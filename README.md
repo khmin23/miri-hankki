@@ -40,3 +40,10 @@ npm run build
 - Android Chrome: 메뉴 -> `앱 설치` 또는 `홈 화면에 추가`
 
 설치 후에는 브라우저 탭이 아닌 독립 실행형 앱처럼 열립니다.
+
+## 모바일 앱 확장
+
+`Capacitor` 설정 파일을 추가해두어서 Android/iOS 앱 래퍼로 확장할 수 있습니다.
+
+- 설정 파일: [docs/mobile-app.md](/Users/kimhyomin/Documents/Playground/docs/mobile-app.md)
+- 핵심 설정: [capacitor.config.ts](/Users/kimhyomin/Documents/Playground/capacitor.config.ts)
