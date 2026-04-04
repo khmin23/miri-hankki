@@ -1,0 +1,31 @@
+{
+  "name": "부산 미리한끼",
+  "short_name": "미리한끼",
+  "description": "부산 광안리와 인근 지역 맛집을 카테고리와 분위기별로 탐색하는 설치형 웹앱",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#0f766e",
+  "lang": "ko-KR",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/maskable-icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
