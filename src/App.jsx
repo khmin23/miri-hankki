@@ -13,6 +13,15 @@ const sortOptions = [
   { id: 'distance', label: '거리순' },
 ]
 
+const quickFilters = [
+  { id: '전체', label: '전체', icon: '✨' },
+  { id: '데이트', label: '데이트', icon: '💑' },
+  { id: '혼밥가능', label: '혼밥', icon: '🍽️' },
+  { id: '오션뷰', label: '오션뷰', icon: '🌊' },
+  { id: '브런치', label: '브런치', icon: '🥐' },
+  { id: '캐주얼', label: '캐주얼', icon: '🛵' },
+]
+
 const accentClassNames = {
   sunset: 'accent-sunset',
   night: 'accent-night',
@@ -282,6 +291,7 @@ export default function App() {
   const [locFilter, setLocFilter] = useState('전체')
   const [moodFilter, setMoodFilter] = useState('전체')
   const [categoryFilter, setCategoryFilter] = useState('전체')
+  const [quickFilter, setQuickFilter] = useState('전체')
   const [sortBy, setSortBy] = useState('popular')
   const [rouletteItem, setRouletteItem] = useState(null)
   const [isSpinning, setIsSpinning] = useState(false)
@@ -303,10 +313,15 @@ export default function App() {
       const moodMatch = moodFilter === '전체' || item.mood.includes(moodFilter)
       const categoryMatch =
         categoryFilter === '전체' || getCuisineCategory(item) === categoryFilter
+      const quickMatch =
+        quickFilter === '전체' ||
+        item.mood.includes(quickFilter) ||
+        item.category.includes(quickFilter) ||
+        item.tags.includes(quickFilter)
 
-      return locationMatch && moodMatch && categoryMatch
+      return locationMatch && moodMatch && categoryMatch && quickMatch
     })
-  }, [categoryFilter, locFilter, moodFilter])
+  }, [categoryFilter, locFilter, moodFilter, quickFilter])
 
   const homeSections = useMemo(() => {
     return cuisineCategories
@@ -345,9 +360,9 @@ export default function App() {
     () => [
       { title: '오늘의 추천', value: `${filteredRestaurants.length}곳`, description: '지금 조건에 맞는 맛집' },
       { title: '가장 많은 지역', value: '광안리', description: '바다 코스와 함께 보기 좋음' },
-      { title: '분위기 필터', value: moodFilter, description: '원하는 무드로 빠르게 탐색' },
+      { title: '빠른 필터', value: quickFilter, description: '배달앱처럼 바로 고르기' },
     ],
-    [filteredRestaurants.length, moodFilter],
+    [filteredRestaurants.length, quickFilter],
   )
 
   function handleAiSearch() {
@@ -488,6 +503,36 @@ export default function App() {
                         ? '전체 맛집 보기'
                         : `${restaurants.filter((item) => getCuisineCategory(item) === category.id).length}곳`}
                     </small>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="quick-filter-strip card-surface">
+              <div className="section-headline-row compact">
+                <div>
+                  <p className="eyebrow dark">Quick Picks</p>
+                  <h2>빠르게 고르는 퀵필터</h2>
+                </div>
+                <button className="text-action" onClick={() => setQuickFilter('전체')}>
+                  전체 해제
+                </button>
+              </div>
+
+              <div className="quick-filter-row">
+                {quickFilters.map((filter) => (
+                  <button
+                    key={filter.id}
+                    className={`quick-filter-pill ${quickFilter === filter.id ? 'active' : ''}`}
+                    onClick={() => {
+                      setQuickFilter(filter.id)
+                      if (filter.id !== '전체' && moodOptions.includes(filter.id)) {
+                        setMoodFilter(filter.id)
+                      }
+                    }}
+                  >
+                    <span>{filter.icon}</span>
+                    <strong>{filter.label}</strong>
                   </button>
                 ))}
               </div>
