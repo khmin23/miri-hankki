@@ -1,6 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { distanceBase, restaurants } from './data/restaurants'
 
+// GitHub Pages 배포 시 /miri-hankki/ 하위 경로 자동 보정
+const BASE = import.meta.env.BASE_URL
+function asset(path) {
+  return BASE + path.replace(/^\//, '')
+}
+
 const navItems = [
   { id: 'home', label: '둘러보기', mobile: '홈', icon: '🏠' },
   { id: 'map', label: '맛집지도', mobile: '지도', icon: '🗺️' },
@@ -336,7 +342,7 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
               <div className="photo-grid">
                 {item.photos.map((photo) => (
                   <figure className="food-photo-card" key={photo.src}>
-                    <img src={photo.src} alt={photo.alt} loading="lazy" />
+                    <img src={asset(photo.src)} alt={photo.alt} loading="lazy" />
                     <figcaption>{photo.caption}</figcaption>
                   </figure>
                 ))}
@@ -628,7 +634,7 @@ export default function App() {
       <header className="topbar">
         <button className="brand" onClick={() => setActiveTab('home')}>
           <span className="brand-mark">
-            <img src="/app-icon-192.png" alt="" aria-hidden="true" />
+            <img src={asset('/app-icon-192.png')} alt="" aria-hidden="true" />
           </span>
           <span>
             <strong>부산 미리한끼</strong>
