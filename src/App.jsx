@@ -495,6 +495,12 @@ export default function App() {
   const [rouletteItem, setRouletteItem] = useState(null)
   const [isSpinning, setIsSpinning] = useState(false)
 
+  // 부산 배경 이미지 — GitHub Pages base 경로 자동 보정
+  useEffect(() => {
+    document.body.style.backgroundImage = `url(${asset('/busan-bg.svg')})`
+    return () => { document.body.style.backgroundImage = '' }
+  }, [])
+
   useEffect(() => {
     function handleBeforeInstallPrompt(event) {
       event.preventDefault()

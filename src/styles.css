@@ -2531,19 +2531,14 @@ body {
   --glass-inner:        inset 0 1px 0 rgba(255, 255, 255, 0.92);
 }
 
-/* 배경: 광안리 낮 하늘 → 해변 모래 */
+/* 배경: 부산 광안리 일러스트 */
 body {
-  background:
-    radial-gradient(ellipse 62% 42% at 88% 0%,   rgba(255, 115, 55, 0.44), transparent),
-    radial-gradient(ellipse 56% 46% at 4%  6%,   rgba(14, 130, 200, 0.30), transparent),
-    radial-gradient(ellipse 52% 36% at 50% 100%,  rgba(255, 195, 100, 0.26), transparent),
-    linear-gradient(168deg,
-      #cce8f6 0%,
-      #c0e0f4 20%,
-      #eaf4fb 46%,
-      #fef3e4 72%,
-      #fde7c6 100%);
+  background-color: #f5ede3;
+  /* background-image: JS에서 asset()으로 주입 */
+  background-size: cover;
+  background-position: center bottom;
   background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 /* 탑바: 부산 야경 딥 오션 */
@@ -2834,10 +2829,12 @@ body {
 /* 모바일 체크 */
 @media (max-width: 720px) {
   body {
-    background:
-      radial-gradient(ellipse 65% 38% at 92% 0%,  rgba(255, 115, 55, 0.46), transparent),
-      radial-gradient(ellipse 58% 42% at 0%  8%,  rgba(14, 130, 200, 0.30), transparent),
-      linear-gradient(168deg, #cce8f6 0%, #d8eef8 28%, #eef6fb 50%, #fef0de 78%, #fde4c0 100%);
+    background-color: #f5ede3;
+    /* background-image: JS에서 asset()으로 주입 */
+    background-size: 100% auto;
+    background-position: center bottom;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
   }
 
   .topbar,
