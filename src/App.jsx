@@ -1,25 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { locationOptions, moodOptions, restaurants } from './data/restaurants'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { distanceBase, restaurants } from './data/restaurants'
 
 const navItems = [
   { id: 'home', label: '둘러보기', mobile: '홈', icon: '🏠' },
   { id: 'map', label: '맛집지도', mobile: '지도', icon: '🗺️' },
   { id: 'recommend', label: '오늘뭐먹지', mobile: '룰렛', icon: '🎲' },
   { id: 'saved', label: '찜한목록', mobile: '찜', icon: '❤️' },
-]
-
-const sortOptions = [
-  { id: 'popular', label: '인기순' },
-  { id: 'distance', label: '거리순' },
-]
-
-const quickFilters = [
-  { id: '전체', label: '전체', icon: '✨' },
-  { id: '데이트', label: '데이트', icon: '💑' },
-  { id: '혼밥가능', label: '혼밥', icon: '🍽️' },
-  { id: '오션뷰', label: '오션뷰', icon: '🌊' },
-  { id: '브런치', label: '브런치', icon: '🥐' },
-  { id: '캐주얼', label: '캐주얼', icon: '🛵' },
 ]
 
 const accentClassNames = {
@@ -31,14 +17,23 @@ const accentClassNames = {
   lime: 'accent-lime',
 }
 
+const mapPinPositions = {
+  1: { x: 388, y: 136 },
+  2: { x: 438, y: 152 },
+  3: { x: 304, y: 232 },
+  4: { x: 350, y: 184 },
+  5: { x: 202, y: 488 },
+  6: { x: 272, y: 202 },
+}
+
 const cuisineCategories = [
   { id: '전체', label: '전체', icon: '🍽️', keywords: [] },
   { id: '한식', label: '한식', icon: '🍚', keywords: ['한식', '곰탕', '국밥'] },
   { id: '중식', label: '중식', icon: '🥢', keywords: ['중식', '마라'] },
   { id: '양식', label: '양식', icon: '🍷', keywords: ['양식', '와인바', '다이닝바'] },
-  { id: '카페', label: '카페', icon: '☕', keywords: ['카페', '에스프레소바'] },
   { id: '브런치', label: '브런치', icon: '🥐', keywords: ['브런치'] },
-  { id: '아시안', label: '아시안', icon: '🍜', keywords: ['베트남음식', '쌀국수'] },
+  { id: '카페', label: '카페', icon: '☕', keywords: ['카페', '에스프레소바'] },
+  { id: '아시안', label: '아시안', icon: '🍜', keywords: ['아시안퓨전', '바오번', '우육면', '마파'] },
 ]
 
 function getCuisineCategory(item) {
@@ -74,7 +69,7 @@ function scoreRestaurant(item, query) {
   if (/브런치|오전|오션뷰|바다/.test(query) && item.mood.includes('오션뷰')) score += 8
   if (/혼밥|든든|국물|한식/.test(query) && item.mood.includes('혼밥가능')) score += 8
   if (/커피|카페|디저트|가볍게/.test(query) && item.category.includes('카페')) score += 8
-  if (/쌀국수|이국적|동남아|가벼운 점심/.test(query) && item.name === '까몬') score += 8
+  if (/바오|마파|우육면|이국적|향신료|가벼운 점심/.test(query) && item.name === '바오하우스 광안점') score += 8
   if (/마라|얼큰|친구|저녁모임/.test(query) && item.name === '푸안 광안점') score += 8
 
   const reasonParts = [
@@ -95,8 +90,8 @@ function getTip(item) {
     2: '무벳은 해 질 무렵 방문하면 분위기가 가장 살아나고, 와인 한 잔과 치즈 플레이트를 먼저 고르면 코스 선택이 쉬워져요.',
     3: '까사부사노는 에스프레소 한 잔과 샤케라또를 나눠 마셔보면 매력을 비교하기 좋아요.',
     4: '위킹홀리데이는 창가 좌석 선호가 높아서 오픈 시간대 방문이 가장 안정적이고, 브런치 메뉴 뒤에 커피를 이어가면 흐름이 좋아요.',
-    5: '나막집은 기본 곰탕으로 먼저 국물 스타일을 보고, 양이 아쉽다면 수육이나 특 곰탕을 추가하는 방식이 부담이 적어요.',
-    6: '까몬은 쌀국수와 반미를 함께 주문하면 식감 차이가 좋아서 만족도가 높고, 점심 피크 전 방문이 가장 쾌적해요.',
+    5: '나막집은 돼지곰탕으로 맑은 국물 스타일을 먼저 보고, 든든하게 먹고 싶다면 고기 칼국수나 삼겹구이를 함께 고르면 좋아요.',
+    6: '바오하우스는 마파두부와 볶음밥을 함께 먹으면 향신료와 고소함의 균형이 좋아요. 점심 피크 전 방문하면 좁은 좌석도 조금 더 편하게 이용할 수 있어요.',
   }
 
   return tips[item.id] ?? '대표 메뉴 하나와 사이드 하나를 조합해서 방문하면 이 집의 강점을 더 또렷하게 느낄 수 있어요.'
@@ -119,60 +114,174 @@ function copyToClipboard(text) {
   return Promise.resolve()
 }
 
-function sortRestaurants(items, sortBy) {
-  const cloned = [...items]
+function sortRestaurants(items) {
+  return [...items]
+}
 
-  if (sortBy === 'distance') {
-    return cloned.sort((a, b) => a.distance - b.distance)
-  }
-
-  return cloned.sort((a, b) => {
-    if (b.rating !== a.rating) return b.rating - a.rating
-    return b.reviewCount - a.reviewCount
-  })
+function openMapLink(url) {
+  window.location.href = url
 }
 
 function RestaurantCard({ item, saved, onToggleSave, onSelect, onOpenMap }) {
   return (
     <article className="card-surface restaurant-card">
-      <button className={`restaurant-hero ${accentClassNames[item.accent]}`} onClick={() => onSelect(item.id)}>
-        <div className="hero-badge-row">
-          <span className="eyebrow">{item.location}</span>
-          <span className="hero-delivery-tag">{item.deliveryTag}</span>
-        </div>
+      <button
+        type="button"
+        className={`restaurant-thumb ${accentClassNames[item.accent]}`}
+        onClick={() => onSelect(item.id)}
+        aria-label={`${item.name} 상세보기`}
+      >
         <span className="restaurant-icon">{item.icon}</span>
-        <div className="restaurant-hero-copy">
-          <h3>{item.name}</h3>
-          <p>{item.category}</p>
-        </div>
       </button>
 
-      <div className="restaurant-body">
-        <div className="meta-row">
-          <span>⭐ {item.rating.toFixed(1)}</span>
-          <span>리뷰 {item.reviewCount}</span>
-          <span>{item.eta}</span>
-        </div>
-        <p className="restaurant-copy">{item.hero}</p>
-        <div className="featured-menu-row">
-          <strong>대표 메뉴</strong>
-          <span>{item.featuredMenu}</span>
-          <small>{item.distance.toFixed(1)}km</small>
-        </div>
-        <div className="chip-row">
-          {item.highlight.map((entry) => (
-            <span className="chip" key={entry}>{entry}</span>
-          ))}
-        </div>
-        <div className="card-actions">
-          <button className="button button-dark" onClick={() => onSelect(item.id)}>상세보기</button>
-          <button className="button button-soft" onClick={() => onOpenMap(item.id)}>지도확인</button>
-          <button className={`icon-button ${saved ? 'saved' : ''}`} onClick={() => onToggleSave(item.id)} aria-label="찜 토글">
+      <div className="restaurant-info">
+        <div className="restaurant-info-head">
+          <div
+            className="restaurant-name-group"
+            onClick={() => onSelect(item.id)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onSelect(item.id)}
+          >
+            <h3>{item.name}</h3>
+            <p className="restaurant-sub">{item.category}</p>
+          </div>
+          <button
+            type="button"
+            className={`icon-button ${saved ? 'saved' : ''}`}
+            onClick={() => onToggleSave(item.id)}
+            aria-label={`${item.name} 찜 토글`}
+          >
             {saved ? '♥' : '♡'}
           </button>
         </div>
+
+        <div className="restaurant-stats">
+          <span>{item.location}</span>
+          <span>{item.eta}</span>
+        </div>
+
+        <p className="restaurant-menu-line">
+          <span className="menu-label">대표</span>
+          {item.featuredMenu}
+          <span className="menu-price">{item.price}</span>
+        </p>
+
+        <div className="card-actions">
+          <button type="button" className="button button-dark" onClick={() => onSelect(item.id)}>상세 정보</button>
+          <button type="button" className="button button-soft" onClick={() => onOpenMap(item.id)}>지도</button>
+        </div>
       </div>
     </article>
+  )
+}
+
+function ApproximateMap({ items, selectedId, onSelect }) {
+  const handlePinKeyDown = (event, id) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      onSelect(id)
+    }
+  }
+
+  return (
+    <div className="approx-map" aria-label="맛집 위치를 대략 표시한 지도">
+      <svg viewBox="0 0 800 600" role="img" aria-labelledby="approx-map-title">
+        <title id="approx-map-title">광안리와 남구 주변 맛집 대략 위치 지도</title>
+        <rect width="800" height="600" fill="#17304f" />
+        <path d="M 520 0 L 800 0 L 800 600 L 470 600 C 500 450 500 300 485 170 C 480 100 495 42 520 0 Z" fill="#256d93" />
+        <path d="M 0 0 H 520 C 492 70 480 132 486 200 C 496 322 492 450 470 600 H 0 Z" fill="#27384f" />
+        <path d="M 506 72 C 560 96 612 96 678 90 C 724 86 764 98 796 122" fill="none" stroke="#d7e7f6" strokeWidth="12" strokeLinecap="round" opacity="0.7" />
+        <path d="M 496 92 C 558 120 618 116 682 110 C 728 106 760 116 798 142" fill="none" stroke="#76a8c7" strokeWidth="5" strokeLinecap="round" strokeDasharray="12 9" />
+        <path d="M 86 0 V 600 M 214 0 V 520 M 346 0 V 488 M 458 0 V 438" stroke="#42546d" strokeWidth="3" />
+        <path d="M 0 82 H 520 M 0 160 H 520 M 0 264 H 498 M 0 362 H 486 M 0 452 H 446" stroke="#42546d" strokeWidth="3" />
+        <path d="M 482 78 C 492 168 488 290 480 448" fill="none" stroke="#5f8fbf" strokeWidth="4" strokeLinecap="round" />
+        <text x="292" y="118" fill="#9db4d1" fontSize="22" fontWeight="800" textAnchor="middle">광안리</text>
+        <text x="178" y="318" fill="#8199b7" fontSize="18" fontWeight="800" textAnchor="middle">남천동</text>
+        <text x="206" y="514" fill="#8199b7" fontSize="18" fontWeight="800" textAnchor="middle">남구</text>
+        <text x="652" y="74" fill="#b4d5e8" fontSize="16" fontWeight="800" textAnchor="middle">광안대교</text>
+        {items.map((item) => {
+          const pos = mapPinPositions[item.id]
+          const active = selectedId === item.id
+          return (
+            <g
+              key={item.id}
+              className="map-svg-pin"
+              onClick={() => onSelect(item.id)}
+              onKeyDown={(event) => handlePinKeyDown(event, item.id)}
+              tabIndex="0"
+              role="button"
+              aria-label={`${item.name} 선택`}
+            >
+              <circle cx={pos.x} cy={pos.y} r={active ? 26 : 19} fill={active ? '#0ea5e9' : '#111827'} stroke={active ? '#bae6fd' : '#74869d'} strokeWidth={active ? 5 : 2} />
+              <text x={pos.x} y={pos.y + 7} textAnchor="middle" fontSize={active ? 18 : 14}>{item.icon}</text>
+              {active && (
+                <>
+                  <rect x={pos.x - 62} y={pos.y - 64} width="124" height="30" rx="10" fill="#0ea5e9" />
+                  <text x={pos.x} y={pos.y - 44} textAnchor="middle" fontSize="13" fontWeight="900" fill="white">{item.name}</text>
+                </>
+              )}
+            </g>
+          )
+        })}
+      </svg>
+      <div className="map-note">위치는 실제 좌표가 아닌 여행 동선 파악용 대략 표시입니다.</div>
+    </div>
+  )
+}
+
+function RealMap({ item }) {
+  const query = item.mapQuery || `${item.name} ${item.address}`
+  const src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=16&ie=UTF8&iwloc=B&output=embed`
+
+  return (
+    <div className="real-map">
+      <iframe
+        title={`${item.name} 실제 지도`}
+        src={src}
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+      />
+      <div className="real-map-caption">
+        <strong>{item.name}</strong>
+        <span>{item.address}</span>
+      </div>
+    </div>
+  )
+}
+
+function ExperienceBadge({ label, value, good }) {
+  return (
+    <div className={`experience-badge ${good ? 'good' : ''}`}>
+      <small>{label}</small>
+      <strong>{value}</strong>
+    </div>
+  )
+}
+
+function VideoSlot({ title, description, video }) {
+  const hasVideo = Boolean(video?.src)
+
+  return (
+    <div className={`video-slot ${hasVideo ? 'has-video' : ''}`}>
+      <div className="video-frame">
+        {hasVideo ? (
+          <video controls preload="metadata" poster={video.poster || ''}>
+            <source src={video.src} type={video.type || 'video/mp4'} />
+          </video>
+        ) : (
+          <div className="video-placeholder">
+            <span>▶</span>
+            <strong>영상 준비 중</strong>
+          </div>
+        )}
+      </div>
+      <div className="video-copy">
+        <strong>{title}</strong>
+        <p>{video?.description || description}</p>
+        {!hasVideo && video?.suggestedPath && <small>{video.suggestedPath}</small>}
+      </div>
+    </div>
   )
 }
 
@@ -185,28 +294,55 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
     setTip('')
   }, [item.id])
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') onClose()
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [onClose])
+
   return (
     <div className="modal-shell" role="dialog" aria-modal="true" aria-labelledby={`modal-title-${item.id}`}>
-      <button className="modal-backdrop" onClick={onClose} aria-label="닫기" />
-      <section className="modal-panel">
+      <div className="modal-backdrop" onClick={onClose} />
+      <section className="modal-panel" ref={scrollRef}>
+        <button type="button" className="modal-close-button" onClick={onClose} aria-label="상세 정보 닫기">닫기</button>
         <div className={`modal-hero ${accentClassNames[item.accent]}`}>
           <div className="modal-top-actions">
-            <button className="glass-button" onClick={() => onShare(item)}>공유</button>
-            <button className="glass-button" onClick={() => onToggleSave(item.id)}>{saved ? '찜해제' : '찜하기'}</button>
-            <button className="glass-button" onClick={onClose}>닫기</button>
+            <button type="button" className="glass-button" onClick={() => onShare(item)}>공유</button>
+            <button type="button" className="glass-button" onClick={() => onToggleSave(item.id)}>{saved ? '찜해제' : '찜하기'}</button>
           </div>
           <span className="modal-icon">{item.icon}</span>
           <p className="eyebrow">{item.location}</p>
           <h2 id={`modal-title-${item.id}`}>{item.name}</h2>
           <p className="modal-subtitle">{item.category}</p>
+          <button type="button" className="hero-map-button" onClick={() => openMapLink(item.links.naver)}>지도 바로 열기</button>
         </div>
 
-        <div className="modal-content" ref={scrollRef}>
+        <div className="modal-content">
           <section className="info-block standout">
             <p className="eyebrow dark">한 줄 소개</p>
             <h3>{item.hero}</h3>
             <p>{item.recommend}</p>
           </section>
+
+          {item.photos?.length > 0 && (
+            <section className="photo-panel">
+              <div className="photo-panel-head">
+                <p className="eyebrow dark">Food Photo</p>
+                <h3>실제 음식 사진</h3>
+              </div>
+              <div className="photo-grid">
+                {item.photos.map((photo) => (
+                  <figure className="food-photo-card" key={photo.src}>
+                    <img src={photo.src} alt={photo.alt} loading="lazy" />
+                    <figcaption>{photo.caption}</figcaption>
+                  </figure>
+                ))}
+              </div>
+            </section>
+          )}
 
           <section className="detail-grid">
             <div className="info-block">
@@ -214,21 +350,78 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
               <strong>{item.price}</strong>
             </div>
             <div className="info-block">
+              <p className="eyebrow dark">기준 거리</p>
+              <strong>약 {item.distance.toFixed(1)}km · {item.eta}</strong>
+              <p>{distanceBase.note}</p>
+            </div>
+            <div className="info-block">
               <p className="eyebrow dark">주소</p>
               <strong>{item.address}</strong>
             </div>
           </section>
 
-          <section className="link-grid">
-            <a className="link-card" href={item.links.naver} target="_blank" rel="noreferrer">네이버 지도</a>
-            <a className="link-card" href={item.links.kakao} target="_blank" rel="noreferrer">카카오맵</a>
-            <a className="link-card" href={item.links.google} target="_blank" rel="noreferrer">구글맵</a>
-            {item.links.reservation ? (
-              <a className="link-card accent" href={item.links.reservation} target="_blank" rel="noreferrer">예약하기</a>
-            ) : (
-              <a className="link-card accent" href={`tel:${item.phone}`}>전화 문의</a>
-            )}
+          <section className="map-action-panel">
+            <p className="eyebrow dark">지도 연결</p>
+            <div className="link-grid">
+              <button type="button" className="link-card naver" onClick={() => openMapLink(item.links.naver)}>현재 장소 네이버 지도 열기</button>
+              <button type="button" className="link-card kakao" onClick={() => openMapLink(item.links.kakao)}>현재 장소 카카오맵 열기</button>
+              <button type="button" className="link-card google" onClick={() => openMapLink(item.links.google)}>현재 장소 구글맵 열기</button>
+              {item.links.reservation ? (
+                <button type="button" className="link-card accent" onClick={() => openMapLink(item.links.reservation)}>예약 열기</button>
+              ) : (
+                <a className="link-card accent" href={`tel:${item.phone}`}>전화 문의</a>
+              )}
+            </div>
           </section>
+
+          <section className="media-panel">
+            <div className="media-panel-head">
+              <p className="eyebrow dark">Video Preview</p>
+              <h3>방문 전에 영상으로 먼저 확인하기</h3>
+            </div>
+            <div className="video-grid">
+              <VideoSlot
+                title="가게 내부 영상"
+                description="좌석 간격, 분위기, 소음감, 창가 여부를 짧게 확인하는 영상 자리입니다."
+                video={item.media?.interior}
+              />
+              <VideoSlot
+                title="가게 찾아가는 영상"
+                description="역/해변/주차장에서 입구까지 가는 동선을 보여주는 영상 자리입니다."
+                video={item.media?.route}
+              />
+            </div>
+          </section>
+
+          {item.experience && (
+            <section className="info-block">
+              <p className="eyebrow dark">실제 방문 경험 데이터</p>
+              <div className="experience-grid">
+                <ExperienceBadge label="혼밥" value={item.experience.soloOk ? '가능' : '불가'} good={item.experience.soloOk} />
+                <ExperienceBadge label="소음" value={item.experience.noise} good={item.experience.noise === '낮음'} />
+                <ExperienceBadge label="분위기" value={item.experience.vibe} />
+                <ExperienceBadge label="관광객" value={item.experience.touristRatio} />
+                <ExperienceBadge label="음식 양" value={item.experience.portion} good={item.experience.portion === '많음'} />
+                <ExperienceBadge label="맵기" value={item.experience.spicy} />
+                <ExperienceBadge label="1인 주문" value={item.experience.singleOrder ? '가능' : '불가'} good={item.experience.singleOrder} />
+                <ExperienceBadge label="내부 넓이" value={item.experience.interior} good={item.experience.interior === '넓음'} />
+              </div>
+              <dl className="experience-detail-list">
+                <div>
+                  <dt>대기시간</dt>
+                  <dd>{item.experience.waitTime}</dd>
+                </div>
+                <div>
+                  <dt>좌석 배치</dt>
+                  <dd>{item.experience.seating}</dd>
+                </div>
+                <div>
+                  <dt>창가 여부</dt>
+                  <dd>{item.experience.window}</dd>
+                </div>
+              </dl>
+            </section>
+          )}
 
           <section className="info-block">
             <p className="eyebrow dark">에디터 포인트</p>
@@ -263,10 +456,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
             </div>
           </section>
 
-          <div className="modal-footer-actions">
-            <button className="button button-soft" onClick={() => onShare(item)}>링크 복사</button>
-            <button className="button button-dark" onClick={() => onOpenMap(item.id)}>지도에서 보기</button>
-          </div>
         </div>
       </section>
     </div>
@@ -277,10 +466,18 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('home')
   const [selectedId, setSelectedId] = useState(null)
   const [mapSelectedId, setMapSelectedId] = useState(restaurants[0].id)
+  const [installPrompt, setInstallPrompt] = useState(null)
+  const [isInstalledApp, setIsInstalledApp] = useState(() => {
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true
+  })
+  const [showInstallGuide, setShowInstallGuide] = useState(false)
   const [savedIds, setSavedIds] = useState(() => {
     try {
       const stored = window.localStorage.getItem('miri-hankki-saved')
-      return stored ? JSON.parse(stored) : []
+      const parsed = stored ? JSON.parse(stored) : []
+      return Array.isArray(parsed)
+        ? parsed.filter((id) => restaurants.some((item) => item.id === id))
+        : []
     } catch {
       return []
     }
@@ -288,13 +485,30 @@ export default function App() {
   const [aiQuery, setAiQuery] = useState('')
   const [aiResult, setAiResult] = useState(null)
   const [showCopyMessage, setShowCopyMessage] = useState(false)
-  const [locFilter, setLocFilter] = useState('전체')
-  const [moodFilter, setMoodFilter] = useState('전체')
   const [categoryFilter, setCategoryFilter] = useState('전체')
-  const [quickFilter, setQuickFilter] = useState('전체')
-  const [sortBy, setSortBy] = useState('popular')
   const [rouletteItem, setRouletteItem] = useState(null)
   const [isSpinning, setIsSpinning] = useState(false)
+
+  useEffect(() => {
+    function handleBeforeInstallPrompt(event) {
+      event.preventDefault()
+      setInstallPrompt(event)
+    }
+
+    function handleAppInstalled() {
+      setInstallPrompt(null)
+      setIsInstalledApp(true)
+      setShowInstallGuide(false)
+    }
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    window.addEventListener('appinstalled', handleAppInstalled)
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+      window.removeEventListener('appinstalled', handleAppInstalled)
+    }
+  }, [])
 
   useEffect(() => {
     document.body.style.overflow = selectedId ? 'hidden' : ''
@@ -309,36 +523,26 @@ export default function App() {
 
   const filteredRestaurants = useMemo(() => {
     return restaurants.filter((item) => {
-      const locationMatch = locFilter === '전체' || item.location === locFilter
-      const moodMatch = moodFilter === '전체' || item.mood.includes(moodFilter)
       const categoryMatch =
         categoryFilter === '전체' || getCuisineCategory(item) === categoryFilter
-      const quickMatch =
-        quickFilter === '전체' ||
-        item.mood.includes(quickFilter) ||
-        item.category.includes(quickFilter) ||
-        item.tags.includes(quickFilter)
 
-      return locationMatch && moodMatch && categoryMatch && quickMatch
+      return categoryMatch
     })
-  }, [categoryFilter, locFilter, moodFilter, quickFilter])
+  }, [categoryFilter])
 
   const homeSections = useMemo(() => {
     return cuisineCategories
       .filter((category) => category.id !== '전체')
       .map((category) => ({
         ...category,
-        items: sortRestaurants(
-          filteredRestaurants.filter((item) => getCuisineCategory(item) === category.id),
-          sortBy,
-        ),
+        items: sortRestaurants(filteredRestaurants.filter((item) => getCuisineCategory(item) === category.id)),
       }))
       .filter((category) => category.items.length > 0)
-  }, [filteredRestaurants, sortBy])
+  }, [filteredRestaurants])
 
   const sortedFilteredRestaurants = useMemo(
-    () => sortRestaurants(filteredRestaurants, sortBy),
-    [filteredRestaurants, sortBy],
+    () => sortRestaurants(filteredRestaurants),
+    [filteredRestaurants],
   )
 
   const selectedItem = useMemo(
@@ -354,15 +558,6 @@ export default function App() {
   const savedRestaurants = useMemo(
     () => restaurants.filter((item) => savedIds.includes(item.id)),
     [savedIds],
-  )
-
-  const heroHighlights = useMemo(
-    () => [
-      { title: '오늘의 추천', value: `${filteredRestaurants.length}곳`, description: '지금 조건에 맞는 맛집' },
-      { title: '가장 많은 지역', value: '광안리', description: '바다 코스와 함께 보기 좋음' },
-      { title: '빠른 필터', value: quickFilter, description: '배달앱처럼 바로 고르기' },
-    ],
-    [filteredRestaurants.length, quickFilter],
   )
 
   function handleAiSearch() {
@@ -384,15 +579,30 @@ export default function App() {
   }
 
   async function handleShare(item) {
-    await copyToClipboard(item.links.naver)
-    setShowCopyMessage(true)
-    window.setTimeout(() => setShowCopyMessage(false), 1800)
+    try {
+      await copyToClipboard(item.links.naver)
+      setShowCopyMessage(true)
+      window.setTimeout(() => setShowCopyMessage(false), 1800)
+    } catch {
+      setShowCopyMessage(false)
+    }
   }
 
   function openMap(id) {
     setMapSelectedId(id)
     setSelectedId(null)
     setActiveTab('map')
+  }
+
+  async function handleInstallApp() {
+    if (installPrompt) {
+      installPrompt.prompt()
+      await installPrompt.userChoice
+      setInstallPrompt(null)
+      return
+    }
+
+    setShowInstallGuide(true)
   }
 
   function spinRoulette() {
@@ -417,78 +627,45 @@ export default function App() {
 
       <header className="topbar">
         <button className="brand" onClick={() => setActiveTab('home')}>
-          <span className="brand-mark">🌊</span>
+          <span className="brand-mark">
+            <img src="/app-icon-192.png" alt="" aria-hidden="true" />
+          </span>
           <span>
             <strong>부산 미리한끼</strong>
-            <small>AI 대신 취향 중심으로 정리한 맛집 큐레이션</small>
           </span>
         </button>
-        <nav className="desktop-nav">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              className={activeTab === item.id ? 'active' : ''}
-              onClick={() => setActiveTab(item.id)}
-            >
-              {item.label}
+        <div className="topbar-actions">
+          {!isInstalledApp && (
+            <button className="app-install-button" onClick={handleInstallApp}>
+              앱 설치
             </button>
-          ))}
-        </nav>
+          )}
+          <nav className="desktop-nav">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                className={activeTab === item.id ? 'active' : ''}
+                onClick={() => setActiveTab(item.id)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+        </div>
       </header>
+
+      {showInstallGuide && !isInstalledApp && (
+        <div className="install-guide card-surface">
+          <button className="install-guide-close" onClick={() => setShowInstallGuide(false)} aria-label="설치 안내 닫기">닫기</button>
+          <strong>홈 화면에 추가하면 앱처럼 실행돼요.</strong>
+          <p>iPhone Safari는 공유 버튼에서 홈 화면에 추가를 선택하고, Android Chrome은 메뉴에서 앱 설치를 선택하세요.</p>
+        </div>
+      )}
 
       <main className="page-shell">
         {activeTab === 'home' && (
           <>
-            <section className="hero-panel">
-              <div className="hero-copy-block">
-                <p className="eyebrow">Busan Food Home</p>
-                <h1>한식부터 카페까지, 앱 홈처럼 카테고리로 바로 고르세요.</h1>
-                <p>
-                  배민이나 쿠팡이츠처럼 먼저 카테고리를 고르고, 그 안에서 분위기와 지역으로 더 좁혀보세요.
-                  취향 문장 검색도 함께 쓸 수 있게 구성했습니다.
-                </p>
-                <div className="hero-stat-grid">
-                  {heroHighlights.map((entry) => (
-                    <div className="hero-stat-card" key={entry.title}>
-                      <small>{entry.title}</small>
-                      <strong>{entry.value}</strong>
-                      <span>{entry.description}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="hero-search-panel">
-                <label htmlFor="query" className="eyebrow dark">취향 입력</label>
-                <div className="hero-search-row">
-                  <input
-                    id="query"
-                    value={aiQuery}
-                    onChange={(event) => setAiQuery(event.target.value)}
-                    onKeyDown={(event) => event.key === 'Enter' && handleAiSearch()}
-                    placeholder="예: 조용한 데이트 디너, 바다 보이는 브런치, 혼밥 가능한 국물 메뉴"
-                  />
-                  <button className="button button-dark" onClick={handleAiSearch}>추천받기</button>
-                </div>
-                {aiResult && (
-                  <div className="result-card">
-                    <p className="eyebrow dark">추천 결과</p>
-                    <h2>{restaurants.find((item) => item.id === aiResult.id)?.name}</h2>
-                    <p>{aiResult.reason}</p>
-                    <button className="button button-soft" onClick={() => setSelectedId(aiResult.id)}>자세히 보기</button>
-                  </div>
-                )}
-              </div>
-            </section>
-
             <section className="category-home card-surface">
-              <div className="section-headline-row compact">
-                <div>
-                  <p className="eyebrow dark">Category Home</p>
-                  <h2>카테고리로 바로 탐색</h2>
-                </div>
-                <p className="section-caption">누르면 바로 해당 음식군 위주로 홈이 재구성됩니다.</p>
-              </div>
-
               <div className="category-grid">
                 {cuisineCategories.map((category) => (
                   <button
@@ -508,78 +685,14 @@ export default function App() {
               </div>
             </section>
 
-            <section className="quick-filter-strip card-surface">
-              <div className="section-headline-row compact">
-                <div>
-                  <p className="eyebrow dark">Quick Picks</p>
-                  <h2>빠르게 고르는 퀵필터</h2>
-                </div>
-                <button className="text-action" onClick={() => setQuickFilter('전체')}>
-                  전체 해제
-                </button>
-              </div>
-
-              <div className="quick-filter-row">
-                {quickFilters.map((filter) => (
-                  <button
-                    key={filter.id}
-                    className={`quick-filter-pill ${quickFilter === filter.id ? 'active' : ''}`}
-                    onClick={() => {
-                      setQuickFilter(filter.id)
-                      if (filter.id !== '전체' && moodOptions.includes(filter.id)) {
-                        setMoodFilter(filter.id)
-                      }
-                    }}
-                  >
-                    <span>{filter.icon}</span>
-                    <strong>{filter.label}</strong>
-                  </button>
-                ))}
-              </div>
-            </section>
-
-            <section className="section-headline-row">
-              <div>
-                <p className="eyebrow dark">Quick Filters</p>
-                <h2>지역과 분위기로 더 좁혀보기</h2>
-              </div>
-              <div className="filter-stack">
-                <select value={locFilter} onChange={(event) => setLocFilter(event.target.value)}>
-                  {locationOptions.map((option) => (
-                    <option key={option} value={option}>{option}</option>
-                  ))}
-                </select>
-                <select value={moodFilter} onChange={(event) => setMoodFilter(event.target.value)}>
-                  {moodOptions.map((option) => (
-                    <option key={option} value={option}>{option}</option>
-                  ))}
-                </select>
-                <div className="sort-tabs" role="tablist" aria-label="정렬 방식">
-                  {sortOptions.map((option) => (
-                    <button
-                      key={option.id}
-                      className={sortBy === option.id ? 'active' : ''}
-                      onClick={() => setSortBy(option.id)}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </section>
-
             {categoryFilter === '전체' ? (
               <section className="category-sections">
                 {homeSections.map((section) => (
                   <section className="category-section" key={section.id}>
                     <div className="section-headline-row compact">
                       <div>
-                        <p className="eyebrow dark">{section.label}</p>
-                        <h2>{section.icon} {section.label} 추천</h2>
+                        <h2>{section.label}</h2>
                       </div>
-                      <button className="text-action" onClick={() => setCategoryFilter(section.id)}>
-                        이 카테고리만 보기
-                      </button>
                     </div>
                     <div className="restaurant-grid">
                       {section.items.map((item) => (
@@ -600,10 +713,7 @@ export default function App() {
               <section className="category-section">
                 <div className="section-headline-row compact">
                   <div>
-                    <p className="eyebrow dark">Selected Category</p>
-                    <h2>
-                      {cuisineCategories.find((entry) => entry.id === categoryFilter)?.icon} {categoryFilter} 맛집
-                    </h2>
+                    <h2>{categoryFilter}</h2>
                   </div>
                   <button className="text-action" onClick={() => setCategoryFilter('전체')}>
                     전체 카테고리 보기
@@ -626,7 +736,7 @@ export default function App() {
                 ) : (
                   <div className="empty-state card-surface">
                     <strong>조건에 맞는 맛집이 아직 없습니다.</strong>
-                    <p>지역이나 분위기 필터를 조금 완화하면 더 많은 카테고리 결과를 볼 수 있어요.</p>
+                    <p>전체 카테고리로 돌아가면 모든 맛집을 다시 볼 수 있어요.</p>
                   </div>
                 )}
               </section>
@@ -637,21 +747,10 @@ export default function App() {
         {activeTab === 'map' && (
           <section className="map-layout">
             <aside className="map-sidebar card-surface">
-              <div>
-                <p className="eyebrow dark">Map Focus</p>
+              <div className="map-sidebar-head">
+                <p className="eyebrow dark">Location</p>
                 <h2>{mapItem.name}</h2>
                 <p>{mapItem.hero}</p>
-              </div>
-              <div className="chip-row">
-                {restaurants.map((item) => (
-                  <button
-                    key={item.id}
-                    className={`map-chip ${mapSelectedId === item.id ? 'active' : ''}`}
-                    onClick={() => setMapSelectedId(item.id)}
-                  >
-                    {item.icon} {item.name}
-                  </button>
-                ))}
               </div>
               <div className={`map-highlight ${accentClassNames[mapItem.accent]}`}>
                 <span>{mapItem.icon}</span>
@@ -660,21 +759,31 @@ export default function App() {
                   <p>{mapItem.address}</p>
                 </div>
               </div>
-              <div className="card-actions stacked">
-                <a className="button button-soft" href={mapItem.links.naver} target="_blank" rel="noreferrer">네이버 지도</a>
-                <a className="button button-soft" href={mapItem.links.kakao} target="_blank" rel="noreferrer">카카오맵</a>
-                <a className="button button-soft" href={mapItem.links.google} target="_blank" rel="noreferrer">구글맵</a>
-                <button className="button button-dark" onClick={() => setSelectedId(mapItem.id)}>상세 보기</button>
+              <div className="map-service-grid" aria-label="지도 앱 선택">
+                <button type="button" className="map-service naver" onClick={() => openMapLink(mapItem.links.naver)}>네이버</button>
+                <button type="button" className="map-service kakao" onClick={() => openMapLink(mapItem.links.kakao)}>카카오</button>
+                <button type="button" className="map-service google" onClick={() => openMapLink(mapItem.links.google)}>구글</button>
+              </div>
+              <button className="button button-dark map-detail-button" onClick={() => setSelectedId(mapItem.id)}>상세 정보 보기</button>
+              <div className="map-place-list">
+                {restaurants.map((item) => (
+                  <button
+                    key={item.id}
+                    className={`map-place-item ${mapSelectedId === item.id ? 'active' : ''}`}
+                    onClick={() => setMapSelectedId(item.id)}
+                  >
+                    <span>{item.icon}</span>
+                    <div>
+                      <strong>{item.name}</strong>
+                      <small>{item.location} · {item.category}</small>
+                    </div>
+                  </button>
+                ))}
               </div>
             </aside>
 
             <div className="map-frame card-surface">
-              <iframe
-                title={`${mapItem.name} 지도`}
-                src={`https://maps.google.com/maps?q=${encodeURIComponent(mapItem.name)}&t=&z=16&ie=UTF8&iwloc=B&output=embed`}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
+              <RealMap item={mapItem} />
             </div>
           </section>
         )}
@@ -700,7 +809,7 @@ export default function App() {
               </button>
               {rouletteItem && !isSpinning && (
                 <button className="button button-soft" onClick={() => setSelectedId(rouletteItem.id)}>
-                  결과 자세히 보기
+                  결과 상세 정보 보기
                 </button>
               )}
             </div>

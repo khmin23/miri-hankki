@@ -1,5 +1,5 @@
-const CACHE_NAME = 'miri-hankki-v1'
-const APP_SHELL = ['/', '/manifest.webmanifest', '/icon-192.svg', '/icon-512.svg', '/maskable-icon.svg']
+const CACHE_NAME = 'miri-hankki-v17'
+const APP_SHELL = ['/', '/manifest.webmanifest', '/app-icon-192.png', '/app-icon-512.png', '/apple-touch-icon.png']
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
