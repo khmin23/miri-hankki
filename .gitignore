@@ -1,3 +1,6 @@
 node_modules
 dist
 .DS_Store
+.pnpm-store
+miri-hankki-claude-handoff.zip
+CLAUDE_HANDOFF.md

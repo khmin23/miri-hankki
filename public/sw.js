@@ -1,5 +1,12 @@
-const CACHE_NAME = 'miri-hankki-v17'
-const APP_SHELL = ['/', '/manifest.webmanifest', '/app-icon-192.png', '/app-icon-512.png', '/apple-touch-icon.png']
+const CACHE_NAME = 'miri-hankki-v24'
+const BASE_PATH = new URL(self.registration.scope).pathname
+const APP_SHELL = [
+  BASE_PATH,
+  `${BASE_PATH}manifest.webmanifest`,
+  `${BASE_PATH}app-icon-192.png`,
+  `${BASE_PATH}app-icon-512.png`,
+  `${BASE_PATH}apple-touch-icon.png`,
+]
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -32,7 +39,7 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone))
           return response
         })
-        .catch(() => caches.match('/'))
+        .catch(() => caches.match(BASE_PATH))
     }),
   )
 })

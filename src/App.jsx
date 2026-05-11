@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { distanceBase, restaurants } from './data/restaurants'
+import { restaurants } from './data/restaurants'
 
-// GitHub Pages 배포 시 /miri-hankki/ 하위 경로 자동 보정
 const BASE = import.meta.env.BASE_URL
+
 function asset(path) {
-  return BASE + path.replace(/^\//, '')
+  return `${BASE}${path.replace(/^\//, '')}`
 }
 
 const navItems = [
@@ -250,7 +250,6 @@ function RealMap({ item }) {
       />
       <div className="real-map-caption">
         <strong>{item.name}</strong>
-        <span>{item.address}</span>
       </div>
     </div>
   )
@@ -272,8 +271,8 @@ function VideoSlot({ title, description, video }) {
     <div className={`video-slot ${hasVideo ? 'has-video' : ''}`}>
       <div className="video-frame">
         {hasVideo ? (
-          <video controls preload="metadata" poster={video.poster || ''}>
-            <source src={video.src} type={video.type || 'video/mp4'} />
+          <video controls preload="metadata" poster={video.poster ? asset(video.poster) : ''}>
+            <source src={asset(video.src)} type={video.type || 'video/mp4'} />
           </video>
         ) : (
           <div className="video-placeholder">
@@ -354,11 +353,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
             <div className="info-block">
               <p className="eyebrow dark">가격대</p>
               <strong>{item.price}</strong>
-            </div>
-            <div className="info-block">
-              <p className="eyebrow dark">기준 거리</p>
-              <strong>약 {item.distance.toFixed(1)}km · {item.eta}</strong>
-              <p>{distanceBase.note}</p>
             </div>
             <div className="info-block">
               <p className="eyebrow dark">주소</p>
@@ -495,10 +489,14 @@ export default function App() {
   const [rouletteItem, setRouletteItem] = useState(null)
   const [isSpinning, setIsSpinning] = useState(false)
 
-  // 부산 배경 이미지 — GitHub Pages base 경로 자동 보정
   useEffect(() => {
-    document.body.style.backgroundImage = `url(${asset('/busan-bg.svg')})`
-    return () => { document.body.style.backgroundImage = '' }
+    document.body.style.setProperty('--app-bg-mobile', `url("${asset('/busan-bg.png')}")`)
+    document.body.style.setProperty('--app-bg-wide', `url("${asset('/busan-bg-wide.png')}")`)
+
+    return () => {
+      document.body.style.removeProperty('--app-bg-mobile')
+      document.body.style.removeProperty('--app-bg-wide')
+    }
   }, [])
 
   useEffect(() => {
@@ -760,16 +758,7 @@ export default function App() {
           <section className="map-layout">
             <aside className="map-sidebar card-surface">
               <div className="map-sidebar-head">
-                <p className="eyebrow dark">Location</p>
                 <h2>{mapItem.name}</h2>
-                <p>{mapItem.hero}</p>
-              </div>
-              <div className={`map-highlight ${accentClassNames[mapItem.accent]}`}>
-                <span>{mapItem.icon}</span>
-                <div>
-                  <strong>{mapItem.category}</strong>
-                  <p>{mapItem.address}</p>
-                </div>
               </div>
               <div className="map-service-grid" aria-label="지도 앱 선택">
                 <button type="button" className="map-service naver" onClick={() => openMapLink(mapItem.links.naver)}>네이버</button>
@@ -787,7 +776,7 @@ export default function App() {
                     <span>{item.icon}</span>
                     <div>
                       <strong>{item.name}</strong>
-                      <small>{item.location} · {item.category}</small>
+                      <small>{item.location}</small>
                     </div>
                   </button>
                 ))}
@@ -829,7 +818,7 @@ export default function App() {
         )}
 
         {activeTab === 'saved' && (
-          <section>
+          <section className="saved-page">
             <div className="section-headline-row">
               <div>
                 <p className="eyebrow dark">Favorites</p>
