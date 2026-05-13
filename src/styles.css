@@ -190,10 +190,10 @@ img { display: block; width: 100%; object-fit: cover; }
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(255,248,243,0.15) 0%,
-    rgba(255,248,243,0.5)  40%,
-    rgba(255,248,243,0.92) 70%,
-    rgba(255,248,243,1)    100%
+    rgba(255,248,243,0.02) 0%,
+    rgba(255,248,243,0.05) 45%,
+    rgba(255,248,243,0.28) 72%,
+    rgba(255,248,243,0.68) 100%
   );
 }
 
@@ -203,42 +203,97 @@ img { display: block; width: 100%; object-fit: cover; }
   flex-direction: column;
   height: 100%;
   padding: 0 28px 48px;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 .splash-logo-area {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 36px;
+  margin-top: 8vh;
   text-align: center;
 }
 
-.splash-icon {
-  width: 80px;
-  height: 80px;
-  border-radius: 22px;
-  box-shadow: var(--shadow-md);
-  margin-bottom: 14px;
+.splash-brand-mark {
+  position: relative;
+  width: 108px;
+  height: 82px;
+  margin-bottom: 6px;
+}
+.brand-cloche {
+  position: absolute;
+  left: 9px;
+  bottom: 0;
+  width: 88px;
+  height: 58px;
+  border-radius: 88px 88px 0 0;
+  background: var(--navy);
+  color: transparent;
+}
+.brand-cloche::before {
+  content: '';
+  position: absolute;
+  left: -11px;
+  right: -11px;
+  bottom: -12px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--navy);
+}
+.brand-cloche::after {
+  content: '';
+  position: absolute;
+  top: -13px;
+  left: 36px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--navy);
+}
+.brand-pin {
+  position: absolute;
+  right: 0;
+  bottom: -5px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50% 50% 50% 10px;
+  transform: rotate(-45deg);
+  background: var(--coral);
+  color: transparent;
+}
+.brand-pin::after {
+  content: '';
+  position: absolute;
+  inset: 14px;
+  border-radius: 50%;
+  background: var(--beige);
 }
 
 .splash-title {
-  font-size: 2.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: clamp(4.2rem, 17vw, 5.8rem);
   font-weight: 900;
-  line-height: 1.15;
+  line-height: 0.92;
   color: var(--navy);
-  margin: 0 0 8px;
+  margin: 0 0 18px;
   letter-spacing: -0.03em;
 }
 .splash-title .accent { color: var(--coral); }
 
 .splash-subtitle {
-  font-size: 0.95rem;
-  color: var(--text-md);
+  font-size: clamp(1rem, 4vw, 1.25rem);
+  color: var(--navy);
   margin: 0;
+  font-weight: 700;
 }
 
 .splash-actions {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 48px;
   display: flex;
   flex-direction: column;
   gap: 12px;

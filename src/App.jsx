@@ -243,12 +243,15 @@ function Splash({ onEnter, onAI }) {
   return (
     <div className="splash">
       <div className="splash-bg">
-        <img src={asset('/busan-bg.svg')} alt="" aria-hidden="true" />
+        <img src={asset('/busan-bg.png')} alt="" aria-hidden="true" />
       </div>
       <div className="splash-overlay" />
       <div className="splash-content">
         <div className="splash-logo-area">
-          <img src={asset('/app-icon-192.png')} alt="앱 아이콘" className="splash-icon" />
+          <div className="splash-brand-mark" aria-hidden="true">
+            <span className="brand-cloche">◜</span>
+            <span className="brand-pin">●</span>
+          </div>
           <h1 className="splash-title">
             <span className="title-ko">부산</span>
             <span className="title-ko accent">미리한끼</span>
