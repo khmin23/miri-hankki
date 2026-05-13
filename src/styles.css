@@ -3297,3 +3297,114 @@ body::before {
 .saved-page .restaurant-grid {
   gap: clamp(18px, 3vw, 28px);
 }
+
+/* Mobile detail modal fit fix */
+@media (max-width: 720px) {
+  .modal-shell {
+    padding: 0 !important;
+    align-items: stretch !important;
+    place-items: stretch !important;
+    overflow: hidden !important;
+  }
+
+  .modal-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    grid-template-columns: 1fr !important;
+    border-radius: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .modal-hero {
+    min-height: 0 !important;
+    padding: max(86px, calc(env(safe-area-inset-top) + 76px)) 22px 24px !important;
+    gap: 9px !important;
+  }
+
+  .modal-top-actions {
+    top: max(14px, calc(env(safe-area-inset-top) + 10px)) !important;
+    left: 16px !important;
+    right: 92px !important;
+    gap: 8px !important;
+  }
+
+  .modal-close-button {
+    position: fixed !important;
+    top: max(14px, calc(env(safe-area-inset-top) + 10px)) !important;
+    right: 16px !important;
+    padding: 10px 14px !important;
+    z-index: 90 !important;
+  }
+
+  .glass-button {
+    padding: 10px 14px !important;
+    border-radius: 18px !important;
+  }
+
+  .modal-icon {
+    width: 74px !important;
+    height: 74px !important;
+    border-radius: 22px !important;
+    font-size: 3.35rem !important;
+  }
+
+  .modal-hero h2 {
+    font-size: clamp(2rem, 10vw, 2.75rem) !important;
+    line-height: 1.1 !important;
+    margin: 4px 0 !important;
+  }
+
+  .modal-subtitle {
+    font-size: 1rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .hero-map-button {
+    margin-top: 8px !important;
+    padding: 12px 16px !important;
+    border-radius: 16px !important;
+  }
+
+  .modal-content {
+    padding: 18px 16px max(112px, calc(env(safe-area-inset-bottom) + 96px)) !important;
+    gap: 16px !important;
+  }
+
+  .info-block,
+  .photo-panel,
+  .media-panel,
+  .map-action-panel {
+    padding: 18px !important;
+    border-radius: 24px !important;
+  }
+
+  .info-block h3,
+  .photo-panel-head h3,
+  .media-panel-head h3 {
+    font-size: clamp(1.3rem, 6vw, 1.7rem) !important;
+    line-height: 1.35 !important;
+    word-break: keep-all;
+  }
+
+  .info-block p {
+    line-height: 1.7 !important;
+    word-break: keep-all;
+  }
+
+  .photo-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .food-photo-card {
+    border-radius: 22px !important;
+    overflow: hidden !important;
+  }
+
+  .food-photo-card img {
+    width: 100% !important;
+    max-height: 72vh !important;
+  }
+}
