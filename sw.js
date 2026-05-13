@@ -1,4 +1,4 @@
-const CACHE_NAME = 'miri-hankki-v29-categories-all'
+const CACHE_NAME = 'miri-hankki-v29-map-ux'
 const BASE_PATH = new URL(self.registration.scope).pathname
 const APP_SHELL = [
   BASE_PATH,
