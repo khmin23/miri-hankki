@@ -66,6 +66,13 @@ const mapCoordinates = {
   6: { lat: 35.15419, lng: 129.11675 },
 }
 
+const mapBounds = {
+  minLat: 35.126,
+  maxLat: 35.162,
+  minLng: 129.112,
+  maxLng: 129.137,
+}
+
 const cuisineCategories = [
   { id: '전체',  keywords: [] },
   { id: '한식',  keywords: ['한식', '곰탕', '국밥'] },
@@ -235,14 +242,39 @@ function ApproximateMap({ items, selectedId, onSelect }) {
   )
 }
 
-function RealMap({ item }) {
+function getMapPoint(item) {
   const coord = mapCoordinates[item.id] ?? { lat: 35.1534, lng: 129.1187 }
-  const delta = 0.006
-  const src = `https://www.openstreetmap.org/export/embed.html?bbox=${coord.lng - delta}%2C${coord.lat - delta}%2C${coord.lng + delta}%2C${coord.lat + delta}&layer=mapnik&marker=${coord.lat}%2C${coord.lng}`
+  const x = ((coord.lng - mapBounds.minLng) / (mapBounds.maxLng - mapBounds.minLng)) * 100
+  const y = ((mapBounds.maxLat - coord.lat) / (mapBounds.maxLat - mapBounds.minLat)) * 100
+  return {
+    x: Math.min(94, Math.max(6, x)),
+    y: Math.min(82, Math.max(12, y)),
+  }
+}
+
+function RealMap({ items, selectedId, onSelect }) {
+  const src = `https://www.openstreetmap.org/export/embed.html?bbox=${mapBounds.minLng}%2C${mapBounds.minLat}%2C${mapBounds.maxLng}%2C${mapBounds.maxLat}&layer=mapnik`
   return (
     <div className="real-map">
-      <iframe title={`${item.name} 지도`} src={src} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
-      <button className="real-map-open" onClick={() => openMapLink(item.links.google)}>구글지도 열기</button>
+      <iframe title="부산 미리한끼 맛집 지도" src={src} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+      <div className="real-map-pins" aria-label="지도 맛집 핀">
+        {items.map((item) => {
+          const point = getMapPoint(item)
+          const active = selectedId === item.id
+          return (
+            <button
+              key={item.id}
+              className={`real-map-pin ${active ? 'active' : ''}`}
+              style={{ left: `${point.x}%`, top: `${point.y}%` }}
+              onClick={() => onSelect(item.id)}
+              aria-label={`${item.name} 선택`}
+            >
+              <span className="pin-bubble"><span>{item.icon}</span></span>
+              <span className="pin-label">{item.name.replace(' 광안점', '')}</span>
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -520,6 +552,10 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect }) {
   )
 
   const mapCategories = ['전체', '한식', '카페', '양식', '아시안']
+  const visibleMapItems = useMemo(() => {
+    if (mapCategory === '전체') return restaurants
+    return restaurants.filter((item) => getCuisineCategory(item) === mapCategory)
+  }, [mapCategory])
 
   function handleMapCategory(label) {
     setMapCategory(label)
@@ -550,7 +586,7 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect }) {
       {/* 지도 */}
       <div className="map-body">
         <div className="map-real-wrap">
-          <RealMap item={mapItem} />
+          <RealMap items={visibleMapItems} selectedId={mapSelectedId} onSelect={setMapSelectedId} />
         </div>
       </div>
 
