@@ -1,4 +1,4 @@
-const CACHE_NAME = 'miri-hankki-v29-splash-bg'
+const CACHE_NAME = 'miri-hankki-v29-situation-recs'
 const BASE_PATH = new URL(self.registration.scope).pathname
 const APP_SHELL = [
   BASE_PATH,

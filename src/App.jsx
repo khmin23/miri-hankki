@@ -42,6 +42,48 @@ const homeMoodCategories = [
   { id: '아시안', label: '아시안', icon: '🍜' },
 ]
 
+const situationCategories = [
+  { id: '혼밥', label: '혼밥', icon: '🍚' },
+  { id: '데이트', label: '데이트', icon: '❤️' },
+  { id: '해장', label: '해장', icon: '🍲' },
+  { id: '브런치', label: '브런치', icon: '🥐' },
+  { id: '카페', label: '카페', icon: '☕' },
+  { id: '얼큰한', label: '얼큰한', icon: '🌶️' },
+]
+
+const situationRecommendationMap = {
+  혼밥: [
+    { id: 5, reason: '혼자 앉기 편하고 맑은 국물로 부담 없는 한 끼' },
+    { id: 3, reason: '해변 산책 전후 가볍게 머물기 좋은 커피 코스' },
+    { id: 1, reason: '1인 주문이 가능하고 얼큰하게 먹기 좋은 중식' },
+  ],
+  데이트: [
+    { id: 2, reason: '조용한 분위기와 와인 구성이 잘 맞는 저녁 코스' },
+    { id: 4, reason: '오션뷰와 브런치 메뉴가 함께 잡히는 낮 데이트' },
+    { id: 3, reason: '바다 앞에서 짧게 들르기 좋은 감성 카페' },
+  ],
+  해장: [
+    { id: 5, reason: '맑고 담백한 돼지곰탕으로 속을 편하게 채우기 좋음' },
+    { id: 1, reason: '얼큰한 마라전골로 강한 국물 맛을 원할 때' },
+    { id: 6, reason: '마파두부와 우육면으로 든든하게 풀기 좋은 선택' },
+  ],
+  브런치: [
+    { id: 4, reason: '브런치 메뉴와 광안대교 뷰를 함께 보기 좋은 곳' },
+    { id: 3, reason: '커피와 디저트로 가볍게 이어가기 좋은 코스' },
+    { id: 2, reason: '늦은 시간까지 여유롭게 이어지는 다이닝 선택지' },
+  ],
+  카페: [
+    { id: 3, reason: '에스프레소와 시그니처 음료를 중심으로 가볍게 방문' },
+    { id: 4, reason: '통창 오션뷰와 라떼를 함께 즐기기 좋은 브런치 카페' },
+    { id: 2, reason: '커피 뒤 저녁 다이닝까지 자연스럽게 이어가기 좋음' },
+  ],
+  얼큰한: [
+    { id: 1, reason: '마라전골 중심으로 확실하게 매콤한 저녁' },
+    { id: 6, reason: '향신료 있는 마파두부와 우육면이 잘 맞는 곳' },
+    { id: 5, reason: '담백한 국물에 고기 칼국수까지 든든하게 가능' },
+  ],
+}
+
 const popularAreas = [
   { name: '광안리', emoji: '🌊', location: '광안리' },
   { name: '서면',   emoji: '🏙️', location: '서면' },
@@ -75,6 +117,12 @@ function getCuisineCategory(item) {
     return c.keywords.some((k) => item.category.includes(k))
   })
   return matched?.id ?? '기타'
+}
+
+function getSituationRecommendations(situation) {
+  return (situationRecommendationMap[situation] ?? [])
+    .map(({ id, reason }) => ({ item: restaurants.find((restaurant) => restaurant.id === id), reason }))
+    .filter(({ item }) => Boolean(item))
 }
 
 function scoreRestaurant(item, query) {
@@ -192,6 +240,33 @@ function TrendingItem({ item, saved, onToggleSave, onSelect }) {
   )
 }
 
+function SituationCard({ item, reason, onSelect, onOpenMap }) {
+  return (
+    <article className="situation-card">
+      <button className="situation-card-main" onClick={() => onSelect(item.id)}>
+        <div className="situation-thumb">
+          <PhotoThumb item={item} />
+        </div>
+        <div className="situation-body">
+          <div className="situation-title-row">
+            <strong>{item.name}</strong>
+            <span>{item.experience.vibe}</span>
+          </div>
+          <p>{reason}</p>
+          <div className="situation-meta">
+            <span>📍 {item.eta}</span>
+            <span>⏳ {item.experience.waitTime}</span>
+          </div>
+        </div>
+      </button>
+      <div className="situation-actions">
+        <button onClick={() => onSelect(item.id)}>상세보기</button>
+        <button onClick={() => onOpenMap(item.id)}>지도</button>
+      </div>
+    </article>
+  )
+}
+
 /** 지도 SVG */
 function ApproximateMap({ items, selectedId, onSelect }) {
   return (
@@ -268,9 +343,10 @@ function Splash({ onEnter, onAI }) {
 }
 
 /* ─── 홈 화면 ───────────────────────────────────────────── */
-function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap }) {
+function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onOpenMapItem }) {
   const [moodFilter, setMoodFilter] = useState('전체')
   const [areaFilter, setAreaFilter]   = useState(null)
+  const [situation, setSituation] = useState('혼밥')
 
   const filtered = useMemo(() => {
     return restaurants.filter((item) => {
@@ -281,6 +357,7 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap }) {
   }, [moodFilter, areaFilter])
 
   const featured = useMemo(() => restaurants.slice(0, 3), [])
+  const situationItems = useMemo(() => getSituationRecommendations(situation), [situation])
 
   return (
     <div className="home-screen">
@@ -316,6 +393,36 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap }) {
               saved={savedIds.includes(item.id)}
               onToggleSave={onToggleSave}
               onSelect={onSelect}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* 상황별 추천 */}
+      <section className="home-section situation-section">
+        <div className="section-header">
+          <h2>상황별 추천</h2>
+        </div>
+        <div className="situation-chips">
+          {situationCategories.map((category) => (
+            <button
+              key={category.id}
+              className={`situation-chip ${situation === category.id ? 'active' : ''}`}
+              onClick={() => setSituation(category.id)}
+            >
+              <span>{category.icon}</span>
+              <span>{category.label}</span>
+            </button>
+          ))}
+        </div>
+        <div className="situation-list">
+          {situationItems.map(({ item, reason }) => (
+            <SituationCard
+              key={`${situation}-${item.id}`}
+              item={item}
+              reason={reason}
+              onSelect={onSelect}
+              onOpenMap={onOpenMapItem}
             />
           ))}
         </div>
@@ -974,6 +1081,7 @@ export default function App() {
                   onSelect={setSelectedId}
                   onGoSearch={() => setActiveTab('search')}
                   onGoMap={() => setActiveTab('map')}
+                  onOpenMapItem={(id) => { setMapSelectedId(id); setActiveTab('map') }}
                 />
               )}
               {activeTab === 'search' && (

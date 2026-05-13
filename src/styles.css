@@ -540,6 +540,164 @@ img { display: block; width: 100%; object-fit: cover; }
 }
 .rec-rating span { color: var(--text-muted); }
 
+/* 상황별 추천 */
+.situation-section {
+  padding-bottom: 22px;
+}
+
+.situation-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 12px;
+}
+.situation-chips::-webkit-scrollbar { display: none; }
+
+.situation-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 9px 14px;
+  border: 1.5px solid rgba(255, 255, 255, 0.82);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: var(--shadow-sm);
+  color: var(--text);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.situation-chip.active {
+  background: var(--navy);
+  border-color: rgba(255, 255, 255, 0.92);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.situation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.situation-card {
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.86);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(18px);
+}
+
+.situation-card-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 14px 12px;
+  text-align: left;
+  color: inherit;
+}
+
+.situation-thumb {
+  flex-shrink: 0;
+  width: 70px;
+  height: 70px;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--beige-md);
+}
+.situation-thumb img,
+.situation-thumb .emoji-thumb {
+  width: 70px;
+  height: 70px;
+  border-radius: 18px;
+}
+.situation-thumb .emoji-thumb { font-size: 1.8rem; }
+
+.situation-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.situation-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.situation-title-row strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 0.98rem;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.situation-title-row span {
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--coral-light);
+  color: var(--coral-dark);
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
+.situation-body p {
+  margin: 0 0 9px;
+  color: var(--text-md);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.situation-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.situation-meta span {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(238, 245, 248, 0.9);
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.situation-actions {
+  display: grid;
+  grid-template-columns: 1fr 92px;
+  gap: 8px;
+  padding: 0 14px 14px;
+}
+
+.situation-actions button {
+  min-height: 42px;
+  border-radius: 14px;
+  background: var(--navy);
+  color: white;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.situation-actions button:last-child {
+  background: var(--sky-light);
+  color: var(--sky-dark);
+}
+
 /* 무드 칩 */
 .mood-chips {
   display: flex;
