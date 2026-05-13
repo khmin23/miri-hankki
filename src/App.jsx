@@ -34,12 +34,11 @@ const navItems = [
 ]
 
 const homeMoodCategories = [
-  { id: '전체',   label: '전체',   icon: '🍽️' },
-  { id: '혼밥',   label: '혼밥',   icon: '🍚' },
-  { id: '가성비', label: '가성비', icon: '💰' },
-  { id: '데이트', label: '데이트', icon: '❤️' },
+  { id: '한식',   label: '한식',   icon: '🍚' },
+  { id: '중식',   label: '중식',   icon: '🥢' },
   { id: '카페',   label: '카페',   icon: '☕' },
-  { id: '야식',   label: '야식',   icon: '🌙' },
+  { id: '브런치', label: '브런치', icon: '🥐' },
+  { id: '아시안', label: '아시안', icon: '🍜' },
 ]
 
 const popularAreas = [
@@ -266,19 +265,13 @@ function Splash({ onEnter, onAI }) {
 
 /* ─── 홈 화면 ───────────────────────────────────────────── */
 function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap }) {
-  const [moodFilter, setMoodFilter] = useState('전체')
+  const [moodFilter, setMoodFilter] = useState('한식')
   const [areaFilter, setAreaFilter]   = useState(null)
 
   const filtered = useMemo(() => {
     return restaurants.filter((item) => {
       if (areaFilter && item.location !== areaFilter) return false
-      if (moodFilter === '전체')   return true
-      if (moodFilter === '혼밥')   return item.experience?.soloOk
-      if (moodFilter === '가성비') return parseFloat(item.price) < 15000 || item.price.includes('9,000') || item.price.includes('10,000') || item.price.includes('5,000') || item.price.includes('12,000')
-      if (moodFilter === '데이트') return item.mood.includes('데이트') || item.mood.includes('기념일')
-      if (moodFilter === '카페')   return item.category.includes('카페')
-      if (moodFilter === '야식')   return item.mood.includes('저녁모임') || item.mood.includes('캐주얼')
-      return true
+      return getCuisineCategory(item) === moodFilter
     })
   }, [moodFilter, areaFilter])
 
@@ -360,9 +353,7 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap }) {
       <section className="home-section">
         <div className="section-header">
           <h2>지금 뜨는 맛집</h2>
-          {moodFilter !== '전체' && (
-            <button className="see-more" onClick={() => setMoodFilter('전체')}>전체 보기</button>
-          )}
+          <button className="see-more" onClick={onGoSearch}>더보기</button>
         </div>
         {filtered.length > 0 ? (
           <div className="trending-list">
