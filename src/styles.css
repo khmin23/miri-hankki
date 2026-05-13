@@ -3319,21 +3319,23 @@ body::before {
   }
 
   .modal-hero {
-    min-height: 0 !important;
-    padding: max(86px, calc(env(safe-area-inset-top) + 76px)) 22px 24px !important;
-    gap: 9px !important;
+    min-height: auto !important;
+    padding: max(22px, calc(env(safe-area-inset-top) + 14px)) 20px 24px !important;
+    gap: 12px !important;
+    justify-content: flex-start !important;
   }
 
   .modal-top-actions {
-    top: max(14px, calc(env(safe-area-inset-top) + 10px)) !important;
-    left: 16px !important;
-    right: 92px !important;
+    position: static !important;
+    order: 1;
+    width: fit-content;
     gap: 8px !important;
+    flex-wrap: wrap !important;
   }
 
   .modal-close-button {
-    position: fixed !important;
-    top: max(14px, calc(env(safe-area-inset-top) + 10px)) !important;
+    position: absolute !important;
+    top: max(16px, calc(env(safe-area-inset-top) + 10px)) !important;
     right: 16px !important;
     padding: 10px 14px !important;
     z-index: 90 !important;
@@ -3345,24 +3347,34 @@ body::before {
   }
 
   .modal-icon {
+    order: 2;
     width: 74px !important;
     height: 74px !important;
     border-radius: 22px !important;
     font-size: 3.35rem !important;
+    margin-top: 8px !important;
+  }
+
+  .modal-hero .eyebrow {
+    order: 3;
+    width: fit-content;
   }
 
   .modal-hero h2 {
+    order: 4;
     font-size: clamp(2rem, 10vw, 2.75rem) !important;
     line-height: 1.1 !important;
     margin: 4px 0 !important;
   }
 
   .modal-subtitle {
+    order: 5;
     font-size: 1rem !important;
     line-height: 1.4 !important;
   }
 
   .hero-map-button {
+    order: 6;
     margin-top: 8px !important;
     padding: 12px 16px !important;
     border-radius: 16px !important;
