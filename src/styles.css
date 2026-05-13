@@ -836,38 +836,6 @@ img { display: block; width: 100%; object-fit: cover; }
   border: none;
 }
 
-.map-floating-label {
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  top: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  background: rgba(255,255,255,0.94);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-radius: 18px;
-  padding: 12px 14px;
-  box-shadow: var(--shadow-md);
-  border: 1px solid rgba(255,255,255,0.7);
-}
-.map-floating-label strong {
-  font-size: 0.95rem;
-  font-weight: 900;
-  color: var(--navy);
-}
-.map-floating-label span {
-  flex-shrink: 0;
-  font-size: 0.76rem;
-  font-weight: 800;
-  color: var(--coral-dark);
-  background: var(--coral-light);
-  border-radius: 999px;
-  padding: 5px 9px;
-}
-
 /* 지도 하단 카드 */
 .map-bottom-card {
   background: white;

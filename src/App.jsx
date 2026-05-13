@@ -509,10 +509,6 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect }) {
         <div className="map-real-wrap">
           <RealMap item={mapItem} />
         </div>
-        <div className="map-floating-label">
-          <strong>{mapItem.name}</strong>
-          <span>{mapItem.eta}</span>
-        </div>
       </div>
 
       {/* 하단 카드 */}
