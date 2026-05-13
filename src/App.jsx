@@ -284,8 +284,8 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap }) {
       {/* 헤더 */}
       <div className="home-header">
         <div className="home-location">
-          <span className="location-pin">📍</span>
-          <span className="location-text">부산광역시 · {areaFilter || '광안리'}</span>
+          <span className="location-pin">🍽️</span>
+          <span className="location-text">부산미리한끼</span>
           {areaFilter && (
             <button className="area-clear" onClick={() => setAreaFilter(null)}>✕</button>
           )}
