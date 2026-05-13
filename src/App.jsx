@@ -312,6 +312,7 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
     <div className="modal-shell" role="dialog" aria-modal="true" aria-labelledby={`modal-title-${item.id}`}>
       <div className="modal-backdrop" onClick={onClose} />
       <section className="modal-panel" ref={scrollRef}>
+        <button type="button" className="modal-close-button" onClick={onClose} aria-label="상세 정보 닫기">닫기</button>
         <div className={`modal-hero ${accentClassNames[item.accent]}`}>
           <h2 id={`modal-title-${item.id}`}>{item.name}</h2>
         </div>
