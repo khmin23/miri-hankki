@@ -8,8 +8,6 @@ function asset(path) {
 }
 
 /* ─── 부가 데이터 ──────────────────────────────────────── */
-const restaurantRatings  = { 1: 4.7, 2: 4.8, 3: 4.6, 4: 4.7, 5: 4.8, 6: 4.5 }
-const reviewCounts       = { 1: 1234, 2: 987, 3: 753, 4: 621, 5: 2345, 6: 489 }
 const operatingHours     = {
   1: '17:00 - 01:00', 2: '18:00 - 24:00', 3: '10:00 - 21:00',
   4: '09:00 - 21:00', 5: '10:00 - 15:00', 6: '11:30 - 21:00',
@@ -57,6 +55,15 @@ const accentClassNames = {
 const mapPinPositions = {
   1: { x: 388, y: 136 }, 2: { x: 438, y: 152 }, 3: { x: 304, y: 232 },
   4: { x: 350, y: 184 }, 5: { x: 202, y: 488 }, 6: { x: 272, y: 202 },
+}
+
+const mapCoordinates = {
+  1: { lat: 35.15826, lng: 129.12238 },
+  2: { lat: 35.15572, lng: 129.13255 },
+  3: { lat: 35.15325, lng: 129.11660 },
+  4: { lat: 35.15375, lng: 129.12075 },
+  5: { lat: 35.12807, lng: 129.11479 },
+  6: { lat: 35.15419, lng: 129.11675 },
 }
 
 const cuisineCategories = [
@@ -163,7 +170,7 @@ function RecommendCard({ item, saved, onToggleSave, onSelect }) {
       <div className="rec-card-body">
         <p className="rec-location">{item.location}</p>
         <strong className="rec-name">{item.name.length > 8 ? item.name.slice(0, 8) + '…' : item.name}</strong>
-        <p className="rec-rating">⭐ {restaurantRatings[item.id]} <span>({reviewCounts[item.id]?.toLocaleString()})</span></p>
+        <p className="rec-rating">{getCuisineCategory(item)} · {item.eta}</p>
       </div>
     </article>
   )
@@ -179,7 +186,7 @@ function TrendingItem({ item, saved, onToggleSave, onSelect }) {
       <div className="trending-body">
         <strong>{item.name}</strong>
         <p className="trending-sub">{item.category} · {item.location}</p>
-        <p className="trending-meta">⭐ {restaurantRatings[item.id]} · {item.eta}</p>
+        <p className="trending-meta">{getCuisineCategory(item)} · {item.eta}</p>
       </div>
       <button
         className={`heart-btn sm ${saved ? 'saved' : ''}`}
@@ -229,11 +236,13 @@ function ApproximateMap({ items, selectedId, onSelect }) {
 }
 
 function RealMap({ item }) {
-  const query = item.mapQuery || `${item.name} ${item.address}`
-  const src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=16&ie=UTF8&iwloc=B&output=embed`
+  const coord = mapCoordinates[item.id] ?? { lat: 35.1534, lng: 129.1187 }
+  const delta = 0.006
+  const src = `https://www.openstreetmap.org/export/embed.html?bbox=${coord.lng - delta}%2C${coord.lat - delta}%2C${coord.lng + delta}%2C${coord.lat + delta}&layer=mapnik&marker=${coord.lat}%2C${coord.lng}`
   return (
     <div className="real-map">
       <iframe title={`${item.name} 지도`} src={src} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+      <button className="real-map-open" onClick={() => openMapLink(item.links.google)}>구글지도 열기</button>
     </div>
   )
 }
@@ -477,7 +486,7 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
             <div className="ai-best-body">
               <strong>{result.item.name}</strong>
               <p className="ai-reason">{result.reason}</p>
-              <p className="rec-rating">⭐ {restaurantRatings[result.item.id]} · {result.item.eta}</p>
+              <p className="rec-rating">{getCuisineCategory(result.item)} · {result.item.eta}</p>
             </div>
           </div>
 
@@ -492,7 +501,7 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
                 <div className="ai-result-img"><PhotoThumb item={item} /></div>
                 <p className="rec-location">{item.location}</p>
                 <strong>{item.name.length > 8 ? item.name.slice(0, 8) + '…' : item.name}</strong>
-                <p className="rec-rating">⭐ {restaurantRatings[item.id]}</p>
+                <p className="rec-rating">{getCuisineCategory(item)}</p>
               </article>
             ))}
           </div>
@@ -547,33 +556,18 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect }) {
 
       {/* 하단 카드 */}
       <div className="map-bottom-card">
-        <div className="map-bottom-inner" onClick={() => onSelect(mapItem.id)}>
-          <div className="map-bottom-thumb">
-            <PhotoThumb item={mapItem} />
-          </div>
+        <div className="map-bottom-inner compact" onClick={() => onSelect(mapItem.id)}>
           <div className="map-bottom-info">
             <strong>{mapItem.name}</strong>
-            <p>{mapItem.category} · {mapItem.location}</p>
-            <p className="rec-rating">⭐ {restaurantRatings[mapItem.id]} · {mapItem.eta}</p>
           </div>
           <span className="map-chevron">›</span>
         </div>
         <div className="map-bottom-actions">
-          <div className="map-place-scroll">
-            {restaurants.map((item) => (
-              <button
-                key={item.id}
-                className={`map-place-chip ${mapSelectedId === item.id ? 'active' : ''}`}
-                onClick={() => setMapSelectedId(item.id)}
-              >
-                <span>{item.icon}</span> {item.name.slice(0, 5)}
-              </button>
-            ))}
-          </div>
           <div className="map-action-row">
             <button className="map-btn naver" onClick={() => openMapLink(mapItem.links.naver)}>네이버 지도</button>
             <button className="map-btn kakao" onClick={() => openMapLink(mapItem.links.kakao)}>카카오맵</button>
             <button className="map-btn google" onClick={() => openMapLink(mapItem.links.google)}>구글지도</button>
+            <button className="map-btn detail" onClick={() => onSelect(mapItem.id)}>상세정보</button>
           </div>
         </div>
       </div>
@@ -715,8 +709,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
     return () => window.removeEventListener('keydown', fn)
   }, [onClose])
 
-  const rating  = restaurantRatings[item.id] || 4.5
-  const reviews = reviewCounts[item.id] || 500
   const hours   = operatingHours[item.id] || '정보 없음'
   const parking = parkingAvail[item.id] ? '주차 가능' : '주차 불가'
   const menus   = menuData[item.id] || []
@@ -761,12 +753,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
               className={`detail-heart ${saved ? 'saved' : ''}`}
               onClick={() => onToggleSave(item.id)}
             >{saved ? '❤️' : '🤍'}</button>
-          </div>
-
-          {/* 별점 */}
-          <div className="detail-rating-row">
-            <span className="detail-stars">⭐ {rating}</span>
-            <span className="detail-review-count">리뷰 {reviews.toLocaleString()}</span>
           </div>
 
           {/* 메타 그리드 */}
