@@ -34,6 +34,7 @@ const navItems = [
 ]
 
 const homeMoodCategories = [
+  { id: '전체',   label: '전체',   icon: '🍽️' },
   { id: '한식',   label: '한식',   icon: '🍚' },
   { id: '중식',   label: '중식',   icon: '🥢' },
   { id: '카페',   label: '카페',   icon: '☕' },
@@ -265,12 +266,13 @@ function Splash({ onEnter, onAI }) {
 
 /* ─── 홈 화면 ───────────────────────────────────────────── */
 function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap }) {
-  const [moodFilter, setMoodFilter] = useState('한식')
+  const [moodFilter, setMoodFilter] = useState('전체')
   const [areaFilter, setAreaFilter]   = useState(null)
 
   const filtered = useMemo(() => {
     return restaurants.filter((item) => {
       if (areaFilter && item.location !== areaFilter) return false
+      if (moodFilter === '전체') return true
       return getCuisineCategory(item) === moodFilter
     })
   }, [moodFilter, areaFilter])
