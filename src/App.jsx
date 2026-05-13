@@ -312,17 +312,8 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
     <div className="modal-shell" role="dialog" aria-modal="true" aria-labelledby={`modal-title-${item.id}`}>
       <div className="modal-backdrop" onClick={onClose} />
       <section className="modal-panel" ref={scrollRef}>
-        <button type="button" className="modal-close-button" onClick={onClose} aria-label="상세 정보 닫기">닫기</button>
         <div className={`modal-hero ${accentClassNames[item.accent]}`}>
-          <div className="modal-top-actions">
-            <button type="button" className="glass-button" onClick={() => onShare(item)}>공유</button>
-            <button type="button" className="glass-button" onClick={() => onToggleSave(item.id)}>{saved ? '찜해제' : '찜하기'}</button>
-          </div>
-          <span className="modal-icon">{item.icon}</span>
-          <p className="eyebrow">{item.location}</p>
           <h2 id={`modal-title-${item.id}`}>{item.name}</h2>
-          <p className="modal-subtitle">{item.category}</p>
-          <button type="button" className="hero-map-button" onClick={() => openMapLink(item.links.naver)}>지도 바로 열기</button>
         </div>
 
         <div className="modal-content">
