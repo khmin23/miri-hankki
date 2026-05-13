@@ -497,44 +497,21 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
 
 /* ─── 지도 화면 ─────────────────────────────────────────── */
 function MapScreen({ mapSelectedId, setMapSelectedId, onSelect }) {
-  const [mapCategory, setMapCategory] = useState('전체')
   const mapItem = useMemo(
     () => restaurants.find((r) => r.id === mapSelectedId) ?? restaurants[0],
     [mapSelectedId],
   )
 
-  const mapCategories = ['전체', '한식', '카페', '양식', '아시안']
-
-  function handleMapCategory(label) {
-    setMapCategory(label)
-    if (label === '전체') {
-      setMapSelectedId(restaurants[0].id)
-      return
-    }
-
-    const firstMatch = restaurants.find((item) => getCuisineCategory(item) === label)
-    if (firstMatch) setMapSelectedId(firstMatch.id)
-  }
-
   return (
     <div className="map-screen">
-      {/* 필터 칩 */}
-      <div className="map-filter-chips">
-        {mapCategories.map((label) => (
-          <button
-            key={label}
-            className={`map-chip ${mapCategory === label ? 'active' : ''}`}
-            onClick={() => handleMapCategory(label)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
       {/* 지도 */}
       <div className="map-body">
         <div className="map-real-wrap">
           <RealMap item={mapItem} />
+        </div>
+        <div className="map-floating-label">
+          <strong>{mapItem.name}</strong>
+          <span>{mapItem.eta}</span>
         </div>
       </div>
 
@@ -547,26 +524,34 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect }) {
           <div className="map-bottom-info">
             <strong>{mapItem.name}</strong>
             <p>{mapItem.category} · {mapItem.location}</p>
-            <p className="rec-rating">⭐ {restaurantRatings[mapItem.id]} · {mapItem.eta}</p>
+            <p className="rec-rating">{mapItem.eta}</p>
           </div>
           <span className="map-chevron">›</span>
         </div>
         <div className="map-bottom-actions">
-          <div className="map-place-scroll">
-            {restaurants.map((item) => (
-              <button
-                key={item.id}
-                className={`map-place-chip ${mapSelectedId === item.id ? 'active' : ''}`}
-                onClick={() => setMapSelectedId(item.id)}
-              >
-                <span>{item.icon}</span> {item.name.slice(0, 5)}
-              </button>
-            ))}
-          </div>
           <div className="map-action-row">
             <button className="map-btn naver" onClick={() => openMapLink(mapItem.links.naver)}>네이버 지도</button>
             <button className="map-btn kakao" onClick={() => openMapLink(mapItem.links.kakao)}>카카오맵</button>
             <button className="map-btn google" onClick={() => openMapLink(mapItem.links.google)}>구글지도</button>
+            <button className="map-btn detail" onClick={() => onSelect(mapItem.id)}>상세정보</button>
+          </div>
+          <div className="map-place-section">
+            <p className="map-place-title">가게 선택</p>
+            <div className="map-place-scroll">
+              {restaurants.map((item) => (
+                <button
+                  key={item.id}
+                  className={`map-place-card ${mapSelectedId === item.id ? 'active' : ''}`}
+                  onClick={() => setMapSelectedId(item.id)}
+                >
+                  <span className="map-place-thumb"><PhotoThumb item={item} /></span>
+                  <span className="map-place-copy">
+                    <strong>{item.name}</strong>
+                    <small>{getCuisineCategory(item)} · {item.eta}</small>
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
