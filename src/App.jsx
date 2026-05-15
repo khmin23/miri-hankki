@@ -906,6 +906,29 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
             </div>
           )}
 
+          {/* 가게 내부 */}
+          {item.media?.interior?.src && (
+            <div className="detail-section">
+              <h3>가게 내부</h3>
+              <div className="interior-viewer-card">
+                {item.media.interior.type === 'html360' ? (
+                  <iframe
+                    title={`${item.name} 가게 내부`}
+                    src={asset(item.media.interior.src)}
+                    loading="lazy"
+                  />
+                ) : (
+                  <video
+                    controls
+                    playsInline
+                    poster={item.media.interior.poster ? asset(item.media.interior.poster) : undefined}
+                    src={asset(item.media.interior.src)}
+                  />
+                )}
+              </div>
+            </div>
+          )}
+
           {/* 방문 경험 */}
           {item.experience && (
             <div className="detail-section">

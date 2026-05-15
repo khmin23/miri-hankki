@@ -1615,6 +1615,28 @@ img { display: block; width: 100%; object-fit: cover; }
   padding: 8px 12px;
 }
 
+/* 가게 내부 */
+.interior-viewer-card {
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: var(--radius-md);
+  background: #0e0c0a;
+  box-shadow: var(--shadow-sm);
+}
+
+.interior-viewer-card iframe,
+.interior-viewer-card video {
+  display: block;
+  width: 100%;
+  height: 492px;
+  border: 0;
+  background: #0e0c0a;
+}
+
+.interior-viewer-card video {
+  object-fit: cover;
+}
+
 /* 경험 배지 */
 .detail-exp-grid {
   display: grid;

@@ -283,7 +283,7 @@ export const restaurants = [
       'W스퀘어 인근이라 주차 접근성이 좋음',
     ],
     media: {
-      interior: { src: '', poster: '', suggestedPath: '/videos/namakjip-interior.mp4' },
+      interior: { src: '/interiors/namakjip-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/namakjip-360.html' },
       route: { src: '', poster: '', suggestedPath: '/videos/namakjip-route.mp4' },
     },
     photos: [
