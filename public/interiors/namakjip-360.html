@@ -5,37 +5,40 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Noto Sans KR',sans-serif;background:#0e0c0a;color:#f0ede8;overflow:hidden;}
-#pano-canvas{display:block;width:100%;height:400px;cursor:grab;}
+body{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(160deg,#f7fbff 0%,#fff8ef 48%,#eef7fb 100%);color:#102033;overflow:hidden;}
+.viewer{position:relative;margin:10px;border-radius:24px;overflow:hidden;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.88);box-shadow:0 18px 46px rgba(16,32,51,.14);backdrop-filter:blur(18px);}
+.pano-stage{position:relative;}
+#pano-canvas{display:block;width:100%;height:360px;cursor:grab;background:#dce7ed;}
 #pano-canvas.drag{cursor:grabbing;}
-.vignette{position:absolute;top:0;left:0;width:100%;height:400px;pointer-events:none;background:linear-gradient(to right,rgba(14,12,10,.6) 0%,transparent 12%,transparent 88%,rgba(14,12,10,.6) 100%),linear-gradient(to bottom,rgba(14,12,10,.2) 0%,transparent 18%,transparent 72%,rgba(14,12,10,.8) 100%);}
-.compass{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:50%;background:rgba(14,12,10,.75);border:.5px solid rgba(240,237,232,.2);display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.vignette{position:absolute;top:0;left:0;width:100%;height:360px;pointer-events:none;background:linear-gradient(to right,rgba(16,32,51,.22) 0%,transparent 14%,transparent 86%,rgba(16,32,51,.22) 100%),linear-gradient(to bottom,rgba(255,255,255,.14) 0%,transparent 54%,rgba(16,32,51,.56) 100%);}
+.compass{position:absolute;top:14px;right:14px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;pointer-events:none;box-shadow:0 8px 22px rgba(16,32,51,.16);backdrop-filter:blur(12px);}
 .needle{width:2px;height:22px;position:relative;transform-origin:50% 50%;}
-.needle::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:#e55;border-radius:1px 1px 0 0;}
-.needle::after{content:'';position:absolute;bottom:0;left:0;right:0;height:50%;background:rgba(240,237,232,.4);}
-.hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(14,12,10,.72);border:.5px solid rgba(240,237,232,.2);padding:8px 18px;border-radius:20px;font-size:13px;color:rgba(240,237,232,.75);pointer-events:none;transition:opacity .5s;white-space:nowrap;}
+.needle::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:#ee6b45;border-radius:1px 1px 0 0;}
+.needle::after{content:'';position:absolute;bottom:0;left:0;right:0;height:50%;background:#315b7f;}
+.hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,.86);border:1px solid rgba(255,255,255,.92);padding:9px 18px;border-radius:999px;font-size:13px;font-weight:700;color:#315b7f;pointer-events:none;transition:opacity .5s;white-space:nowrap;box-shadow:0 10px 26px rgba(16,32,51,.16);backdrop-filter:blur(12px);}
 .hint.off{opacity:0;}
-.angle{position:absolute;bottom:408px;left:14px;background:rgba(14,12,10,.72);border:.5px solid rgba(240,237,232,.18);border-radius:12px;padding:4px 10px;font-size:12px;color:rgba(240,237,232,.6);pointer-events:none;}
-.strip{height:2px;background:rgba(240,237,232,.08);}
-.strip-fill{height:100%;background:#c8903a;transition:width .04s linear;}
-.info{padding:14px 18px 18px;background:#0e0c0a;}
-.shop-tag{font-size:11px;letter-spacing:.08em;color:#c8903a;text-transform:uppercase;margin-bottom:4px;}
-.shop-name{font-size:20px;font-weight:700;}
-.shop-sub{font-size:12px;color:rgba(240,237,232,.4);margin-top:3px;}
-.rating-num{font-size:24px;font-weight:700;color:#c8903a;line-height:1;}
-.rating-stars{font-size:11px;color:#c8903a;text-align:right;margin-top:2px;}
-.rating-count{font-size:11px;color:rgba(240,237,232,.35);text-align:right;}
+.angle{position:absolute;bottom:14px;left:16px;background:rgba(255,255,255,.82);border:1px solid rgba(255,255,255,.92);border-radius:999px;padding:5px 11px;font-size:12px;font-weight:800;color:#315b7f;pointer-events:none;box-shadow:0 8px 20px rgba(16,32,51,.12);backdrop-filter:blur(12px);}
+.strip{height:4px;background:rgba(49,91,127,.1);}
+.strip-fill{height:100%;background:linear-gradient(90deg,#ee6b45,#5db7de);transition:width .04s linear;}
+.info{padding:14px 16px 16px;background:rgba(255,255,255,.78);backdrop-filter:blur(16px);}
+.shop-tag{display:inline-flex;align-items:center;padding:5px 10px;border-radius:999px;background:#eef5f8;color:#315b7f;font-size:11px;font-weight:800;letter-spacing:.03em;margin-bottom:8px;}
+.shop-name{font-size:21px;font-weight:900;color:#102033;letter-spacing:-.02em;}
+.shop-sub{font-size:12px;color:#66788a;margin-top:3px;font-weight:600;}
+.viewer-status{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.status-pill{padding:7px 11px;border-radius:999px;background:#163a5b;color:white;font-size:12px;font-weight:900;box-shadow:0 8px 18px rgba(16,32,51,.16);}
+.status-copy{font-size:11px;color:#66788a;font-weight:700;text-align:right;}
 .pin{position:absolute;transform:translate(-50%,-50%);cursor:pointer;z-index:10;}
-.pin-circle{width:26px;height:26px;border-radius:50%;background:rgba(200,144,58,.15);border:1.5px solid #c8903a;display:flex;align-items:center;justify-content:center;font-size:12px;animation:puls 2.5s ease-in-out infinite;}
-@keyframes puls{0%,100%{box-shadow:0 0 0 0 rgba(200,144,58,.4);}50%{box-shadow:0 0 0 7px rgba(200,144,58,0);}}
+.pin-circle{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.9);border:2px solid #ee6b45;display:flex;align-items:center;justify-content:center;font-size:14px;animation:puls 2.5s ease-in-out infinite;box-shadow:0 8px 18px rgba(16,32,51,.16);}
+@keyframes puls{0%,100%{box-shadow:0 0 0 0 rgba(238,107,69,.34),0 8px 18px rgba(16,32,51,.16);}50%{box-shadow:0 0 0 8px rgba(238,107,69,0),0 8px 18px rgba(16,32,51,.16);}}
 .pin:hover .pin-circle{transform:scale(1.2);}
-.pin-tip{position:absolute;bottom:33px;left:50%;transform:translateX(-50%);background:rgba(14,12,10,.92);border:.5px solid rgba(200,144,58,.45);border-radius:8px;padding:7px 11px;white-space:nowrap;font-size:12px;opacity:0;pointer-events:none;transition:opacity .2s;}
+.pin-tip{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.94);border:1px solid rgba(255,255,255,.92);border-radius:14px;padding:8px 12px;white-space:nowrap;font-size:12px;color:#66788a;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s;box-shadow:0 10px 24px rgba(16,32,51,.16);backdrop-filter:blur(12px);}
 .pin:hover .pin-tip{opacity:1;}
-.pin-tip b{color:#c8903a;display:block;font-size:13px;margin-bottom:2px;}
+.pin-tip b{color:#102033;display:block;font-size:13px;margin-bottom:2px;}
 </style>
 </head>
 <body>
-<div style="position:relative;">
+<div class="viewer">
+<div class="pano-stage">
   <canvas id="pano-canvas"></canvas>
   <div class="vignette"></div>
   <div class="compass"><div class="needle" id="needle"></div></div>
@@ -50,21 +53,21 @@ body{font-family:'Noto Sans KR',sans-serif;background:#0e0c0a;color:#f0ede8;over
       <div class="shop-name">나막집</div>
       <div class="shop-sub">부산 · 국밥 · 오픈 키친</div>
     </div>
-    <div>
-      <div class="rating-num">4.8</div>
-      <div class="rating-stars">★★★★★</div>
-      <div class="rating-count">리뷰 1,247개</div>
+    <div class="viewer-status">
+      <div class="status-pill">360°</div>
+      <div class="status-copy">드래그로 둘러보기</div>
     </div>
   </div>
+</div>
 </div>
 
 <script>
 const HOTSPOTS=[
-  {rx:.04,ry:.45,icon:'🚪',title:'왼쪽 출입구',desc:'자동문 · 영업중'},
-  {rx:.35,ry:.38,icon:'👨‍🍳',title:'오픈 주방',desc:'위생등급 A · 직화 조리'},
-  {rx:.50,ry:.30,icon:'🥘',title:'대형 솥',desc:'육수 24시간 끓임'},
-  {rx:.22,ry:.62,icon:'🪑',title:'카운터 좌석',desc:'주방 뷰 명당'},
-  {rx:.92,ry:.45,icon:'🚪',title:'오른쪽 출입구',desc:'직원 안내 데스크'},
+  {rx:.04,ry:.45,icon:'🚪',title:'왼쪽 출입구',desc:'출입 동선'},
+  {rx:.35,ry:.38,icon:'👨‍🍳',title:'오픈 주방',desc:'조리 공간'},
+  {rx:.50,ry:.30,icon:'🥘',title:'대형 솥',desc:'국물 조리 공간'},
+  {rx:.22,ry:.62,icon:'🪑',title:'카운터 좌석',desc:'혼밥 동선'},
+  {rx:.92,ry:.45,icon:'🚪',title:'오른쪽 출입구',desc:'매장 안쪽'},
 ];
 
 const canvas=document.getElementById('pano-canvas');
@@ -109,7 +112,7 @@ function draw(){
 }
 
 function buildPins(){
-  const root=document.querySelector('div');
+  const root=document.querySelector('.pano-stage');
   HOTSPOTS.forEach((h,i)=>{
     const el=document.createElement('div');
     el.className='pin';el.id='p'+i;
