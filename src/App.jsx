@@ -8,8 +8,6 @@ function asset(path) {
 }
 
 /* ─── 부가 데이터 ──────────────────────────────────────── */
-const restaurantRatings  = { 1: 4.7, 2: 4.8, 3: 4.6, 4: 4.7, 5: 4.8, 6: 4.5 }
-const reviewCounts       = { 1: 1234, 2: 987, 3: 753, 4: 621, 5: 2345, 6: 489 }
 const operatingHours     = {
   1: '17:00 - 01:00', 2: '18:00 - 24:00', 3: '10:00 - 21:00',
   4: '09:00 - 21:00', 5: '10:00 - 15:00', 6: '11:30 - 21:00',
@@ -211,7 +209,6 @@ function RecommendCard({ item, saved, onToggleSave, onSelect }) {
       <div className="rec-card-body">
         <p className="rec-location">{item.location}</p>
         <strong className="rec-name">{item.name.length > 8 ? item.name.slice(0, 8) + '…' : item.name}</strong>
-        <p className="rec-rating">⭐ {restaurantRatings[item.id]} <span>({reviewCounts[item.id]?.toLocaleString()})</span></p>
       </div>
     </article>
   )
@@ -227,7 +224,7 @@ function TrendingItem({ item, saved, onToggleSave, onSelect }) {
       <div className="trending-body">
         <strong>{item.name}</strong>
         <p className="trending-sub">{item.category} · {item.location}</p>
-        <p className="trending-meta">⭐ {restaurantRatings[item.id]} · {item.eta}</p>
+        <p className="trending-meta">{item.eta}</p>
       </div>
       <button
         className={`heart-btn sm ${saved ? 'saved' : ''}`}
@@ -580,7 +577,7 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
             <div className="ai-best-body">
               <strong>{result.item.name}</strong>
               <p className="ai-reason">{result.reason}</p>
-              <p className="rec-rating">⭐ {restaurantRatings[result.item.id]} · {result.item.eta}</p>
+              <p className="item-eta">{result.item.eta}</p>
             </div>
           </div>
 
@@ -595,7 +592,6 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
                 <div className="ai-result-img"><PhotoThumb item={item} /></div>
                 <p className="rec-location">{item.location}</p>
                 <strong>{item.name.length > 8 ? item.name.slice(0, 8) + '…' : item.name}</strong>
-                <p className="rec-rating">⭐ {restaurantRatings[item.id]}</p>
               </article>
             ))}
           </div>
@@ -630,7 +626,7 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect }) {
           <div className="map-bottom-info">
             <strong>{mapItem.name}</strong>
             <p>{mapItem.category} · {mapItem.location}</p>
-            <p className="rec-rating">{mapItem.eta}</p>
+            <p className="item-eta">{mapItem.eta}</p>
           </div>
           <span className="map-chevron">›</span>
         </div>
@@ -799,8 +795,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
     return () => window.removeEventListener('keydown', fn)
   }, [onClose])
 
-  const rating  = restaurantRatings[item.id] || 4.5
-  const reviews = reviewCounts[item.id] || 500
   const hours   = operatingHours[item.id] || '정보 없음'
   const parking = parkingAvail[item.id] ? '주차 가능' : '주차 불가'
   const menus   = menuData[item.id] || []
@@ -845,12 +839,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
               className={`detail-heart ${saved ? 'saved' : ''}`}
               onClick={() => onToggleSave(item.id)}
             >{saved ? '❤️' : '🤍'}</button>
-          </div>
-
-          {/* 별점 */}
-          <div className="detail-rating-row">
-            <span className="detail-stars">⭐ {rating}</span>
-            <span className="detail-review-count">리뷰 {reviews.toLocaleString()}</span>
           </div>
 
           {/* 메타 그리드 */}

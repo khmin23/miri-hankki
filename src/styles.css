@@ -533,12 +533,12 @@ img { display: block; width: 100%; object-fit: cover; }
   margin-bottom: 4px;
   letter-spacing: -0.01em;
 }
-.rec-rating {
+.item-eta {
   font-size: 0.75rem;
   color: var(--text-md);
   margin: 0;
+  font-weight: 700;
 }
-.rec-rating span { color: var(--text-muted); }
 
 /* 상황별 추천 */
 .situation-section {
@@ -977,8 +977,6 @@ img { display: block; width: 100%; object-fit: cover; }
 .ai-result-img .emoji-thumb { height: 90px; font-size: 1.8rem; }
 .ai-result-card .rec-location { padding: 8px 10px 2px; font-size: 0.68rem; color: var(--text-muted); }
 .ai-result-card strong { display: block; padding: 0 10px; font-size: 0.82rem; font-weight: 800; }
-.ai-result-card .rec-rating { padding: 2px 10px 0; font-size: 0.72rem; }
-
 /* ═══════════════════════════════════════════════════════════
    지도 화면
 ═══════════════════════════════════════════════════════════ */
@@ -1462,15 +1460,6 @@ img { display: block; width: 100%; object-fit: cover; }
   flex-shrink: 0;
   padding: 2px;
 }
-
-.detail-rating-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-.detail-stars { font-size: 1rem; font-weight: 700; color: var(--text); }
-.detail-review-count { font-size: 0.82rem; color: var(--text-muted); }
 
 /* 메타 그리드 */
 .detail-meta-grid {
