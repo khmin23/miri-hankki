@@ -342,18 +342,26 @@ function Splash({ onEnter, onAI }) {
 /* ─── 홈 화면 ───────────────────────────────────────────── */
 function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onOpenMapItem }) {
   const [moodFilter, setMoodFilter] = useState('전체')
-  const [areaFilter, setAreaFilter]   = useState(null)
   const [situation, setSituation] = useState('혼밥')
+  const [selectedMapId, setSelectedMapId] = useState(restaurants[0].id)
 
   const filtered = useMemo(() => {
     return restaurants.filter((item) => {
-      if (areaFilter && item.location !== areaFilter) return false
       if (moodFilter === '전체') return true
       return getCuisineCategory(item) === moodFilter
     })
-  }, [moodFilter, areaFilter])
+  }, [moodFilter])
 
-  const featured = useMemo(() => restaurants.slice(0, 3), [])
+  useEffect(() => {
+    if (!filtered.some((item) => item.id === selectedMapId)) {
+      setSelectedMapId(filtered[0]?.id ?? restaurants[0].id)
+    }
+  }, [filtered, selectedMapId])
+
+  const selectedMapItem = useMemo(
+    () => filtered.find((item) => item.id === selectedMapId) ?? filtered[0] ?? restaurants[0],
+    [filtered, selectedMapId],
+  )
   const situationItems = useMemo(() => getSituationRecommendations(situation), [situation])
 
   return (
@@ -363,34 +371,69 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
         <div className="home-location">
           <span className="location-pin">🍽️</span>
           <span className="location-text">부산미리한끼</span>
-          {areaFilter && (
-            <button className="area-clear" onClick={() => setAreaFilter(null)}>✕</button>
-          )}
         </div>
         <button className="header-icon-btn" onClick={() => onGoMap()}>🗺️</button>
       </div>
 
-      {/* 검색창 */}
-      <button className="home-search-bar" onClick={onGoSearch}>
-        <span className="search-icon">🔍</span>
-        <span className="search-placeholder">지역, 음식, 맛집을 검색해보세요</span>
-      </button>
-
-      {/* 오늘의 추천 */}
-      <section className="home-section">
-        <div className="section-header">
-          <h2>오늘의 추천 한끼</h2>
-          <button className="see-more" onClick={onGoSearch}>더보기</button>
+      {/* 지도 중심 탐색 */}
+      <section className="home-map-section">
+        <div className="section-header home-map-header">
+          <div>
+            <h2>지도에서 바로 고르기</h2>
+            <p>위치를 먼저 보고, 갈 만한 곳만 빠르게 확인해보세요.</p>
+          </div>
+          <button className="see-more" onClick={onGoMap}>크게 보기</button>
         </div>
-        <div className="rec-scroll">
-          {featured.map((item) => (
-            <RecommendCard
+
+        <div className="mood-chips map-first-chips">
+          {homeMoodCategories.map((c) => (
+            <button
+              key={c.id}
+              className={`mood-chip ${moodFilter === c.id ? 'active' : ''}`}
+              onClick={() => setMoodFilter(c.id)}
+            >
+              <span>{c.icon}</span>
+              <span>{c.label}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="home-map-card">
+          <div className="home-map-canvas">
+            <RealMap item={selectedMapItem} />
+          </div>
+          <div className="home-map-selected">
+            <button className="home-selected-main" onClick={() => onSelect(selectedMapItem.id)}>
+              <span className="home-selected-thumb"><PhotoThumb item={selectedMapItem} /></span>
+              <span className="home-selected-copy">
+                <strong>{selectedMapItem.name}</strong>
+                <small>{getCuisineCategory(selectedMapItem)} · {selectedMapItem.location}</small>
+                <em>{selectedMapItem.eta}</em>
+              </span>
+            </button>
+            <div className="home-map-actions">
+              <button onClick={() => onSelect(selectedMapItem.id)}>상세보기</button>
+              <button onClick={() => onOpenMapItem(selectedMapItem.id)}>지도 열기</button>
+              <button
+                className={savedIds.includes(selectedMapItem.id) ? 'saved' : ''}
+                onClick={() => onToggleSave(selectedMapItem.id)}
+              >
+                {savedIds.includes(selectedMapItem.id) ? '찜됨' : '찜하기'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="home-map-places" aria-label="가게 선택">
+          {filtered.map((item) => (
+            <button
               key={item.id}
-              item={item}
-              saved={savedIds.includes(item.id)}
-              onToggleSave={onToggleSave}
-              onSelect={onSelect}
-            />
+              className={`home-map-place ${selectedMapItem.id === item.id ? 'active' : ''}`}
+              onClick={() => setSelectedMapId(item.id)}
+            >
+              <span><PhotoThumb item={item} /></span>
+              <strong>{item.name}</strong>
+            </button>
           ))}
         </div>
       </section>
@@ -425,43 +468,10 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
         </div>
       </section>
 
-      {/* 카테고리 */}
-      <div className="mood-chips">
-        {homeMoodCategories.map((c) => (
-          <button
-            key={c.id}
-            className={`mood-chip ${moodFilter === c.id ? 'active' : ''}`}
-            onClick={() => setMoodFilter(c.id)}
-          >
-            <span>{c.icon}</span>
-            <span>{c.label}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* 인기 지역 */}
+      {/* 목록으로 다시 보기 */}
       <section className="home-section">
         <div className="section-header">
-          <h2>인기 지역</h2>
-        </div>
-        <div className="area-cards">
-          {popularAreas.map((area) => (
-            <button
-              key={area.name}
-              className={`area-card ${areaFilter === area.location ? 'active' : ''}`}
-              onClick={() => setAreaFilter(areaFilter === area.location ? null : area.location)}
-            >
-              <span className="area-emoji">{area.emoji}</span>
-              <span className="area-name">{area.name}</span>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* 지금 뜨는 맛집 */}
-      <section className="home-section">
-        <div className="section-header">
-          <h2>지금 뜨는 맛집</h2>
+          <h2>목록으로 보기</h2>
           <button className="see-more" onClick={onGoSearch}>더보기</button>
         </div>
         {filtered.length > 0 ? (
@@ -479,7 +489,7 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
         ) : (
           <div className="empty-box">
             <p>조건에 맞는 맛집이 없어요 😅</p>
-            <button onClick={() => { setMoodFilter('전체'); setAreaFilter(null) }}>필터 초기화</button>
+            <button onClick={() => setMoodFilter('전체')}>필터 초기화</button>
           </div>
         )}
       </section>

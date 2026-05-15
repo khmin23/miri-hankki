@@ -472,6 +472,211 @@ img { display: block; width: 100%; object-fit: cover; }
 .search-icon { font-size: 1rem; flex-shrink: 0; }
 .search-placeholder { font-size: 0.88rem; color: var(--text-muted); font-weight: 500; }
 
+/* 지도 중심 홈 */
+.home-map-section {
+  padding: 8px 20px 22px;
+}
+
+.home-map-header {
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+.home-map-header p {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.map-first-chips {
+  padding: 0 0 12px;
+}
+
+.home-map-card {
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.84);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(22px);
+}
+
+.home-map-canvas {
+  height: 310px;
+  overflow: hidden;
+  background: var(--sea-light);
+}
+
+.home-map-canvas .real-map,
+.home-map-canvas iframe {
+  width: 100%;
+  height: 100%;
+}
+
+.home-map-selected {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.home-selected-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  padding: 0 0 12px;
+  color: inherit;
+  text-align: left;
+}
+
+.home-selected-thumb {
+  width: 62px;
+  height: 62px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--beige-md);
+}
+
+.home-selected-thumb img,
+.home-selected-thumb .emoji-thumb {
+  width: 62px;
+  height: 62px;
+  font-size: 1.6rem;
+}
+
+.home-selected-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.home-selected-copy strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 1.02rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-selected-copy small,
+.home-selected-copy em {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-style: normal;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-map-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 82px;
+  gap: 8px;
+}
+
+.home-map-actions button {
+  min-height: 42px;
+  border-radius: 15px;
+  background: var(--navy);
+  color: white;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.home-map-actions button:nth-child(2) {
+  background: var(--sky-light);
+  color: var(--sky-dark);
+}
+
+.home-map-actions button:nth-child(3) {
+  background: var(--beige);
+  color: var(--coral-dark);
+}
+
+.home-map-actions button.saved {
+  background: var(--coral-light);
+  color: var(--coral-dark);
+}
+
+.home-map-places {
+  display: flex;
+  gap: 9px;
+  overflow-x: auto;
+  padding: 12px 2px 2px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.home-map-places::-webkit-scrollbar { display: none; }
+
+.home-map-place {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  max-width: 168px;
+  padding: 8px 11px 8px 8px;
+  border: 1.5px solid rgba(255, 255, 255, 0.78);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: var(--shadow-sm);
+  color: var(--text);
+}
+
+.home-map-place.active {
+  border-color: rgba(232, 101, 74, 0.58);
+  background: var(--coral-light);
+}
+
+.home-map-place span {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  background: white;
+}
+
+.home-map-place span img,
+.home-map-place span .emoji-thumb {
+  width: 34px;
+  height: 34px;
+  font-size: 1rem;
+}
+
+.home-map-place strong {
+  overflow: hidden;
+  max-width: 102px;
+  color: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+  .home-map-section {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .home-map-canvas {
+    height: 280px;
+  }
+  .home-map-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+  .home-map-actions button:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+}
+
 /* 섹션 */
 .home-section {
   padding: 0 20px 20px;
