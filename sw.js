@@ -1,4 +1,4 @@
-const CACHE_NAME = 'miri-hankki-v29-map-first-home'
+const CACHE_NAME = 'miri-hankki-v30-leaflet-map'
 const BASE_PATH = new URL(self.registration.scope).pathname
 const APP_SHELL = [
   BASE_PATH,
