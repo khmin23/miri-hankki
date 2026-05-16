@@ -331,7 +331,7 @@ function InteractiveMap({ items, activeId, onActive }) {
       scrollWheelZoom: false,
     })
 
-    window.L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    window.L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '© OpenStreetMap © CartoDB',
       maxZoom: 19,
     }).addTo(map)
@@ -356,8 +356,10 @@ function InteractiveMap({ items, activeId, onActive }) {
     markerRefs.current.forEach((marker) => marker.remove())
     markerRefs.current = []
 
+    const coords = []
     items.forEach((item) => {
       if (!item.lat || !item.lng) return
+      coords.push([item.lat, item.lng])
       const active = item.id === activeId
       const color = accentColors[item.accent] ?? '#E8654A'
       const icon = window.L.divIcon({
@@ -382,12 +384,26 @@ function InteractiveMap({ items, activeId, onActive }) {
       marker.getElement()?.addEventListener('touchend', () => onActive(item.id), { passive: true })
       markerRefs.current.push(marker)
     })
+
+    window.setTimeout(() => {
+      map.invalidateSize()
+      if (coords.length === 1) {
+        map.setView(coords[0], 15, { animate: true })
+      } else if (coords.length > 1) {
+        map.fitBounds(window.L.latLngBounds(coords), {
+          paddingTopLeft: [46, 42],
+          paddingBottomRight: [46, 88],
+          maxZoom: 15,
+          animate: true,
+          duration: 0.45,
+        })
+      }
+    }, 80)
   }, [items, activeId, onActive])
 
   useEffect(() => {
     const map = mapRef.current
     if (!map || !activeItem?.lat || !activeItem?.lng) return
-    map.flyTo([activeItem.lat, activeItem.lng], 15, { duration: 0.65 })
     window.setTimeout(() => map.invalidateSize(), 60)
   }, [activeItem])
 
