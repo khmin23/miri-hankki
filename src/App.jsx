@@ -94,6 +94,16 @@ const accentClassNames = {
   ocean: 'accent-ocean', forest: 'accent-forest', lime: 'accent-lime',
 }
 
+const mapCenter = [35.153, 129.1152]
+const accentColors = {
+  sunset: '#E8654A',
+  night: '#163A5B',
+  espresso: '#8B5E34',
+  ocean: '#4A90C4',
+  forest: '#2F7D46',
+  lime: '#7BAE3C',
+}
+
 const mapPinPositions = {
   1: { x: 388, y: 136 }, 2: { x: 438, y: 152 }, 3: { x: 304, y: 232 },
   4: { x: 350, y: 184 }, 5: { x: 202, y: 488 }, 6: { x: 272, y: 202 },
@@ -300,12 +310,91 @@ function ApproximateMap({ items, selectedId, onSelect }) {
   )
 }
 
-function RealMap({ item }) {
-  const query = item.mapQuery || `${item.name} ${item.address}`
-  const src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=16&ie=UTF8&iwloc=B&output=embed`
+function InteractiveMap({ items, activeId, onActive }) {
+  const mapEl = useRef(null)
+  const mapRef = useRef(null)
+  const markerRefs = useRef([])
+
+  const activeItem = useMemo(
+    () => items.find((item) => item.id === activeId) ?? items[0],
+    [items, activeId],
+  )
+
+  useEffect(() => {
+    if (!mapEl.current || mapRef.current || !window.L) return undefined
+
+    const map = window.L.map(mapEl.current, {
+      center: activeItem?.lat && activeItem?.lng ? [activeItem.lat, activeItem.lng] : mapCenter,
+      zoom: 14,
+      zoomControl: false,
+      attributionControl: false,
+      scrollWheelZoom: false,
+    })
+
+    window.L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap © CartoDB',
+      maxZoom: 19,
+    }).addTo(map)
+    window.L.control.zoom({ position: 'bottomright' }).addTo(map)
+    mapRef.current = map
+    window.setTimeout(() => map.invalidateSize(), 0)
+
+    return () => {
+      markerRefs.current.forEach((marker) => marker.remove())
+      markerRefs.current = []
+      map.remove()
+      mapRef.current = null
+    }
+  }, [])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !window.L) return
+
+    window.__miriSelectRestaurant = (id) => onActive(Number(id))
+
+    markerRefs.current.forEach((marker) => marker.remove())
+    markerRefs.current = []
+
+    items.forEach((item) => {
+      if (!item.lat || !item.lng) return
+      const active = item.id === activeId
+      const color = accentColors[item.accent] ?? '#E8654A'
+      const icon = window.L.divIcon({
+        html: `
+          <button type="button" class="custom-marker${active ? ' active' : ''}" style="background:${color}" onclick="window.__miriSelectRestaurant && window.__miriSelectRestaurant(${item.id})">
+            <span class="custom-marker-inner">${item.icon}</span>
+          </button>
+        `,
+        className: 'custom-marker-shell',
+        iconSize: [36, 36],
+        iconAnchor: [18, 36],
+      })
+
+      const marker = window.L.marker([item.lat, item.lng], {
+        icon,
+        zIndexOffset: active ? 1000 : 0,
+      })
+        .addTo(map)
+        .on('click', () => onActive(item.id))
+
+      marker.getElement()?.addEventListener('click', () => onActive(item.id))
+      marker.getElement()?.addEventListener('touchend', () => onActive(item.id), { passive: true })
+      markerRefs.current.push(marker)
+    })
+  }, [items, activeId, onActive])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !activeItem?.lat || !activeItem?.lng) return
+    map.flyTo([activeItem.lat, activeItem.lng], 15, { duration: 0.65 })
+    window.setTimeout(() => map.invalidateSize(), 60)
+  }, [activeItem])
+
   return (
-    <div className="real-map">
-      <iframe title={`${item.name} 지도`} src={src} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+    <div className="interactive-map">
+      {!window.L && <div className="map-loading">지도를 불러오는 중입니다.</div>}
+      <div id="map" ref={mapEl} className="leaflet-map" />
     </div>
   )
 }
@@ -400,7 +489,7 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
 
         <div className="home-map-card">
           <div className="home-map-canvas">
-            <RealMap item={selectedMapItem} />
+            <InteractiveMap items={filtered} activeId={selectedMapItem.id} onActive={setSelectedMapId} />
           </div>
           <div className="home-map-selected">
             <button className="home-selected-main" onClick={() => onSelect(selectedMapItem.id)}>
@@ -623,7 +712,7 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect }) {
       {/* 지도 */}
       <div className="map-body">
         <div className="map-real-wrap">
-          <RealMap item={mapItem} />
+          <InteractiveMap items={restaurants} activeId={mapItem.id} onActive={setMapSelectedId} />
         </div>
       </div>
 
