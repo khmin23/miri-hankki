@@ -310,7 +310,7 @@ function ApproximateMap({ items, selectedId, onSelect }) {
   )
 }
 
-function InteractiveMap({ items, activeId, onActive }) {
+function InteractiveMap({ items, activeId, onActive, mode = 'overview' }) {
   const mapEl = useRef(null)
   const mapRef = useRef(null)
   const markerRefs = useRef([])
@@ -325,7 +325,7 @@ function InteractiveMap({ items, activeId, onActive }) {
 
     const map = window.L.map(mapEl.current, {
       center: activeItem?.lat && activeItem?.lng ? [activeItem.lat, activeItem.lng] : mapCenter,
-      zoom: 14,
+      zoom: mode === 'focused' ? 16 : 14,
       zoomControl: false,
       attributionControl: false,
       scrollWheelZoom: false,
@@ -351,7 +351,7 @@ function InteractiveMap({ items, activeId, onActive }) {
     const map = mapRef.current
     if (!map || !window.L) return
 
-    window.__miriSelectRestaurant = (id) => onActive(Number(id))
+    window.__miriSelectRestaurant = (id) => onActive?.(Number(id))
 
     markerRefs.current.forEach((marker) => marker.remove())
     markerRefs.current = []
@@ -378,16 +378,18 @@ function InteractiveMap({ items, activeId, onActive }) {
         zIndexOffset: active ? 1000 : 0,
       })
         .addTo(map)
-        .on('click', () => onActive(item.id))
+        .on('click', () => onActive?.(item.id))
 
-      marker.getElement()?.addEventListener('click', () => onActive(item.id))
-      marker.getElement()?.addEventListener('touchend', () => onActive(item.id), { passive: true })
+      marker.getElement()?.addEventListener('click', () => onActive?.(item.id))
+      marker.getElement()?.addEventListener('touchend', () => onActive?.(item.id), { passive: true })
       markerRefs.current.push(marker)
     })
 
     window.setTimeout(() => {
       map.invalidateSize()
-      if (coords.length === 1) {
+      if (mode === 'focused' && activeItem?.lat && activeItem?.lng) {
+        map.setView([activeItem.lat, activeItem.lng], 16, { animate: true })
+      } else if (coords.length === 1) {
         map.setView(coords[0], 15, { animate: true })
       } else if (coords.length > 1) {
         map.fitBounds(window.L.latLngBounds(coords), {
@@ -399,13 +401,16 @@ function InteractiveMap({ items, activeId, onActive }) {
         })
       }
     }, 80)
-  }, [items, activeId, onActive])
+  }, [items, activeId, onActive, mode, activeItem])
 
   useEffect(() => {
     const map = mapRef.current
     if (!map || !activeItem?.lat || !activeItem?.lng) return
+    if (mode === 'focused') {
+      map.setView([activeItem.lat, activeItem.lng], 16, { animate: true })
+    }
     window.setTimeout(() => map.invalidateSize(), 60)
-  }, [activeItem])
+  }, [activeItem, mode])
 
   return (
     <div className="interactive-map">
@@ -504,8 +509,12 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
         </div>
 
         <div className="home-map-card">
-          <div className="home-map-canvas">
-            <InteractiveMap items={filtered} activeId={selectedMapItem.id} onActive={setSelectedMapId} />
+          <div className="home-map-canvas home-map-preview" onClick={onGoMap} role="button" tabIndex="0" onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onGoMap()}>
+            <InteractiveMap items={filtered} activeId={selectedMapItem.id} onActive={setSelectedMapId} mode="overview" />
+            <div className="map-preview-cta">
+              <strong>큰 지도에서 선택하기</strong>
+              <span>핀을 더 넓게 보고 고를 수 있어요</span>
+            </div>
           </div>
           <div className="home-map-selected">
             <button className="home-selected-main" onClick={() => onSelect(selectedMapItem.id)}>
@@ -728,7 +737,7 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect }) {
       {/* 지도 */}
       <div className="map-body">
         <div className="map-real-wrap">
-          <InteractiveMap items={restaurants} activeId={mapItem.id} onActive={setMapSelectedId} />
+          <InteractiveMap items={restaurants} activeId={mapItem.id} onActive={setMapSelectedId} mode="focused" />
         </div>
       </div>
 
