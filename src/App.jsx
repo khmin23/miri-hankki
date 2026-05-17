@@ -737,7 +737,7 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect }) {
       {/* 지도 */}
       <div className="map-body">
         <div className="map-real-wrap">
-          <InteractiveMap items={restaurants} activeId={mapItem.id} onActive={setMapSelectedId} mode="focused" />
+          <InteractiveMap items={restaurants} activeId={mapItem.id} onActive={setMapSelectedId} mode="overview" />
         </div>
       </div>
 
@@ -1167,6 +1167,10 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem('miri-hankki-saved', JSON.stringify(savedIds))
   }, [savedIds])
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' })
+  }, [activeTab])
 
   function toggleSave(id) {
     setSavedIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id])
