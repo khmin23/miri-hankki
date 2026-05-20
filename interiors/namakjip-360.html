@@ -96,9 +96,11 @@ function draw(){
   ctx.clearRect(0,0,W,H);
   const scale=H/img.naturalHeight;
   const dW=img.naturalWidth*scale;
-  const ox=((offsetX%dW)+dW)%dW;
+  const maxOx=Math.max(0,dW-W);
+  if(offsetX>maxOx)offsetX=maxOx;
+  if(offsetX<0)offsetX=0;
+  const ox=offsetX;
   ctx.drawImage(img,0,0,img.naturalWidth,img.naturalHeight,-ox,0,dW,H);
-  ctx.drawImage(img,0,0,img.naturalWidth,img.naturalHeight,dW-ox,0,dW,H);
   const deg=Math.round((ox/dW)*360);
   needle.style.transform=`rotate(${-deg}deg)`;
   sfill.style.width=`${(ox/dW)*100}%`;
@@ -126,7 +128,7 @@ function updatePins(ox,dW){
   HOTSPOTS.forEach((h,i)=>{
     const el=document.getElementById('p'+i);if(!el)return;
     let sx=(h.rx*dW-ox);
-    if(sx<-30)sx+=dW;
+    if(sx<-30||sx>canvas.offsetWidth+30)continue;
     const pct=sx/canvas.offsetWidth*100;
     el.style.display=(pct<-5||pct>105)?'none':'block';
     el.style.left=pct+'%';
@@ -144,7 +146,7 @@ canvas.addEventListener('touchend',()=>{isDrag=false;scheduleAuto();});
 function scheduleAuto(){
   clearTimeout(window._at);
   window._at=setTimeout(()=>{
-    function step(){if(isDrag)return;offsetX-=0.6;draw();raf=requestAnimationFrame(step);}
+    function step(){if(isDrag)return;const sc=canvas.offsetHeight/img.naturalHeight;const mOx=Math.max(0,img.naturalWidth*sc-canvas.offsetWidth);offsetX+=0.6;if(offsetX>=mOx)return;draw();raf=requestAnimationFrame(step);}
     raf=requestAnimationFrame(step);
   },4000);
 }
