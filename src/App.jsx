@@ -8,11 +8,11 @@ function asset(path) {
 }
 
 /* ─── 부가 데이터 ──────────────────────────────────────── */
-const operatingHours     = {
+const operatingHours = {
   1: '17:00 - 01:00', 2: '18:00 - 24:00', 3: '10:00 - 21:00',
   4: '09:00 - 21:00', 5: '10:00 - 15:00', 6: '11:30 - 21:00',
 }
-const parkingAvail       = { 1: false, 2: false, 3: false, 4: false, 5: true, 6: false }
+const parkingAvail = { 1: false, 2: false, 3: false, 4: false, 5: true, 6: false }
 const menuData = {
   1: [{ name: '마라전골', price: '18,000원' }, { name: '가지튀김', price: '7,000원' }, { name: '계란볶음밥', price: '5,000원' }],
   2: [{ name: '한우웰링턴 코스', price: '65,000원' }, { name: '파리지엔 뇨끼', price: '24,000원' }, { name: '치즈 플레이트', price: '18,000원' }],
@@ -41,11 +41,11 @@ const homeMoodCategories = [
 ]
 
 const situationCategories = [
-  { id: '혼밥', label: '혼밥', icon: '🍚' },
+  { id: '혼밥',   label: '혼밥',   icon: '🍚' },
   { id: '데이트', label: '데이트', icon: '❤️' },
-  { id: '해장', label: '해장', icon: '🍲' },
+  { id: '해장',   label: '해장',   icon: '🍲' },
   { id: '브런치', label: '브런치', icon: '🥐' },
-  { id: '카페', label: '카페', icon: '☕' },
+  { id: '카페',   label: '카페',   icon: '☕' },
   { id: '얼큰한', label: '얼큰한', icon: '🌶️' },
 ]
 
@@ -82,13 +82,6 @@ const situationRecommendationMap = {
   ],
 }
 
-const popularAreas = [
-  { name: '광안리', emoji: '🌊', location: '광안리' },
-  { name: '서면',   emoji: '🏙️', location: '서면' },
-  { name: '해운대', emoji: '🏖️', location: '해운대' },
-  { name: '전포',   emoji: '☕',  location: '전포' },
-]
-
 const accentClassNames = {
   sunset: 'accent-sunset', night: 'accent-night', espresso: 'accent-espresso',
   ocean: 'accent-ocean', forest: 'accent-forest', lime: 'accent-lime',
@@ -96,12 +89,8 @@ const accentClassNames = {
 
 const mapCenter = [35.153, 129.1152]
 const accentColors = {
-  sunset: '#E8654A',
-  night: '#163A5B',
-  espresso: '#8B5E34',
-  ocean: '#4A90C4',
-  forest: '#2F7D46',
-  lime: '#7BAE3C',
+  sunset: '#E8654A', night: '#163A5B', espresso: '#8B5E34',
+  ocean: '#4A90C4', forest: '#2F7D46', lime: '#7BAE3C',
 }
 
 const mapPinPositions = {
@@ -110,12 +99,12 @@ const mapPinPositions = {
 }
 
 const cuisineCategories = [
-  { id: '전체',  keywords: [] },
-  { id: '한식',  keywords: ['한식', '곰탕', '국밥'] },
-  { id: '중식',  keywords: ['중식', '마라'] },
-  { id: '양식',  keywords: ['양식', '와인바', '다이닝바'] },
+  { id: '전체',   keywords: [] },
+  { id: '한식',   keywords: ['한식', '곰탕', '국밥'] },
+  { id: '중식',   keywords: ['중식', '마라'] },
+  { id: '양식',   keywords: ['양식', '와인바', '다이닝바'] },
   { id: '브런치', keywords: ['브런치'] },
-  { id: '카페',  keywords: ['카페', '에스프레소바'] },
+  { id: '카페',   keywords: ['카페', '에스프레소바'] },
   { id: '아시안', keywords: ['아시안퓨전', '바오번', '우육면', '마파'] },
 ]
 
@@ -129,7 +118,7 @@ function getCuisineCategory(item) {
 
 function getSituationRecommendations(situation) {
   return (situationRecommendationMap[situation] ?? [])
-    .map(({ id, reason }) => ({ item: restaurants.find((restaurant) => restaurant.id === id), reason }))
+    .map(({ id, reason }) => ({ item: restaurants.find((r) => r.id === id), reason }))
     .filter(({ item }) => Boolean(item))
 }
 
@@ -144,16 +133,16 @@ function scoreRestaurant(item, query) {
     if (item.location.toLowerCase().includes(kw)) score += 3
     if (item.hero.toLowerCase().includes(kw))     score += 3
     if (item.price.toLowerCase().includes(kw))    score += 2
-    if (item.tags.some((t) => t.toLowerCase().includes(kw))) score += 4
-    if (item.mood.some((m) => m.toLowerCase().includes(kw))) score += 4
+    if (item.tags.some((t) => t.toLowerCase().includes(kw)))  score += 4
+    if (item.mood.some((m) => m.toLowerCase().includes(kw)))  score += 4
     if (item.points.some((p) => p.toLowerCase().includes(kw))) score += 2
   })
-  if (/데이트|기념일|무드|와인/.test(query)         && item.mood.includes('데이트'))     score += 8
-  if (/브런치|오전|오션뷰|바다/.test(query)         && item.mood.includes('오션뷰'))     score += 8
-  if (/혼밥|든든|국물|한식/.test(query)            && item.mood.includes('혼밥가능'))   score += 8
-  if (/커피|카페|디저트|가볍게/.test(query)         && item.category.includes('카페'))   score += 8
-  if (/바오|마파|우육면|이국적|향신료/.test(query)  && item.name === '바오하우스 광안점') score += 8
-  if (/마라|얼큰|친구|저녁모임/.test(query)        && item.name === '푸안 광안점')      score += 8
+  if (/데이트|기념일|무드|와인/.test(query)        && item.mood.includes('데이트'))   score += 8
+  if (/브런치|오전|오션뷰|바다/.test(query)        && item.mood.includes('오션뷰'))   score += 8
+  if (/혼밥|든든|국물|한식/.test(query)           && item.mood.includes('혼밥가능')) score += 8
+  if (/커피|카페|디저트|가볍게/.test(query)        && item.category.includes('카페')) score += 8
+  if (/바오|마파|우육면|이국적|향신료/.test(query) && item.name === '바오하우스 광안점') score += 8
+  if (/마라|얼큰|친구|저녁모임/.test(query)       && item.name === '푸안 광안점')   score += 8
   const reasonParts = [`${item.location}에서 찾기 쉬운 동선`, `${item.category} 중심의 메뉴 구성`, item.recommend]
   return {
     score,
@@ -243,6 +232,43 @@ function TrendingItem({ item, saved, onToggleSave, onSelect }) {
       >
         {saved ? '❤️' : '🤍'}
       </button>
+    </article>
+  )
+}
+
+/** 데스크탑 카드 그리드용 */
+function RestaurantCard({ item, saved, onToggleSave, onSelect, isSelected, onHover }) {
+  return (
+    <article
+      className={`rest-card${isSelected ? ' rest-card-selected' : ''}`}
+      onClick={() => onSelect(item.id)}
+      onMouseEnter={() => onHover?.(item.id)}
+    >
+      <div className="rest-card-img">
+        <PhotoThumb item={item} />
+        <button
+          className={`heart-btn ${saved ? 'saved' : ''}`}
+          onClick={(e) => { e.stopPropagation(); onToggleSave(item.id) }}
+          aria-label="찜"
+        >
+          {saved ? '❤️' : '🤍'}
+        </button>
+        {item.mood?.includes('데이트') && <span className="rest-card-badge">❤️ 데이트</span>}
+      </div>
+      <div className="rest-card-body">
+        <p className="rest-card-loc">{item.location}</p>
+        <strong className="rest-card-name">{item.name}</strong>
+        <p className="rest-card-cat">{item.category}</p>
+        <div className="rest-card-tags">
+          {item.tags?.slice(0, 3).map((tag) => (
+            <span key={tag} className="rest-tag">#{tag}</span>
+          ))}
+        </div>
+        <div className="rest-card-foot">
+          <span className="rest-card-eta">📍 {item.eta}</span>
+          <span className="rest-card-price">{item.price}</span>
+        </div>
+      </div>
     </article>
   )
 }
@@ -452,15 +478,25 @@ function Splash({ onEnter, onAI }) {
 /* ─── 홈 화면 ───────────────────────────────────────────── */
 function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onOpenMapItem }) {
   const [moodFilter, setMoodFilter] = useState('전체')
-  const [situation, setSituation] = useState('혼밥')
+  const [heroSearch, setHeroSearch]  = useState('')
+  const [situation, setSituation]    = useState('혼밥')
   const [selectedMapId, setSelectedMapId] = useState(restaurants[0].id)
 
   const filtered = useMemo(() => {
     return restaurants.filter((item) => {
-      if (moodFilter === '전체') return true
-      return getCuisineCategory(item) === moodFilter
+      if (moodFilter !== '전체' && getCuisineCategory(item) !== moodFilter) return false
+      if (heroSearch.trim()) {
+        const q = heroSearch.toLowerCase()
+        return (
+          item.name.toLowerCase().includes(q) ||
+          item.category.toLowerCase().includes(q) ||
+          item.location.toLowerCase().includes(q) ||
+          item.tags?.some((t) => t.toLowerCase().includes(q))
+        )
+      }
+      return true
     })
-  }, [moodFilter])
+  }, [moodFilter, heroSearch])
 
   useEffect(() => {
     if (!filtered.some((item) => item.id === selectedMapId)) {
@@ -472,87 +508,115 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
     () => filtered.find((item) => item.id === selectedMapId) ?? filtered[0] ?? restaurants[0],
     [filtered, selectedMapId],
   )
+
   const situationItems = useMemo(() => getSituationRecommendations(situation), [situation])
 
   return (
     <div className="home-screen">
-      {/* 헤더 */}
-      <div className="home-header">
-        <div className="home-location">
-          <span className="location-pin">🍽️</span>
-          <span className="location-text">부산미리한끼</span>
+
+      {/* ── Hero Banner ── */}
+      <div className="home-hero">
+        <div className="home-hero-inner">
+          <div className="home-hero-text">
+            <h1 className="home-hero-title">부산에서, 지금 딱 맞는 한 끼</h1>
+            <p className="home-hero-sub">광안리 · 남천동 로컬 맛집을 미리 골라두세요 🌊</p>
+          </div>
+          <div className="home-hero-search-wrap">
+            <input
+              className="home-hero-input"
+              value={heroSearch}
+              onChange={(e) => setHeroSearch(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && heroSearch && onGoSearch()}
+              placeholder="🔍 맛집, 지역, 음식을 검색해보세요"
+            />
+            <button className="home-hero-ai-btn" onClick={onGoSearch}>✨ AI 추천</button>
+          </div>
         </div>
-        <button className="header-icon-btn" onClick={() => onGoMap()}>🗺️</button>
       </div>
 
-      {/* 지도 중심 탐색 */}
-      <section className="home-map-section">
-        <div className="section-header home-map-header">
-          <div>
-            <h2>지도에서 바로 고르기</h2>
-            <p>위치를 먼저 보고, 갈 만한 곳만 빠르게 확인해보세요.</p>
-          </div>
-          <button className="see-more" onClick={onGoMap}>크게 보기</button>
-        </div>
+      {/* ── Filter Bar ── */}
+      <div className="home-filter-bar">
+        {homeMoodCategories.map((c) => (
+          <button
+            key={c.id}
+            className={`home-filter-chip${moodFilter === c.id ? ' active' : ''}`}
+            onClick={() => setMoodFilter(c.id)}
+          >
+            <span>{c.icon}</span>
+            <span>{c.label}</span>
+          </button>
+        ))}
+      </div>
 
-        <div className="mood-chips map-first-chips">
-          {homeMoodCategories.map((c) => (
-            <button
-              key={c.id}
-              className={`mood-chip ${moodFilter === c.id ? 'active' : ''}`}
-              onClick={() => setMoodFilter(c.id)}
-            >
-              <span>{c.icon}</span>
-              <span>{c.label}</span>
-            </button>
-          ))}
-        </div>
+      {/* ── Main Grid: Cards + Map Sidebar ── */}
+      <div className="home-main-grid">
 
-        <div className="home-map-card">
-          <div className="home-map-canvas home-map-preview" onClick={onGoMap} role="button" tabIndex="0" onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onGoMap()}>
-            <InteractiveMap items={filtered} activeId={selectedMapItem.id} onActive={setSelectedMapId} mode="overview" />
-            <div className="map-preview-cta">
-              <strong>큰 지도에서 선택하기</strong>
-              <span>핀을 더 넓게 보고 고를 수 있어요</span>
+        {/* 카드 영역 */}
+        <div className="home-cards-col">
+          {(moodFilter !== '전체' || heroSearch) && (
+            <p className="home-results-label">
+              {filtered.length}곳
+              {moodFilter !== '전체' ? ` · ${moodFilter}` : ''}
+              {heroSearch ? ` · "${heroSearch}"` : ''}
+            </p>
+          )}
+          {filtered.length > 0 ? (
+            <div className="home-card-grid">
+              {filtered.map((item) => (
+                <RestaurantCard
+                  key={item.id}
+                  item={item}
+                  saved={savedIds.includes(item.id)}
+                  onToggleSave={onToggleSave}
+                  onSelect={onSelect}
+                  isSelected={selectedMapId === item.id}
+                  onHover={setSelectedMapId}
+                />
+              ))}
             </div>
-          </div>
-          <div className="home-map-selected">
-            <button className="home-selected-main" onClick={() => onSelect(selectedMapItem.id)}>
-              <span className="home-selected-thumb"><PhotoThumb item={selectedMapItem} /></span>
-              <span className="home-selected-copy">
-                <strong>{selectedMapItem.name}</strong>
-                <small>{getCuisineCategory(selectedMapItem)} · {selectedMapItem.location}</small>
-                <em>{selectedMapItem.eta}</em>
-              </span>
-            </button>
-            <div className="home-map-actions">
-              <button onClick={() => onSelect(selectedMapItem.id)}>상세보기</button>
-              <button onClick={() => onOpenMapItem(selectedMapItem.id)}>지도 열기</button>
-              <button
-                className={savedIds.includes(selectedMapItem.id) ? 'saved' : ''}
-                onClick={() => onToggleSave(selectedMapItem.id)}
-              >
-                {savedIds.includes(selectedMapItem.id) ? '찜됨' : '찜하기'}
+          ) : (
+            <div className="empty-box">
+              <p>조건에 맞는 맛집이 없어요 😅</p>
+              <button onClick={() => { setMoodFilter('전체'); setHeroSearch('') }}>필터 초기화</button>
+            </div>
+          )}
+        </div>
+
+        {/* 지도 사이드바 */}
+        <div className="home-map-col">
+          <div className="home-map-sticky">
+            <div className="home-map-box">
+              <InteractiveMap
+                items={filtered.length > 0 ? filtered : restaurants}
+                activeId={selectedMapItem?.id}
+                onActive={setSelectedMapId}
+                mode="overview"
+              />
+            </div>
+
+            {selectedMapItem && (
+              <button className="home-sidebar-card" onClick={() => onSelect(selectedMapItem.id)}>
+                <div className="home-sidebar-thumb">
+                  <PhotoThumb item={selectedMapItem} />
+                </div>
+                <div className="home-sidebar-info">
+                  <strong>{selectedMapItem.name}</strong>
+                  <p>{getCuisineCategory(selectedMapItem)} · {selectedMapItem.location}</p>
+                  <em>{selectedMapItem.eta}</em>
+                </div>
+                <span className="map-chevron">›</span>
               </button>
+            )}
+
+            <div className="home-sidebar-btns">
+              <button onClick={() => selectedMapItem && onSelect(selectedMapItem.id)}>상세보기</button>
+              <button onClick={() => onGoMap()}>🗺️ 전체 지도</button>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="home-map-places" aria-label="가게 선택">
-          {filtered.map((item) => (
-            <button
-              key={item.id}
-              className={`home-map-place ${selectedMapItem.id === item.id ? 'active' : ''}`}
-              onClick={() => setSelectedMapId(item.id)}
-            >
-              <span><PhotoThumb item={item} /></span>
-              <strong>{item.name}</strong>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* 상황별 추천 */}
+      {/* ── 상황별 추천 ── */}
       <section className="home-section situation-section">
         <div className="section-header">
           <h2>상황별 추천</h2>
@@ -582,33 +646,14 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
         </div>
       </section>
 
-      {/* 목록으로 다시 보기 */}
-      <section className="home-section">
-        <div className="section-header">
-          <h2>목록으로 보기</h2>
-          <button className="see-more" onClick={onGoSearch}>더보기</button>
+      {/* ── Footer ── */}
+      <footer className="home-footer">
+        <div className="home-footer-inner">
+          <span className="home-footer-brand">🍽️ 부산 미리한끼</span>
+          <p>광안리 · 남천동 로컬 맛집 큐레이션</p>
+          <p className="home-footer-copy">© 2025 미리한끼. Made with ❤️ in Busan.</p>
         </div>
-        {filtered.length > 0 ? (
-          <div className="trending-list">
-            {filtered.map((item) => (
-              <TrendingItem
-                key={item.id}
-                item={item}
-                saved={savedIds.includes(item.id)}
-                onToggleSave={onToggleSave}
-                onSelect={onSelect}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="empty-box">
-            <p>조건에 맞는 맛집이 없어요 😅</p>
-            <button onClick={() => setMoodFilter('전체')}>필터 초기화</button>
-          </div>
-        )}
-      </section>
-
-      <div style={{ height: 16 }} />
+      </footer>
     </div>
   )
 }
@@ -664,21 +709,19 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
 
       {!result && (
         <>
-          {/* AI 예시 */}
           <div className="ai-section">
             <div className="ai-badge">✨ AI 추천</div>
             <h3>어떤 한 끼를 찾으세요?</h3>
             <p className="ai-desc">궁금한 걸 자유롭게 물어보세요. 부산 맛집을 찾아드릴게요.</p>
             <div className="example-queries">
               {exampleQueries.map((q) => (
-                <button key={q} className="example-chip" onClick={() => { setQuery(q); }}>
+                <button key={q} className="example-chip" onClick={() => { setQuery(q) }}>
                   {q}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* 전체 목록 */}
           <section className="home-section" style={{ marginTop: 8 }}>
             <div className="section-header"><h2>전체 맛집</h2></div>
             <div className="trending-list">
@@ -692,7 +735,6 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
 
       {result && (
         <div className="ai-result-area">
-          {/* 베스트 추천 */}
           <div className="ai-best-card" onClick={() => onSelect(result.item.id)}>
             <div className="ai-best-photo">
               <PhotoThumb item={result.item} />
@@ -705,7 +747,6 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
             </div>
           </div>
 
-          {/* 전체 순위 */}
           <div className="section-header" style={{ marginTop: 20 }}>
             <h2>추천 결과</h2>
             <button className="see-more" onClick={() => { setResult(null); setAllResults(null); setQuery('') }}>다시 검색</button>
@@ -734,14 +775,12 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect }) {
 
   return (
     <div className="map-screen">
-      {/* 지도 */}
       <div className="map-body">
         <div className="map-real-wrap">
           <InteractiveMap items={restaurants} activeId={mapItem.id} onActive={setMapSelectedId} mode="overview" />
         </div>
       </div>
 
-      {/* 하단 카드 */}
       <div className="map-bottom-card">
         <div className="map-bottom-inner" onClick={() => onSelect(mapItem.id)}>
           <div className="map-bottom-thumb">
@@ -829,7 +868,6 @@ function MyScreen({ savedIds, isInstalledApp, installPrompt, onInstall, showInst
 
   return (
     <div className="my-screen">
-      {/* 프로필 섹션 */}
       <div className="my-profile-card">
         <div className="my-avatar">🧑</div>
         <div>
@@ -838,7 +876,6 @@ function MyScreen({ savedIds, isInstalledApp, installPrompt, onInstall, showInst
         </div>
       </div>
 
-      {/* 앱 설치 */}
       {!isInstalledApp && (
         <div className="my-install-card">
           <div>
@@ -856,7 +893,6 @@ function MyScreen({ savedIds, isInstalledApp, installPrompt, onInstall, showInst
         </div>
       )}
 
-      {/* 룰렛 */}
       <div className="my-roulette-card">
         <p className="my-section-label">오늘 뭐 먹지?</p>
         <div className={`roulette-display ${isSpinning ? 'spinning' : ''}`}>
@@ -874,13 +910,12 @@ function MyScreen({ savedIds, isInstalledApp, installPrompt, onInstall, showInst
         </button>
       </div>
 
-      {/* 내 리스트 */}
       <div className="my-list-section">
         <p className="my-section-label">내 리스트</p>
         <div className="my-list-items">
           {[
             { icon: '🔖', label: '저장한 맛집', count: savedIds.length },
-            { icon: '📍', label: '광안리', count: restaurants.filter(r => r.location === '광안리').length },
+            { icon: '📍', label: '광안리', count: restaurants.filter((r) => r.location === '광안리').length },
             { icon: '🍽️', label: '전체 등록 맛집', count: restaurants.length },
           ].map((item) => (
             <div key={item.label} className="my-list-item">
@@ -901,10 +936,10 @@ function MyScreen({ savedIds, isInstalledApp, installPrompt, onInstall, showInst
   )
 }
 
-/* ─── 상세 모달 (완전 재설계) ────────────────────────────── */
+/* ─── 상세 모달 ─────────────────────────────────────────── */
 function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave }) {
   const scrollRef = useRef(null)
-  const [tip, setTip]     = useState('')
+  const [tip, setTip]       = useState('')
   const [photoIdx, setPhotoIdx] = useState(0)
 
   useEffect(() => {
@@ -928,7 +963,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
       <div className="modal-backdrop" onClick={onClose} />
       <div className="detail-panel" ref={scrollRef}>
 
-        {/* 사진 헤더 */}
         <div className="detail-photo-wrap">
           {item.photos?.length > 0 ? (
             <img
@@ -950,10 +984,7 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
           )}
         </div>
 
-        {/* 메인 정보 */}
         <div className="detail-body">
-
-          {/* 이름 + 찜 */}
           <div className="detail-title-row">
             <div>
               <h2 className="detail-name">{item.name}</h2>
@@ -965,7 +996,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
             >{saved ? '❤️' : '🤍'}</button>
           </div>
 
-          {/* 메타 그리드 */}
           <div className="detail-meta-grid">
             <div className="meta-chip"><span>📍</span><span>{item.eta}</span></div>
             <div className="meta-chip"><span>🕐</span><span>{hours}</span></div>
@@ -973,10 +1003,8 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
             <div className="meta-chip"><span>💬</span><span>{item.experience?.noise === '낮음' ? '조용함' : item.experience?.noise === '높음' ? '활발함' : '보통'}</span></div>
           </div>
 
-          {/* 한 줄 소개 */}
           <p className="detail-hero-text">{item.hero}</p>
 
-          {/* 대표 메뉴 */}
           {menus.length > 0 && (
             <div className="detail-menu-section">
               <h3>대표 메뉴</h3>
@@ -992,7 +1020,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
             </div>
           )}
 
-          {/* 액션 버튼 */}
           <div className="detail-action-row">
             <button
               className={`detail-save-btn ${saved ? 'saved' : ''}`}
@@ -1003,7 +1030,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
 
           <div className="detail-divider" />
 
-          {/* 음식 사진 더보기 */}
           {item.photos?.length > 0 && (
             <div className="detail-section">
               <h3>음식 사진</h3>
@@ -1018,7 +1044,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
             </div>
           )}
 
-          {/* 가게 내부 */}
           {item.media?.interior?.src && (
             <div className="detail-section">
               <h3>가게 내부</h3>
@@ -1041,7 +1066,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
             </div>
           )}
 
-          {/* 방문 경험 */}
           {item.experience && (
             <div className="detail-section">
               <h3>방문 경험</h3>
@@ -1065,7 +1089,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
             </div>
           )}
 
-          {/* 에디터 포인트 */}
           <div className="detail-section">
             <h3>에디터 포인트</h3>
             <ul className="detail-points">
@@ -1073,7 +1096,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
             </ul>
           </div>
 
-          {/* 지도 연결 */}
           <div className="detail-section">
             <h3>지도 연결</h3>
             <div className="detail-map-links">
@@ -1087,7 +1109,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
             </div>
           </div>
 
-          {/* 방문 팁 */}
           <div className="detail-section tip-box">
             <div className="tip-head">
               <h3>방문 팁</h3>
@@ -1096,7 +1117,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
             <p className="tip-text">{tip || '버튼을 누르면 이 장소를 더 잘 즐기는 방법을 알려드려요.'}</p>
           </div>
 
-          {/* 근처 */}
           <div className="detail-section">
             <h3>근처에서 함께 가볼 곳</h3>
             <div className="detail-nearby">
@@ -1121,12 +1141,12 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
 
 /* ─── 메인 앱 ────────────────────────────────────────────── */
 export default function App() {
-  const [showSplash, setShowSplash]     = useState(true)
-  const [activeTab, setActiveTab]       = useState('home')
-  const [selectedId, setSelectedId]     = useState(null)
+  const [showSplash, setShowSplash]       = useState(true)
+  const [activeTab, setActiveTab]         = useState('home')
+  const [selectedId, setSelectedId]       = useState(null)
   const [mapSelectedId, setMapSelectedId] = useState(restaurants[0].id)
-  const [installPrompt, setInstallPrompt]   = useState(null)
-  const [isInstalledApp, setIsInstalledApp] = useState(
+  const [installPrompt, setInstallPrompt]     = useState(null)
+  const [isInstalledApp, setIsInstalledApp]   = useState(
     () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true,
   )
   const [showInstallGuide, setShowInstallGuide] = useState(false)
@@ -1256,7 +1276,6 @@ export default function App() {
               )}
             </main>
 
-            {/* 하단 탭 */}
             <nav className="bottom-nav">
               {navItems.map((item) => (
                 <button
