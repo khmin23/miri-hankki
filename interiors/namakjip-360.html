@@ -128,7 +128,7 @@ function updatePins(ox,dW){
   HOTSPOTS.forEach((h,i)=>{
     const el=document.getElementById('p'+i);if(!el)return;
     let sx=(h.rx*dW-ox);
-    if(sx<-30||sx>canvas.offsetWidth+30)continue;
+    if(sx<-30||sx>canvas.offsetWidth+30)return;
     const pct=sx/canvas.offsetWidth*100;
     el.style.display=(pct<-5||pct>105)?'none':'block';
     el.style.left=pct+'%';
