@@ -45,7 +45,7 @@ export const restaurants = [
       '2~4인 방문 시 가장 풍성하게 즐기기 좋음',
     ],
     media: {
-      interior: { src: '', poster: '', suggestedPath: '/videos/puan-interior.mp4' },
+      interior: { src: '/interiors/puan-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/puan-360.jpg' },
       route: { src: '', poster: '', suggestedPath: '/videos/puan-route.mp4' },
     },
     photos: [
@@ -107,7 +107,7 @@ export const restaurants = [
       '특별한 날을 위한 코스 요리 예약이 가능함',
     ],
     media: {
-      interior: { src: '', poster: '', suggestedPath: '/videos/muvet-interior.mp4' },
+      interior: { src: '/interiors/muvet-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/muvet-360.jpg' },
       route: { src: '', poster: '', suggestedPath: '/videos/muvet-route.mp4' },
     },
     photos: [
@@ -169,7 +169,7 @@ export const restaurants = [
       '다양한 에스프레소 베이스 메뉴가 입문자에게도 적합함',
     ],
     media: {
-      interior: { src: '', poster: '', suggestedPath: '/videos/casabusano-interior.mp4' },
+      interior: { src: '/interiors/casabusano-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/casabusano-360.jpg' },
       route: { src: '', poster: '', suggestedPath: '/videos/casabusano-route.mp4' },
     },
     photos: [
@@ -231,7 +231,7 @@ export const restaurants = [
       '식사와 커피를 한 자리에서 해결하기 편함',
     ],
     media: {
-      interior: { src: '', poster: '', suggestedPath: '/videos/walking-holiday-interior.mp4' },
+      interior: { src: '/interiors/walking-holiday-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/walking-holiday-360.jpg' },
       route: { src: '', poster: '', suggestedPath: '/videos/walking-holiday-route.mp4' },
     },
     photos: [
@@ -355,7 +355,7 @@ export const restaurants = [
       '광안리 골목 동선에 있어 해변 산책 전후로 연결하기 좋음',
     ],
     media: {
-      interior: { src: '', poster: '', suggestedPath: '/videos/baohaus-interior.mp4' },
+      interior: { src: '/interiors/baohaus-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/baohaus-360.jpg' },
       route: { src: '', poster: '', suggestedPath: '/videos/baohaus-route.mp4' },
     },
     photos: [
