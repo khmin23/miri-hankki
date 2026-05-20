@@ -2200,3 +2200,27 @@ img { display: block; width: 100%; object-fit: cover; }
   .app-frame { min-height: 100dvh; }
 }
  
+
+
+/* ═══════════════════════════════════════════════════════════
+   데스크탑 웹 레이아웃 (720px 이상)
+═══════════════════════════════════════════════════════════ */
+@media (min-width: 720px) {
+  .app-wrapper { padding: 0; align-items: stretch; background: var(--beige); }
+  .app-frame { max-width: none; border-radius: 0; box-shadow: none; min-height: 100dvh; overflow-x: visible; }
+  .bottom-nav { top: 0; bottom: auto; max-width: none; height: 60px; border-top: none; border-bottom: 1px solid var(--border); padding: 0 40px; justify-content: flex-end; gap: 4px; }
+  .bottom-nav::before { content: '🍽️ 미리한끼'; font-size: 1.1rem; font-weight: 900; color: var(--coral); letter-spacing: -0.03em; margin-right: auto; flex-shrink: 0; }
+  .bottom-nav button { flex: 0 0 auto; flex-direction: row; gap: 6px; padding: 8px 16px; border-radius: var(--radius-md); font-size: 0.88rem; color: var(--text-md); }
+  .bottom-nav button small { font-size: 0.88rem; }
+  .bottom-nav button .nav-icon { font-size: 1rem; }
+  .bottom-nav button.active { background: var(--coral-light); color: var(--coral-dark); }
+  .main-content { padding-bottom: 0; padding-top: 60px; max-width: 960px; margin: 0 auto; min-height: calc(100dvh - 60px); }
+  .map-screen { height: calc(100dvh - 60px); padding-bottom: 0; max-width: none; margin: 0; }
+  .home-map-canvas { height: 400px; }
+  .situation-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .modal-shell { align-items: center; justify-content: center; }
+  .detail-panel { max-width: 580px; height: 85dvh; max-height: 85dvh; border-radius: 28px; margin: 0; }
+  .toast { bottom: 40px; }
+  .home-header { padding-top: 16px; }
+  .search-header-bar { padding-top: 12px; }
+}
