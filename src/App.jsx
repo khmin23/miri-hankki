@@ -40,6 +40,15 @@ const homeMoodCategories = [
   { id: '아시안', label: '아시안', icon: '🍜' },
 ]
 
+const moodCategories = [
+  { id: '전체',   label: '전체',   icon: '🍽️' },
+  { id: '한식',   label: '한식',   icon: '🍚' },
+  { id: '중식',   label: '중식',   icon: '🥢' },
+  { id: '카페',   label: '카페',   icon: '☕' },
+  { id: '브런치', label: '브런치', icon: '🥐' },
+  { id: '아시안', label: '아시안', icon: '🍜' },
+]
+
 const situationCategories = [
   { id: '혼밥',   label: '혼밥',   icon: '🍚' },
   { id: '데이트', label: '데이트', icon: '❤️' },
@@ -124,28 +133,30 @@ function getSituationRecommendations(situation) {
 
 function scoreRestaurant(item, query) {
   const normalized = query.trim().toLowerCase()
-  if (!normalized) return { score: 0, reason: '질문을 입력하면 취향에 맞춘 추천을 드릴게요.' }
+  if (!normalized) return { score: 0, matches: [], reason: '키워드를 입력하면 취향에 맞춘 추천을 드릴게요.' }
   const keywords = normalized.split(/\s+/).filter(Boolean)
   let score = 0
+  const matchedSet = new Set()
   keywords.forEach((kw) => {
     if (item.name.toLowerCase().includes(kw))     score += 6
-    if (item.category.toLowerCase().includes(kw)) score += 4
-    if (item.location.toLowerCase().includes(kw)) score += 3
+    if (item.category.toLowerCase().includes(kw)) { score += 4; matchedSet.add(item.category) }
+    if (item.location.toLowerCase().includes(kw)) { score += 3; matchedSet.add(item.location) }
     if (item.hero.toLowerCase().includes(kw))     score += 3
     if (item.price.toLowerCase().includes(kw))    score += 2
-    if (item.tags.some((t) => t.toLowerCase().includes(kw)))  score += 4
-    if (item.mood.some((m) => m.toLowerCase().includes(kw)))  score += 4
-    if (item.points.some((p) => p.toLowerCase().includes(kw))) score += 2
+    item.tags.forEach((t) => { if (t.toLowerCase().includes(kw)) { score += 4; matchedSet.add(t) } })
+    item.mood.forEach((m) => { if (m.toLowerCase().includes(kw)) { score += 4; matchedSet.add(m) } })
+    item.points.forEach((p) => { if (p.toLowerCase().includes(kw)) score += 2 })
   })
-  if (/데이트|기념일|무드|와인/.test(query)        && item.mood.includes('데이트'))   score += 8
-  if (/브런치|오전|오션뷰|바다/.test(query)        && item.mood.includes('오션뷰'))   score += 8
-  if (/혼밥|든든|국물|한식/.test(query)           && item.mood.includes('혼밥가능')) score += 8
-  if (/커피|카페|디저트|가볍게/.test(query)        && item.category.includes('카페')) score += 8
-  if (/바오|마파|우육면|이국적|향신료/.test(query) && item.name === '바오하우스 광안점') score += 8
-  if (/마라|얼큰|친구|저녁모임/.test(query)       && item.name === '푸안 광안점')   score += 8
+  if (/데이트|기념일|무드|와인/.test(query)        && item.mood.includes('데이트'))   { score += 8; matchedSet.add('데이트 무드') }
+  if (/브런치|오전|오션뷰|바다/.test(query)        && item.mood.includes('오션뷰'))   { score += 8; matchedSet.add('오션뷰') }
+  if (/혼밥|든든|국물|한식/.test(query)           && item.mood.includes('혼밥가능')) { score += 8; matchedSet.add('혼밥 가능') }
+  if (/커피|카페|디저트|가볍게/.test(query)        && item.category.includes('카페')) { score += 8; matchedSet.add('카페') }
+  if (/바오|마파|우육면|이국적|향신료/.test(query) && item.name === '바오하우스 광안점') { score += 8; matchedSet.add('아시안퓨전') }
+  if (/마라|얼큰|친구|저녁모임/.test(query)       && item.name === '푸안 광안점')   { score += 8; matchedSet.add('마라') }
   const reasonParts = [`${item.location}에서 찾기 쉬운 동선`, `${item.category} 중심의 메뉴 구성`, item.recommend]
   return {
     score,
+    matches: [...matchedSet].slice(0, 5),
     reason: `${reasonParts[0]}, ${reasonParts[1]}이고 ${reasonParts[2].replace('추천', '잘 맞습니다')}.`,
   }
 }
@@ -176,6 +187,52 @@ function copyToClipboard(text) {
 
 function openMapLink(url) {
   window.location.href = url
+}
+
+/* ─── 브레이크포인트 훅 ───────────────────────────────── */
+function useBreakpoint() {
+  function get() {
+    const w = window.innerWidth
+    if (w >= 1100) return 'desktop'
+    if (w >= 768)  return 'tablet'
+    return 'mobile'
+  }
+  const [bp, setBp] = useState(get)
+  useEffect(() => {
+    const h = () => setBp(get())
+    window.addEventListener('resize', h)
+    return () => window.removeEventListener('resize', h)
+  }, [])
+  return bp
+}
+
+/* ─── 사이드 네비게이션 ─────────────────────────────────── */
+function SideNav({ bp, activeTab, onTabChange, savedCount }) {
+  const isDesktop = bp === 'desktop'
+  return (
+    <nav className={`side-nav${isDesktop ? ' side-nav-desktop' : ' side-nav-tablet'}`}>
+      <div className="side-nav-brand">
+        <span className="side-nav-logo-icon">🍽️</span>
+        {isDesktop && <span className="side-nav-logo-text">부산미리한끼</span>}
+      </div>
+      <div className="side-nav-items">
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            className={`side-nav-btn${activeTab === item.id ? ' active' : ''}`}
+            onClick={() => onTabChange(item.id)}
+            title={item.label}
+          >
+            <span className="side-nav-icon">{item.icon}</span>
+            <span className="side-nav-label">{item.label}</span>
+            {item.id === 'saved' && savedCount > 0 && (
+              <span className="side-nav-badge">{savedCount}</span>
+            )}
+          </button>
+        ))}
+      </div>
+    </nav>
+  )
 }
 
 /* ─── 서브 컴포넌트 ──────────────────────────────────────── */
@@ -447,7 +504,7 @@ function InteractiveMap({ items, activeId, onActive, mode = 'overview' }) {
 }
 
 /* ─── 스플래시 화면 ─────────────────────────────────────── */
-function Splash({ onEnter, onAI }) {
+function Splash({ onEnter, onKeyword }) {
   return (
     <div className="splash">
       <div className="splash-bg">
@@ -468,7 +525,7 @@ function Splash({ onEnter, onAI }) {
         </div>
         <div className="splash-actions">
           <button className="splash-btn-primary" onClick={onEnter}>🍽️ 맛집 찾기</button>
-          <button className="splash-btn-secondary" onClick={onAI}>✨ AI 추천받기</button>
+          <button className="splash-btn-secondary" onClick={onKeyword}>🔍 키워드 추천받기</button>
         </div>
       </div>
     </div>
@@ -529,7 +586,7 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
               onKeyDown={(e) => e.key === 'Enter' && heroSearch && onGoSearch()}
               placeholder="🔍 맛집, 지역, 음식을 검색해보세요"
             />
-            <button className="home-hero-ai-btn" onClick={onGoSearch}>✨ AI 추천</button>
+            <button className="home-hero-ai-btn" onClick={onGoSearch}>🔍 키워드 추천</button>
           </div>
         </div>
       </div>
@@ -658,7 +715,7 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
   )
 }
 
-/* ─── 검색 / AI 추천 화면 ────────────────────────────────── */
+/* ─── 검색 / 키워드 추천 화면 ──────────────────────────── */
 function SearchScreen({ savedIds, onToggleSave, onSelect }) {
   const [query, setQuery] = useState('')
   const [result, setResult] = useState(null)
@@ -677,9 +734,9 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
     setAllResults(ranked)
     const best = ranked[0]
     if (!best || best.score === 0) {
-      setResult({ item: restaurants[0], reason: '질문이 아직 구체적이지 않아서 가장 무난한 곳을 먼저 골랐어요.' })
+      setResult({ item: restaurants[0], matches: [], reason: '질문이 아직 구체적이지 않아서 가장 무난한 곳을 먼저 골랐어요.' })
     } else {
-      setResult({ item: best.item, reason: best.reason })
+      setResult({ item: best.item, matches: best.matches, reason: best.reason })
     }
   }
 
@@ -709,10 +766,10 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
 
       {!result && (
         <>
-          <div className="ai-section">
-            <div className="ai-badge">✨ AI 추천</div>
-            <h3>어떤 한 끼를 찾으세요?</h3>
-            <p className="ai-desc">궁금한 걸 자유롭게 물어보세요. 부산 맛집을 찾아드릴게요.</p>
+          <div className="keyword-section">
+            <div className="keyword-badge">🔍 키워드 추천</div>
+            <h3>어떤 분위기로 찾으세요?</h3>
+            <p className="keyword-desc">음식, 분위기, 상황을 입력하면 태그와 연결해 맞는 맛집을 찾아드려요.</p>
             <div className="example-queries">
               {exampleQueries.map((q) => (
                 <button key={q} className="example-chip" onClick={() => { setQuery(q) }}>
@@ -738,11 +795,18 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
           <div className="ai-best-card" onClick={() => onSelect(result.item.id)}>
             <div className="ai-best-photo">
               <PhotoThumb item={result.item} />
-              <div className="ai-best-badge">✨ AI 추천</div>
+              <div className="ai-best-badge">🔍 키워드 매칭</div>
             </div>
             <div className="ai-best-body">
               <strong>{result.item.name}</strong>
               <p className="ai-reason">{result.reason}</p>
+              {result.matches?.length > 0 && (
+                <div className="matched-tags">
+                  {result.matches.map((m) => (
+                    <span key={m} className="matched-tag">#{m}</span>
+                  ))}
+                </div>
+              )}
               <p className="item-eta">{result.item.eta}</p>
             </div>
           </div>
@@ -752,11 +816,18 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
             <button className="see-more" onClick={() => { setResult(null); setAllResults(null); setQuery('') }}>다시 검색</button>
           </div>
           <div className="ai-result-grid">
-            {allResults?.slice(0, 3).map(({ item }) => (
+            {allResults?.slice(0, 3).map(({ item, matches }) => (
               <article key={item.id} className="ai-result-card" onClick={() => onSelect(item.id)}>
                 <div className="ai-result-img"><PhotoThumb item={item} /></div>
                 <p className="rec-location">{item.location}</p>
                 <strong>{item.name.length > 8 ? item.name.slice(0, 8) + '…' : item.name}</strong>
+                {matches?.length > 0 && (
+                  <div className="matched-tags" style={{ marginTop: 4 }}>
+                    {matches.slice(0, 2).map((m) => (
+                      <span key={m} className="matched-tag">#{m}</span>
+                    ))}
+                  </div>
+                )}
               </article>
             ))}
           </div>
@@ -767,17 +838,94 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
 }
 
 /* ─── 지도 화면 ─────────────────────────────────────────── */
-function MapScreen({ mapSelectedId, setMapSelectedId, onSelect }) {
+function MapScreen({ mapSelectedId, setMapSelectedId, onSelect, bp }) {
+  const [categoryFilter, setCategoryFilter] = useState('전체')
+
+  const filteredItems = useMemo(() => {
+    if (categoryFilter === '전체') return restaurants
+    return restaurants.filter((r) => getCuisineCategory(r) === categoryFilter)
+  }, [categoryFilter])
+
   const mapItem = useMemo(
-    () => restaurants.find((r) => r.id === mapSelectedId) ?? restaurants[0],
-    [mapSelectedId],
+    () => filteredItems.find((r) => r.id === mapSelectedId) ?? filteredItems[0] ?? restaurants[0],
+    [filteredItems, mapSelectedId],
   )
+
+  const isWeb = bp === 'tablet' || bp === 'desktop'
+
+  if (isWeb) {
+    return (
+      <div className="map-screen-web">
+        <div className="map-side-panel">
+          <div className="map-side-header">
+            <h3 className="map-side-title">맛집 지도</h3>
+            <p className="map-side-sub">{filteredItems.length}곳</p>
+          </div>
+          <div className="map-filter-bar">
+            {moodCategories.map((c) => (
+              <button
+                key={c.id}
+                className={`map-filter-chip${categoryFilter === c.id ? ' active' : ''}`}
+                onClick={() => setCategoryFilter(c.id)}
+              >
+                {c.icon} {c.label}
+              </button>
+            ))}
+          </div>
+          <div className="map-side-list">
+            {filteredItems.map((item) => (
+              <button
+                key={item.id}
+                className={`map-list-item${mapItem.id === item.id ? ' active' : ''}`}
+                onClick={() => setMapSelectedId(item.id)}
+              >
+                <div className="map-list-thumb"><PhotoThumb item={item} /></div>
+                <div className="map-list-info">
+                  <strong>{item.name}</strong>
+                  <p>{getCuisineCategory(item)} · {item.location}</p>
+                  <p className="map-list-eta">{item.eta}</p>
+                </div>
+                {mapItem.id === item.id && <span className="map-list-active-dot" />}
+              </button>
+            ))}
+          </div>
+          <div className="map-side-actions">
+            <button className="map-side-btn primary" onClick={() => onSelect(mapItem.id)}>상세보기</button>
+            <button className="map-side-btn" onClick={() => openMapLink(mapItem.links.naver)}>네이버 지도</button>
+            <button className="map-side-btn" onClick={() => openMapLink(mapItem.links.kakao)}>카카오맵</button>
+          </div>
+        </div>
+        <div className="map-main-panel">
+          <InteractiveMap items={filteredItems} activeId={mapItem.id} onActive={setMapSelectedId} mode="overview" />
+          <div className="map-selected-overlay" onClick={() => onSelect(mapItem.id)}>
+            <div className="map-selected-thumb"><PhotoThumb item={mapItem} /></div>
+            <div className="map-selected-info">
+              <strong>{mapItem.name}</strong>
+              <p>{mapItem.category} · {mapItem.location} · {mapItem.eta}</p>
+            </div>
+            <span className="map-chevron">›</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="map-screen">
-      <div className="map-body">
+      <div className="map-body" style={{ position: 'relative' }}>
+        <div className="map-chip-overlay">
+          {moodCategories.map((c) => (
+            <button
+              key={c.id}
+              className={`map-chip${categoryFilter === c.id ? ' active' : ''}`}
+              onClick={() => setCategoryFilter(c.id)}
+            >
+              {c.icon} {c.label}
+            </button>
+          ))}
+        </div>
         <div className="map-real-wrap">
-          <InteractiveMap items={restaurants} activeId={mapItem.id} onActive={setMapSelectedId} mode="overview" />
+          <InteractiveMap items={filteredItems} activeId={mapItem.id} onActive={setMapSelectedId} mode="overview" />
         </div>
       </div>
 
@@ -803,7 +951,7 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect }) {
           <div className="map-place-section">
             <p className="map-place-title">가게 선택</p>
             <div className="map-place-scroll">
-              {restaurants.map((item) => (
+              {filteredItems.map((item) => (
                 <button
                   key={item.id}
                   className={`map-place-card ${mapSelectedId === item.id ? 'active' : ''}`}
@@ -1141,7 +1289,10 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
 
 /* ─── 메인 앱 ────────────────────────────────────────────── */
 export default function App() {
-  const [showSplash, setShowSplash]       = useState(true)
+  const bp    = useBreakpoint()
+  const isWeb = bp !== 'mobile'
+
+  const [showSplash, setShowSplash]       = useState(() => !isWeb)
   const [activeTab, setActiveTab]         = useState('home')
   const [selectedId, setSelectedId]       = useState(null)
   const [mapSelectedId, setMapSelectedId] = useState(restaurants[0].id)
@@ -1158,6 +1309,11 @@ export default function App() {
     } catch { return [] }
   })
   const [showCopyMessage, setShowCopyMessage] = useState(false)
+
+  // 웹 환경에서는 스플래시 자동 스킵
+  useEffect(() => {
+    if (isWeb && showSplash) setShowSplash(false)
+  }, [isWeb])
 
   useEffect(() => {
     document.body.style.setProperty('--app-bg-mobile', `url("${asset('/busan-bg.png')}")`)
@@ -1220,18 +1376,31 @@ export default function App() {
     setShowInstallGuide(true)
   }
 
+  function handleTabChange(tab) {
+    setActiveTab(tab)
+  }
+
   const selectedItem = restaurants.find((r) => r.id === selectedId) ?? null
 
   return (
     <div className="app-wrapper">
       <div className="app-frame">
-        {showSplash ? (
+        {showSplash && !isWeb ? (
           <Splash
             onEnter={() => setShowSplash(false)}
-            onAI={() => { setShowSplash(false); setActiveTab('search') }}
+            onKeyword={() => { setShowSplash(false); setActiveTab('search') }}
           />
         ) : (
-          <>
+          <div className={`app-layout${isWeb ? ' app-layout-web' : ''}`}>
+            {isWeb && (
+              <SideNav
+                bp={bp}
+                activeTab={activeTab}
+                onTabChange={handleTabChange}
+                savedCount={savedIds.length}
+              />
+            )}
+
             <main className="main-content">
               {activeTab === 'home' && (
                 <HomeScreen
@@ -1255,6 +1424,7 @@ export default function App() {
                   mapSelectedId={mapSelectedId}
                   setMapSelectedId={setMapSelectedId}
                   onSelect={setSelectedId}
+                  bp={bp}
                 />
               )}
               {activeTab === 'saved' && (
@@ -1276,19 +1446,21 @@ export default function App() {
               )}
             </main>
 
-            <nav className="bottom-nav">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  className={activeTab === item.id ? 'active' : ''}
-                  onClick={() => setActiveTab(item.id)}
-                >
-                  <span className="nav-icon">{item.icon}</span>
-                  <small>{item.label}</small>
-                </button>
-              ))}
-            </nav>
-          </>
+            {!isWeb && (
+              <nav className="bottom-nav">
+                {navItems.map((item) => (
+                  <button
+                    key={item.id}
+                    className={activeTab === item.id ? 'active' : ''}
+                    onClick={() => setActiveTab(item.id)}
+                  >
+                    <span className="nav-icon">{item.icon}</span>
+                    <small>{item.label}</small>
+                  </button>
+                ))}
+              </nav>
+            )}
+          </div>
         )}
 
         {showCopyMessage && <div className="toast">📋 링크를 복사했어요.</div>}
