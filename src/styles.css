@@ -2046,9 +2046,10 @@ img { display: block; width: 100%; object-fit: cover; }
 }
 .detail-photo-fig img {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: auto;
   height: auto;
-  object-fit: cover;
+  object-fit: contain;
+  background: var(--beige-md);
 }
 .detail-photo-fig figcaption {
   font-size: 0.75rem;
