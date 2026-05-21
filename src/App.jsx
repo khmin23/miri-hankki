@@ -1065,20 +1065,13 @@ function SavedScreen({ savedIds, onToggleSave, onSelect }) {
 }
 
 /* ─── 마이 화면 ─────────────────────────────────────────── */
-function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, isInstalledApp, installPrompt, onInstall, showInstallGuide, setShowInstallGuide }) {
+function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, setVisitRecords, reviews, setReviews, isInstalledApp, installPrompt, onInstall, showInstallGuide, setShowInstallGuide }) {
   const [activeFilter, setActiveFilter] = useState('전체')
   const [rouletteItem, setRouletteItem] = useState(null)
   const [isSpinning, setIsSpinning] = useState(false)
   const [toast, setToast] = useState('')
   const [editingIdx, setEditingIdx] = useState(null)
   const [editText, setEditText] = useState('')
-
-  const INIT_VISITS = [
-    { restaurantId: 6, name: '바오하우스 광안점', icon: '🥟', dish: '토마토달걀볶음밥', date: '2025.05.18', revisit: true,  photo: '/restaurant-photos/baohaus-food.jpg', location: '광안리' },
-    { restaurantId: 3, name: '까사부사노',       icon: '☕', dish: '아메리카노 + 크루아상',  date: '2025.05.15', revisit: true,  photo: null, location: '광안리' },
-    { restaurantId: 4, name: '위킹홀리데이',     icon: '🥐', dish: '에그베네딕트 + 라떼',   date: '2025.05.10', revisit: true,  photo: null, location: '광안리' },
-  ]
-  const [visitRecords, setVisitRecords] = useState(INIT_VISITS)
 
   const BADGES = [
     { icon: '🍱', label: '혼밥 입문자',    desc: '혼밥 3회 달성',  earned: true },
@@ -1095,13 +1088,6 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, isInstalledApp, i
     { label: '한식',        pct: 18, color: '#5db75d' },
     { label: '기타',        pct:  9, color: 'var(--text-muted)' },
   ]
-
-  const INIT_REVIEWS = [
-    { name: '바오하우스',   rating: 5, text: '토마토달걀볶음밥 진짜 최고. 가성비 킹', date: '05.18' },
-    { name: '위킹홀리데이', rating: 5, text: '오션뷰 대박. 브런치 맛있고 통창 뷰가 너무 예뻐', date: '05.10' },
-    { name: '까사부사노',   rating: 4, text: '커피 향이 진하고 분위기 좋음. 혼자 오기 완벽', date: '05.15' },
-  ]
-  const [reviews, setReviews] = useState(INIT_REVIEWS)
 
   const FILTER_MAP = {
     '혼밥': ['혼밥가능'],
@@ -1457,11 +1443,60 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, isInstalledApp, i
 }
 
 /* ─── 상세 모달 ─────────────────────────────────────────── */
-function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave }) {
+function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, visitRecords, setVisitRecords, reviews, setReviews }) {
   const userLoc = useContext(UserLocCtx)
   const scrollRef = useRef(null)
   const [tip, setTip]       = useState('')
   const [photoIdx, setPhotoIdx] = useState(0)
+
+  // 방문 기록 추가
+  const [showVisitForm, setShowVisitForm] = useState(false)
+  const [visitDish, setVisitDish]         = useState('')
+  const [visitRevisit, setVisitRevisit]   = useState(true)
+
+  // 리뷰 작성
+  const [showReviewForm, setShowReviewForm] = useState(false)
+  const [reviewRating, setReviewRating]     = useState(5)
+  const [reviewText, setReviewText]         = useState('')
+
+  // 이 가게에 해당하는 내 기록
+  const myVisits  = (visitRecords || []).filter((v) => v.restaurantId === item.id)
+  const myReviews = (reviews || []).filter((r) => r.restaurantId === item.id)
+
+  function handleAddVisit() {
+    if (!visitDish.trim()) return
+    const today = new Date()
+    const pad = (n) => String(n).padStart(2, '0')
+    const dateStr = `${today.getFullYear()}.${pad(today.getMonth() + 1)}.${pad(today.getDate())}`
+    setVisitRecords((prev) => [{
+      restaurantId: item.id,
+      name: item.name,
+      icon: item.icon,
+      dish: visitDish.trim(),
+      date: dateStr,
+      revisit: visitRevisit,
+      photo: item.banner ?? item.photos?.[0]?.src ?? null,
+      location: item.location,
+    }, ...prev])
+    setVisitDish('')
+    setShowVisitForm(false)
+  }
+
+  function handleAddReview() {
+    if (!reviewText.trim()) return
+    const today = new Date()
+    const pad = (n) => String(n).padStart(2, '0')
+    const dateStr = `${pad(today.getMonth() + 1)}.${pad(today.getDate())}`
+    setReviews((prev) => [{
+      restaurantId: item.id,
+      name: item.name,
+      rating: reviewRating,
+      text: reviewText.trim(),
+      date: dateStr,
+    }, ...prev])
+    setReviewText('')
+    setShowReviewForm(false)
+  }
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'auto' })
@@ -1676,6 +1711,111 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
             </div>
           </div>
 
+          {/* ── 내 방문 기록 ── */}
+          <div className="detail-section detail-my-block">
+            <div className="detail-my-hd">
+              <h3>📍 내 방문 기록</h3>
+              {!showVisitForm && (
+                <button className="detail-my-add-btn" onClick={() => setShowVisitForm(true)}>+ 추가</button>
+              )}
+            </div>
+
+            {myVisits.length > 0 && (
+              <div className="detail-my-visits">
+                {myVisits.map((v, i) => (
+                  <div key={i} className="detail-my-visit-row">
+                    <span className="detail-my-visit-date">{v.date}</span>
+                    <span className="detail-my-visit-dish">{v.dish}</span>
+                    <span className={`detail-my-visit-tag ${v.revisit ? 'yes' : 'no'}`}>
+                      {v.revisit ? '✅ 재방문' : '❌ 비추'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {showVisitForm && (
+              <div className="detail-my-form">
+                <input
+                  className="detail-my-input"
+                  placeholder="먹은 메뉴를 입력하세요"
+                  value={visitDish}
+                  onChange={(e) => setVisitDish(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddVisit()}
+                />
+                <div className="detail-my-toggle-row">
+                  <button
+                    className={`detail-my-toggle ${visitRevisit ? 'active' : ''}`}
+                    onClick={() => setVisitRevisit(true)}
+                  >✅ 재방문 예정</button>
+                  <button
+                    className={`detail-my-toggle ${!visitRevisit ? 'active-no' : ''}`}
+                    onClick={() => setVisitRevisit(false)}
+                  >❌ 비추</button>
+                </div>
+                <div className="detail-my-form-btns">
+                  <button className="detail-my-save" onClick={handleAddVisit}>저장</button>
+                  <button className="detail-my-cancel" onClick={() => { setShowVisitForm(false); setVisitDish('') }}>취소</button>
+                </div>
+              </div>
+            )}
+
+            {myVisits.length === 0 && !showVisitForm && (
+              <p className="detail-my-empty">아직 방문 기록이 없어요</p>
+            )}
+          </div>
+
+          {/* ── 내 리뷰 & 메모 ── */}
+          <div className="detail-section detail-my-block">
+            <div className="detail-my-hd">
+              <h3>✏️ 내 리뷰 &amp; 메모</h3>
+              {!showReviewForm && (
+                <button className="detail-my-add-btn" onClick={() => setShowReviewForm(true)}>+ 작성</button>
+              )}
+            </div>
+
+            {myReviews.length > 0 && (
+              <div className="detail-my-reviews">
+                {myReviews.map((r, i) => (
+                  <div key={i} className="detail-my-review-row">
+                    <div className="detail-my-review-top">
+                      <span className="detail-my-stars">{'⭐'.repeat(r.rating)}</span>
+                      <span className="detail-my-review-date">{r.date}</span>
+                    </div>
+                    <p className="detail-my-review-text">{r.text}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {showReviewForm && (
+              <div className="detail-my-form">
+                <div className="detail-star-row">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button key={n} className="detail-star-btn" onClick={() => setReviewRating(n)}>
+                      {n <= reviewRating ? '⭐' : '☆'}
+                    </button>
+                  ))}
+                </div>
+                <textarea
+                  className="detail-my-textarea"
+                  placeholder="한 줄 메모를 남겨보세요"
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  rows={3}
+                />
+                <div className="detail-my-form-btns">
+                  <button className="detail-my-save" onClick={handleAddReview}>저장</button>
+                  <button className="detail-my-cancel" onClick={() => { setShowReviewForm(false); setReviewText('') }}>취소</button>
+                </div>
+              </div>
+            )}
+
+            {myReviews.length === 0 && !showReviewForm && (
+              <p className="detail-my-empty">아직 작성한 리뷰가 없어요</p>
+            )}
+          </div>
+
           <div style={{ height: 32 }} />
         </div>
       </div>
@@ -1706,6 +1846,28 @@ export default function App() {
     } catch { return [] }
   })
   const [showCopyMessage, setShowCopyMessage] = useState(false)
+
+  // 방문 기록 (전역 공유)
+  const INIT_VISITS = [
+    { restaurantId: 6, name: '바오하우스 광안점', icon: '🥟', dish: '토마토달걀볶음밥', date: '2025.05.18', revisit: true,  photo: '/restaurant-photos/baohaus-food.jpg', location: '광안리' },
+    { restaurantId: 3, name: '까사부사노',        icon: '☕', dish: '아메리카노 + 크루아상',  date: '2025.05.15', revisit: true,  photo: null, location: '광안리' },
+    { restaurantId: 4, name: '위킹홀리데이',      icon: '🥐', dish: '에그베네딕트 + 라떼',   date: '2025.05.10', revisit: true,  photo: null, location: '광안리' },
+  ]
+  const [visitRecords, setVisitRecords] = useState(() => {
+    try { const s = window.localStorage.getItem('miri-hankki-visits'); return s ? JSON.parse(s) : INIT_VISITS }
+    catch { return INIT_VISITS }
+  })
+
+  // 리뷰 (전역 공유)
+  const INIT_REVIEWS = [
+    { restaurantId: 6, name: '바오하우스',   rating: 5, text: '토마토달걀볶음밥 진짜 최고. 가성비 킹', date: '05.18' },
+    { restaurantId: 4, name: '위킹홀리데이', rating: 5, text: '오션뷰 대박. 브런치 맛있고 통창 뷰가 너무 예뻐', date: '05.10' },
+    { restaurantId: 3, name: '까사부사노',   rating: 4, text: '커피 향이 진하고 분위기 좋음. 혼자 오기 완벽', date: '05.15' },
+  ]
+  const [reviews, setReviews] = useState(() => {
+    try { const s = window.localStorage.getItem('miri-hankki-reviews'); return s ? JSON.parse(s) : INIT_REVIEWS }
+    catch { return INIT_REVIEWS }
+  })
 
   // 웹 환경에서는 스플래시 자동 스킵
   useEffect(() => {
@@ -1740,6 +1902,14 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem('miri-hankki-saved', JSON.stringify(savedIds))
   }, [savedIds])
+
+  useEffect(() => {
+    window.localStorage.setItem('miri-hankki-visits', JSON.stringify(visitRecords))
+  }, [visitRecords])
+
+  useEffect(() => {
+    window.localStorage.setItem('miri-hankki-reviews', JSON.stringify(reviews))
+  }, [reviews])
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' })
@@ -1838,6 +2008,10 @@ export default function App() {
                   onToggleSave={toggleSave}
                   onSelect={setSelectedId}
                   onGoMap={() => setActiveTab('map')}
+                  visitRecords={visitRecords}
+                  setVisitRecords={setVisitRecords}
+                  reviews={reviews}
+                  setReviews={setReviews}
                   isInstalledApp={isInstalledApp}
                   installPrompt={installPrompt}
                   onInstall={handleInstallApp}
@@ -1874,6 +2048,10 @@ export default function App() {
             onOpenMap={openMap}
             saved={savedIds.includes(selectedItem.id)}
             onToggleSave={toggleSave}
+            visitRecords={visitRecords}
+            setVisitRecords={setVisitRecords}
+            reviews={reviews}
+            setReviews={setReviews}
           />
         )}
       </div>

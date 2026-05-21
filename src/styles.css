@@ -2610,6 +2610,98 @@ img { display: block; width: 100%; object-fit: cover; }
 .nearby-card strong { display: block; font-size: 0.88rem; font-weight: 700; }
 .nearby-card small { font-size: 0.75rem; color: var(--text-muted); }
 
+/* ─── DetailModal: 내 방문기록 & 리뷰 블록 ─── */
+.detail-my-block {
+  background: var(--beige);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  border: 1px solid var(--border);
+}
+.detail-my-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.detail-my-hd h3 { font-size: 0.92rem; font-weight: 800; color: var(--text); margin: 0; }
+.detail-my-add-btn {
+  font-size: 0.78rem; font-weight: 700;
+  color: var(--sea);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--sea-light);
+}
+
+/* 방문 기록 목록 */
+.detail-my-visits { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.detail-my-visit-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px;
+  background: white; border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 0.8rem;
+}
+.detail-my-visit-date { color: var(--text-muted); font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+.detail-my-visit-dish { flex: 1; color: var(--text); font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.detail-my-visit-tag { font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; flex-shrink: 0; }
+.detail-my-visit-tag.yes { background: #edfff3; color: #2F7D46; }
+.detail-my-visit-tag.no  { background: #fff0eb; color: var(--coral-dark); }
+
+/* 리뷰 목록 */
+.detail-my-reviews { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.detail-my-review-row {
+  padding: 10px 12px;
+  background: white; border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.detail-my-review-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.detail-my-stars { font-size: 0.82rem; }
+.detail-my-review-date { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; }
+.detail-my-review-text { font-size: 0.82rem; color: var(--text-md); line-height: 1.5; margin: 0; }
+
+/* 빈 상태 */
+.detail-my-empty { font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 10px 0 0; margin: 0; }
+
+/* 폼 */
+.detail-my-form { display: flex; flex-direction: column; gap: 8px; }
+.detail-my-input {
+  width: 100%; padding: 10px 12px;
+  border: 1.5px solid var(--border); border-radius: 10px;
+  font-size: 0.85rem; font-family: inherit;
+  background: white; color: var(--text); outline: none;
+}
+.detail-my-input:focus { border-color: var(--sea); }
+.detail-my-toggle-row { display: flex; gap: 8px; }
+.detail-my-toggle {
+  flex: 1; padding: 8px; border-radius: 10px;
+  font-size: 0.78rem; font-weight: 700;
+  background: white; color: var(--text-md);
+  border: 1.5px solid var(--border);
+  transition: all 0.15s;
+}
+.detail-my-toggle.active { background: #edfff3; color: #2F7D46; border-color: #2F7D46; }
+.detail-my-toggle.active-no { background: #fff0eb; color: var(--coral-dark); border-color: var(--coral); }
+.detail-my-textarea {
+  width: 100%; padding: 10px 12px;
+  border: 1.5px solid var(--border); border-radius: 10px;
+  font-size: 0.85rem; font-family: inherit;
+  resize: none; background: white; color: var(--text); outline: none;
+}
+.detail-my-textarea:focus { border-color: var(--sea); }
+.detail-star-row { display: flex; gap: 4px; }
+.detail-star-btn { font-size: 1.4rem; line-height: 1; cursor: pointer; }
+.detail-my-form-btns { display: flex; gap: 8px; justify-content: flex-end; }
+.detail-my-save {
+  padding: 8px 18px; background: var(--coral);
+  color: white; border-radius: 10px;
+  font-size: 0.82rem; font-weight: 700;
+}
+.detail-my-cancel {
+  padding: 8px 14px; background: var(--beige-md);
+  color: var(--text-md); border-radius: 10px;
+  font-size: 0.82rem; font-weight: 700;
+}
+
 /* ═══════════════════════════════════════════════════════════
    악센트 색상 (사진 없을 때 플레이스홀더)
 ═══════════════════════════════════════════════════════════ */
