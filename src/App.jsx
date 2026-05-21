@@ -14,7 +14,16 @@ const operatingHours = {
 }
 const parkingAvail = { 1: false, 2: false, 3: false, 4: false, 5: true, 6: false }
 const menuData = {
-  1: [{ name: '마라전골', price: '18,000원' }, { name: '가지튀김', price: '7,000원' }, { name: '계란볶음밥', price: '5,000원' }],
+  1: [
+    { name: '보리새우 백짬뽕탕', price: '25,000원' },
+    { name: '마라전골 (매운맛 2단계)', price: '28,000원' },
+    { name: '유린기', price: '22,000원' },
+    { name: '크림새우', price: '26,000원' },
+    { name: '트러플 누룽지탕', price: '25,000원' },
+    { name: '가지튀김', price: '15,000원' },
+    { name: '계란볶음밥', price: '9,000원' },
+    { name: '이과봉봉주 (시그니처)', price: '12,000원' },
+  ],
   2: [{ name: '한우웰링턴 코스', price: '65,000원' }, { name: '파리지엔 뇨끼', price: '24,000원' }, { name: '치즈 플레이트', price: '18,000원' }],
   3: [{ name: '에스프레소', price: '4,500원' }, { name: '샤케라또', price: '7,500원' }, { name: '카푸치노', price: '5,500원' }],
   4: [{ name: '에그베네딕트', price: '18,000원' }, { name: '팬케이크', price: '15,000원' }, { name: '파스타', price: '16,000원' }],
