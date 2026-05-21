@@ -1,7 +1,44 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { restaurants } from './data/restaurants'
 
 const BASE = import.meta.env.BASE_URL
+
+/* ─── GPS 위치 기반 거리/소요시간 ────────────────────────── */
+const UserLocCtx = createContext(null)
+
+function haversine(lat1, lon1, lat2, lon2) {
+  const R = 6371
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLon = (lon2 - lon1) * Math.PI / 180
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+}
+
+function getEta(item, userLoc) {
+  if (!userLoc) return item.eta
+  const km = haversine(userLoc.lat, userLoc.lng, item.lat, item.lng)
+  if (km < 2.5) {
+    const mins = Math.max(1, Math.round(km / 5 * 60))
+    return `도보 약 ${mins}분`
+  } else {
+    const mins = Math.max(1, Math.round(km / 40 * 60))
+    return `차량 약 ${mins}분`
+  }
+}
+
+function useUserLocation() {
+  const [loc, setLoc] = useState(null)
+  useEffect(() => {
+    if (!navigator.geolocation) return
+    const id = navigator.geolocation.watchPosition(
+      (pos) => setLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      () => {},
+      { enableHighAccuracy: true, maximumAge: 10000 }
+    )
+    return () => navigator.geolocation.clearWatch(id)
+  }, [])
+  return loc
+}
 
 function asset(path) {
   return `${BASE}${path.replace(/^\//, '')}`
@@ -282,6 +319,7 @@ function RecommendCard({ item, saved, onToggleSave, onSelect }) {
 
 /** 리스트형 트렌딩 아이템 */
 function TrendingItem({ item, saved, onToggleSave, onSelect }) {
+  const userLoc = useContext(UserLocCtx)
   return (
     <article className="trending-item" onClick={() => onSelect(item.id)}>
       <div className="trending-thumb">
@@ -290,7 +328,7 @@ function TrendingItem({ item, saved, onToggleSave, onSelect }) {
       <div className="trending-body">
         <strong>{item.name}</strong>
         <p className="trending-sub">{item.category} · {item.location}</p>
-        <p className="trending-meta">{item.eta}</p>
+        <p className="trending-meta">{getEta(item, userLoc)}</p>
       </div>
       <button
         className={`heart-btn sm ${saved ? 'saved' : ''}`}
@@ -305,6 +343,7 @@ function TrendingItem({ item, saved, onToggleSave, onSelect }) {
 
 /** 데스크탑 카드 그리드용 */
 function RestaurantCard({ item, saved, onToggleSave, onSelect, isSelected, onHover }) {
+  const userLoc = useContext(UserLocCtx)
   return (
     <article
       className={`rest-card${isSelected ? ' rest-card-selected' : ''}`}
@@ -332,7 +371,7 @@ function RestaurantCard({ item, saved, onToggleSave, onSelect, isSelected, onHov
           ))}
         </div>
         <div className="rest-card-foot">
-          <span className="rest-card-eta">📍 {item.eta}</span>
+          <span className="rest-card-eta">📍 {getEta(item, userLoc)}</span>
           <span className="rest-card-price">{item.price}</span>
         </div>
       </div>
@@ -341,6 +380,7 @@ function RestaurantCard({ item, saved, onToggleSave, onSelect, isSelected, onHov
 }
 
 function SituationCard({ item, reason, onSelect, onOpenMap }) {
+  const userLoc = useContext(UserLocCtx)
   return (
     <article className="situation-card">
       <button className="situation-card-main" onClick={() => onSelect(item.id)}>
@@ -354,7 +394,7 @@ function SituationCard({ item, reason, onSelect, onOpenMap }) {
           </div>
           <p>{reason}</p>
           <div className="situation-meta">
-            <span>📍 {item.eta}</span>
+            <span>📍 {getEta(item, userLoc)}</span>
             <span>⏳ {item.experience.waitTime}</span>
           </div>
         </div>
@@ -544,6 +584,7 @@ function Splash({ onEnter, onKeyword }) {
 
 /* ─── 홈 화면 ───────────────────────────────────────────── */
 function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onOpenMapItem }) {
+  const userLoc = useContext(UserLocCtx)
   const [moodFilter, setMoodFilter] = useState('전체')
   const [heroSearch, setHeroSearch]  = useState('')
   const [situation, setSituation]    = useState('혼밥')
@@ -669,7 +710,7 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
                 <div className="home-sidebar-info">
                   <strong>{selectedMapItem.name}</strong>
                   <p>{getCuisineCategory(selectedMapItem)} · {selectedMapItem.location}</p>
-                  <em>{selectedMapItem.eta}</em>
+                  <em>{getEta(selectedMapItem, userLoc)}</em>
                 </div>
                 <span className="map-chevron">›</span>
               </button>
@@ -727,6 +768,7 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
 
 /* ─── 검색 / 키워드 추천 화면 ──────────────────────────── */
 function SearchScreen({ savedIds, onToggleSave, onSelect }) {
+  const userLoc = useContext(UserLocCtx)
   const [query, setQuery] = useState('')
   const [result, setResult] = useState(null)
   const [allResults, setAllResults] = useState(null)
@@ -817,7 +859,7 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
                   ))}
                 </div>
               )}
-              <p className="item-eta">{result.item.eta}</p>
+              <p className="item-eta">{getEta(result.item, userLoc)}</p>
             </div>
           </div>
 
@@ -849,6 +891,7 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
 
 /* ─── 지도 화면 ─────────────────────────────────────────── */
 function MapScreen({ mapSelectedId, setMapSelectedId, onSelect, bp }) {
+  const userLoc = useContext(UserLocCtx)
   const [categoryFilter, setCategoryFilter] = useState('전체')
 
   const filteredItems = useMemo(() => {
@@ -893,7 +936,7 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect, bp }) {
                 <div className="map-list-info">
                   <strong>{item.name}</strong>
                   <p>{getCuisineCategory(item)} · {item.location}</p>
-                  <p className="map-list-eta">{item.eta}</p>
+                  <p className="map-list-eta">{getEta(item, userLoc)}</p>
                 </div>
                 {mapItem.id === item.id && <span className="map-list-active-dot" />}
               </button>
@@ -911,7 +954,7 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect, bp }) {
             <div className="map-selected-thumb"><PhotoThumb item={mapItem} /></div>
             <div className="map-selected-info">
               <strong>{mapItem.name}</strong>
-              <p>{mapItem.category} · {mapItem.location} · {mapItem.eta}</p>
+              <p>{mapItem.category} · {mapItem.location} · {getEta(mapItem, userLoc)}</p>
             </div>
             <span className="map-chevron">›</span>
           </div>
@@ -947,7 +990,7 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect, bp }) {
           <div className="map-bottom-info">
             <strong>{mapItem.name}</strong>
             <p>{mapItem.category} · {mapItem.location}</p>
-            <p className="item-eta">{mapItem.eta}</p>
+            <p className="item-eta">{getEta(mapItem, userLoc)}</p>
           </div>
           <span className="map-chevron">›</span>
         </div>
@@ -970,7 +1013,7 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect, bp }) {
                   <span className="map-place-thumb"><PhotoThumb item={item} /></span>
                   <span className="map-place-copy">
                     <strong>{item.name}</strong>
-                    <small>{getCuisineCategory(item)} · {item.eta}</small>
+                    <small>{getCuisineCategory(item)} · {getEta(item, userLoc)}</small>
                   </span>
                 </button>
               ))}
@@ -1096,6 +1139,7 @@ function MyScreen({ savedIds, isInstalledApp, installPrompt, onInstall, showInst
 
 /* ─── 상세 모달 ─────────────────────────────────────────── */
 function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave }) {
+  const userLoc = useContext(UserLocCtx)
   const scrollRef = useRef(null)
   const [tip, setTip]       = useState('')
   const [photoIdx, setPhotoIdx] = useState(0)
@@ -1155,7 +1199,7 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
           </div>
 
           <div className="detail-meta-grid">
-            <div className="meta-chip"><span>📍</span><span>{item.eta}</span></div>
+            <div className="meta-chip"><span>📍</span><span>{getEta(item, userLoc)}</span></div>
             <div className="meta-chip"><span>🕐</span><span>{hours}</span></div>
             <div className="meta-chip"><span>🅿️</span><span>{parking}</span></div>
             <div className="meta-chip"><span>💬</span><span>{item.experience?.noise === '낮음' ? '조용함' : item.experience?.noise === '높음' ? '활발함' : '보통'}</span></div>
@@ -1322,8 +1366,9 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
 
 /* ─── 메인 앱 ────────────────────────────────────────────── */
 export default function App() {
-  const bp    = useBreakpoint()
-  const isWeb = bp !== 'mobile'
+  const bp      = useBreakpoint()
+  const isWeb   = bp !== 'mobile'
+  const userLoc = useUserLocation()
 
   const [showSplash, setShowSplash]       = useState(() => !isWeb)
   const [activeTab, setActiveTab]         = useState('home')
@@ -1416,6 +1461,7 @@ export default function App() {
   const selectedItem = restaurants.find((r) => r.id === selectedId) ?? null
 
   return (
+    <UserLocCtx.Provider value={userLoc}>
     <div className="app-wrapper">
       <div className="app-frame">
         {showSplash && !isWeb ? (
@@ -1510,5 +1556,6 @@ export default function App() {
         )}
       </div>
     </div>
+    </UserLocCtx.Provider>
   )
 }
