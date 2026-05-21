@@ -1162,18 +1162,38 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
 
           <p className="detail-hero-text">{item.hero}</p>
 
-          {menus.length > 0 && (
+          {(item.menu?.length > 0 || menus.length > 0) && (
             <div className="detail-menu-section">
-              <h3>대표 메뉴</h3>
-              {menus.map((m) => (
-                <div key={m.name} className="detail-menu-item">
-                  <div className="menu-icon-name">
-                    <div className="menu-dot" />
-                    <span>{m.name}</span>
+              <h3>메뉴</h3>
+              {item.menu?.length > 0 ? (
+                item.menu.map((cat) => (
+                  <div key={cat.category} className="menu-category">
+                    <div className="menu-category-label">{cat.category}</div>
+                    {cat.items.map((m) => (
+                      <div key={m.name} className="detail-menu-item">
+                        <div className="menu-icon-name">
+                          <div className="menu-dot" />
+                          <div className="menu-name-wrap">
+                            <span>{m.name}{m.spicy ? ' 🌶️'.repeat(m.spicy) : ''}</span>
+                            {m.desc && <span className="menu-desc">{m.desc}</span>}
+                          </div>
+                        </div>
+                        <span className="menu-price-tag">{m.price}</span>
+                      </div>
+                    ))}
                   </div>
-                  <span className="menu-price-tag">{m.price}</span>
-                </div>
-              ))}
+                ))
+              ) : (
+                menus.map((m) => (
+                  <div key={m.name} className="detail-menu-item">
+                    <div className="menu-icon-name">
+                      <div className="menu-dot" />
+                      <span>{m.name}</span>
+                    </div>
+                    <span className="menu-price-tag">{m.price}</span>
+                  </div>
+                ))
+              )}
             </div>
           )}
 

@@ -44,6 +44,92 @@ export const restaurants = [
       '사이드 메뉴인 가지튀김과의 조합이 잘 어울림',
       '2~4인 방문 시 가장 풍성하게 즐기기 좋음',
     ],
+    menu: [
+      {
+        category: '시그니처',
+        items: [
+          { name: '보리새우 백짬뽕탕', price: '25,000원', spicy: 1, desc: '각종 해물과 보리새우를 넣고 볶는 과정에서 발생하는 육수를 최대한 끓여내 깊고 진한맛의 사천탕' },
+          { name: '마라전골', price: '28,000원', spicy: 2, desc: '각종 야채, 버섯, 두부류, 분모자, 넙적당면, 소고기와 특제소스를 넣은 마라탕과 샤브용 전골사시의 푸안만의 특별한 메뉴' },
+          { name: '유린기', price: '22,000원', desc: '닭다리살을 넓게 저며 튀겨내 푸안만의 특별소스에 샐러드와 함께 먹는 튀김요리' },
+          { name: '이과봉봉주', price: '12,000원', desc: '향이 덜 강하고 도수는 강한 이과두주와 달달한 봉봉음료를 섞은 푸안의 시그니처 하이볼' },
+          { name: '옥수수빠스 (10~11p)', price: '7,000원' },
+        ],
+      },
+      {
+        category: 'MAIN DISH',
+        items: [
+          { name: '황비홍깐풍기', price: '25,000원', spicy: 1 },
+          { name: '유산슬', price: '25,000원' },
+          { name: '양장피', price: '35,000원' },
+          { name: '크림새우', price: '26,000원' },
+          { name: '칠리새우 10p', price: '23,000원' },
+          { name: '팔보채', price: '30,000원' },
+          { name: '트러플 누룽지탕', price: '25,000원' },
+          { name: '고추잡채와 꽃빵', price: '25,000원' },
+          { name: '해물짬뽕탕', price: '25,000원', spicy: 1 },
+        ],
+      },
+      {
+        category: 'SIDE DISH',
+        items: [
+          { name: '가지튀김', price: '15,000원' },
+          { name: '미니탕수육', price: '12,000원' },
+          { name: '마파두부', price: '15,000원' },
+          { name: '군만두 6p', price: '4,000원' },
+          { name: '아이스크림', price: '6,000원' },
+        ],
+      },
+      {
+        category: 'NOODLE MAIN',
+        items: [
+          { name: '중국식우동', price: '9,000원' },
+          { name: '짬뽕', price: '10,000원', spicy: 1 },
+          { name: '해물쟁반짜장 (2인)', price: '17,000원' },
+          { name: '사천탕면', price: '10,000원', spicy: 1 },
+          { name: '짜장면', price: '8,000원' },
+        ],
+      },
+      {
+        category: 'RICE MAIN',
+        items: [
+          { name: '잡채밥', price: '10,000원' },
+          { name: '계란볶음밥', price: '9,000원' },
+          { name: '중화비빔밥', price: '10,000원' },
+          { name: '고추잡채밥', price: '10,000원' },
+          { name: 'XO소고기볶음밥', price: '10,000원' },
+          { name: '새우볶음밥', price: '10,000원' },
+        ],
+      },
+      {
+        category: 'HIGHBALL',
+        items: [
+          { name: '연태하이볼', price: '8,000원' },
+          { name: '유자하이볼', price: '8,000원' },
+        ],
+      },
+      {
+        category: 'LIQUOR',
+        items: [
+          { name: '이과두주 小', price: '5,000원' },
+          { name: '연태블루', price: '90,000원' },
+          { name: '연태구냥', price: '12,000원' },
+          { name: '공부가주 10년산', price: '180,000원' },
+          { name: '양하대곡', price: '60,000원' },
+          { name: '자약', price: '70,000원' },
+        ],
+      },
+      {
+        category: 'DRINK',
+        items: [
+          { name: '하얼빈', price: '8,000원' },
+          { name: '소주', price: '5,000원' },
+          { name: '칭따오 생맥주', price: '7,000원' },
+          { name: '맥주', price: '5,000원' },
+          { name: '토닉워터', price: '2,000원' },
+          { name: '탄산음료', price: '2,000원' },
+        ],
+      },
+    ],
     media: {
       interior: { src: '/interiors/puan-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/puan-360.jpg' },
       route: { src: '', poster: '', suggestedPath: '/videos/puan-route.mp4' },

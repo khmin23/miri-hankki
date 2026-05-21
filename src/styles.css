@@ -1937,6 +1937,40 @@ img { display: block; width: 100%; object-fit: cover; }
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--coral);
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.menu-category {
+  margin-bottom: 4px;
+}
+.menu-category-label {
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 10px 0 6px;
+  border-bottom: 1.5px solid var(--border);
+  margin-bottom: 2px;
+}
+.menu-category:first-child .menu-category-label {
+  padding-top: 0;
+}
+.menu-name-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.menu-name-wrap > span:first-child {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.menu-desc {
+  font-size: 0.75rem !important;
+  font-weight: 400 !important;
+  color: var(--text-muted) !important;
+  line-height: 1.5;
 }
 
 /* 액션 버튼 */
