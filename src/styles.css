@@ -1379,6 +1379,39 @@ img { display: block; width: 100%; object-fit: cover; }
   background: transparent !important;
 }
 
+/* 현재 위치 마커 */
+.user-loc-marker {
+  position: relative;
+  width: 32px;
+  height: 32px;
+}
+.user-loc-dot {
+  width: 14px;
+  height: 14px;
+  background: #4285F4;
+  border: 3px solid white;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 8px rgba(66,133,244,0.5);
+  z-index: 2;
+}
+.user-loc-ring {
+  width: 32px;
+  height: 32px;
+  background: rgba(66,133,244,0.18);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation: userLocPulse 2s ease-in-out infinite;
+}
+@keyframes userLocPulse {
+  0%, 100% { transform: translate(-50%,-50%) scale(0.7); opacity: 0.7; }
+  50%       { transform: translate(-50%,-50%) scale(1.4); opacity: 0.1; }
+}
+
 .custom-marker {
   width: 34px;
   height: 34px;

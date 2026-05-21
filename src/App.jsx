@@ -444,9 +444,11 @@ function ApproximateMap({ items, selectedId, onSelect }) {
 }
 
 function InteractiveMap({ items, activeId, onActive, mode = 'overview' }) {
+  const userLoc = useContext(UserLocCtx)
   const mapEl = useRef(null)
   const mapRef = useRef(null)
   const markerRefs = useRef([])
+  const userMarkerRef = useRef(null)
 
   const activeItem = useMemo(
     () => items.find((item) => item.id === activeId) ?? items[0],
@@ -475,6 +477,7 @@ function InteractiveMap({ items, activeId, onActive, mode = 'overview' }) {
     return () => {
       markerRefs.current.forEach((marker) => marker.remove())
       markerRefs.current = []
+      if (userMarkerRef.current) { userMarkerRef.current.remove(); userMarkerRef.current = null }
       map.remove()
       mapRef.current = null
     }
@@ -544,6 +547,20 @@ function InteractiveMap({ items, activeId, onActive, mode = 'overview' }) {
     }
     window.setTimeout(() => map.invalidateSize(), 60)
   }, [activeItem, mode])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !window.L) return
+    if (userMarkerRef.current) { userMarkerRef.current.remove(); userMarkerRef.current = null }
+    if (!userLoc) return
+    const icon = window.L.divIcon({
+      html: `<div class="user-loc-marker"><div class="user-loc-dot"></div><div class="user-loc-ring"></div></div>`,
+      className: '',
+      iconSize: [32, 32],
+      iconAnchor: [16, 16],
+    })
+    userMarkerRef.current = window.L.marker([userLoc.lat, userLoc.lng], { icon, zIndexOffset: 2000 }).addTo(map)
+  }, [userLoc])
 
   return (
     <div className="interactive-map">
