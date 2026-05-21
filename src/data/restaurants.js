@@ -792,15 +792,15 @@ export const restaurants = [
     address: '부산광역시 수영구 광안로48번길 5 1층',
     phone: '0507-1413-2047',
     hero: '마파두부·볶음밥·우육면으로 유명한 광안리 아시안퓨전 맛집',
-    highlight: ['마파두부', '볶음밥', '우육면'],
+    highlight: ['마파두부밥', '어향가지튀김', '우육미엔'],
     tags: ['광안리', '바오번', '점심추천', '이국적'],
     accent: 'lime',
     icon: '🥙',
-    featuredMenu: '마파두부',
+    featuredMenu: '마파두부밥',
     eta: '도보 약 8분',
     distance: 0.5,
     deliveryTag: '이국적인 점심',
-    price: '1인 20,000원',
+    price: '1인 9,000 ~ 20,000원대',
     recommend: '향신료 향 가득한 이국적인 한 끼를 찾을 때 추천',
     experience: {
       waitTime: '점심 기준 10분 이상',
@@ -819,6 +819,62 @@ export const restaurants = [
       '마파두부와 볶음밥을 함께 먹으면 향신료와 고소함의 균형이 좋음',
       '점심에도 캐주얼하게 들르기 좋은 밝은 분위기',
       '광안리 골목 동선에 있어 해변 산책 전후로 연결하기 좋음',
+    ],
+    menu: [
+      {
+        category: 'BAO',
+        items: [
+          { name: '클래식 바오 (PORK BELLY BAO)', price: '5,500원', desc: '땅콩, 고수 포함 · 肉割包' },
+          { name: '새우 바오 (SHRIMP BAO)', price: '5,500원', desc: '炸虾割包' },
+          { name: '램커리 바오 (LAMB CURRY BAO)', price: '6,000원', desc: '羊肉割包' },
+        ],
+      },
+      {
+        category: 'RICE',
+        items: [
+          { name: '루로우판 (LU ROU FAN)', price: '8,500원', desc: '卤肉饭' },
+          { name: '하이난 치킨 라이스 (HAINANESE CHICKEN RICE)', price: '16,000원', desc: '海南鸡饭 · 한정수량' },
+          { name: '볶음밥 (FRIED RICE)', price: '9,000원', desc: '炒饭 · 비건 옵션 가능' },
+          { name: '공기밥 (RICE)', price: '1,500원', desc: '饭' },
+        ],
+      },
+      {
+        category: 'HAUS SPECIALTY',
+        items: [
+          { name: '마파두부밥 (MAPO TOFU)', price: '13,000원', desc: '麻婆豆腐 · 비건 옵션 가능' },
+          { name: '마파두부 & 볶음밥 小', price: '17,500원', desc: 'MAPO TOFU & FRIED RICE · 麻婆豆腐 & 炒饭 小' },
+          { name: '어향가지튀김 小 (DEEP FRIED EGGPLANT Small)', price: '9,500원', desc: '鱼香茄子 小 · 비건 옵션 가능' },
+          { name: '어향가지튀김 中 (DEEP FRIED EGGPLANT Medium)', price: '14,000원', desc: '鱼香茄子 中 · 비건 옵션 가능' },
+          { name: '토마토달걀볶음 (STIR FRIED TOMATO & EGG)', price: '12,500원', desc: '西红柿炒鸡蛋 · 비건 옵션 가능' },
+          { name: '오이샐러드 (CUCUMBER SALAD)', price: '6,000원', desc: '拍黄瓜 · 비건 옵션 가능' },
+        ],
+      },
+      {
+        category: 'SET',
+        items: [
+          { name: '2인 세트 (SET 2人)', price: '40,000원', desc: '마파두부&볶음밥(小) + 어향가지튀김(小) + 우육미엔 or 딴딴미엔 택1' },
+        ],
+      },
+      {
+        category: 'NOODLES',
+        items: [
+          { name: '우육미엔 (BEEF NOODLE SOUP)', price: '13,000원', desc: '牛肉面' },
+          { name: '딴딴미엔 (DAN DAN NOODLE)', price: '13,000원', desc: '担担面 · 땅콩 포함 · 비건 옵션 가능' },
+        ],
+      },
+      {
+        category: 'DRINKS & COCKTAILS',
+        items: [
+          { name: '바오 라거 (BAO LAGER)', price: '7,500원', desc: '430ml' },
+          { name: '바오 IPA (BAO IPA)', price: '7,500원', desc: '355ml' },
+          { name: '블랙티 레몬에이드 (BLACK TEA LEMONADE)', price: '6,000원' },
+          { name: '바오 레몬사워 (BAO LEMON SOUR)', price: '8,000원' },
+          { name: '바오 하이볼 (BAO HIGHBALL)', price: '8,000원' },
+          { name: '대만 맥주 (TAIWAN BEER)', price: '8,000원', desc: '600ml' },
+          { name: '대만 망고맥주 (MANGO BEER)', price: '7,000원', desc: '330ml' },
+          { name: '콜라 / 제로콜라 / 사이다', price: '2,500원' },
+        ],
+      },
     ],
     media: {
       interior: { src: '/interiors/baohaus-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/baohaus-360.jpg' },
