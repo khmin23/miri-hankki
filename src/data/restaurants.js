@@ -164,15 +164,15 @@ export const restaurants = [
     address: '부산광역시 수영구 광안해변로 311 서희스타힐스 상가 1층',
     phone: '0507-1355-1254',
     hero: '와인과 함께 즐기는 양식 기반의 무드 있는 다이닝바',
-    highlight: ['한우웰링턴 코스', '파리지엔 뇨끼', '치즈 플레이트'],
+    highlight: ['훗카이도산 생관자', '한우 웰링턴', '파리지엔 뇨끼'],
     tags: ['광안리', '와인바', '양식', '데이트'],
     accent: 'night',
     icon: '🍷',
-    featuredMenu: '한우웰링턴 코스',
+    featuredMenu: '한우 웰링턴',
     eta: '도보 약 17분',
     distance: 1.2,
     deliveryTag: '데이트 무드',
-    price: '1인 30,000 ~ 60,000원대',
+    price: '1인 20,000 ~ 80,000원대',
     recommend: '무드 있는 데이트나 기념일 디너에 최적화된 공간',
     experience: {
       waitTime: '예약 필수 · 당일 대기 없음',
@@ -191,6 +191,43 @@ export const restaurants = [
       '프라이빗하고 조용한 분위기가 대화하기 좋음',
       '전문적인 와인 리스트와 메뉴의 조화가 뛰어남',
       '특별한 날을 위한 코스 요리 예약이 가능함',
+    ],
+    menu: [
+      {
+        category: '시그니처',
+        items: [
+          { name: '훗카이도산 생관자, 깻잎치미추리 (생면)', price: '27,000원' },
+          { name: '한우 웰링턴 단품', price: '100,000원', desc: '2인 이상 주문 가능 (1인 6만원)' },
+        ],
+      },
+      {
+        category: 'STARTER',
+        items: [
+          { name: '한우안심 타르타르와 감자파브 (한정)', price: '21,000원' },
+          { name: '샤워도우 브레드와 다시마 버터', price: '7,000원' },
+          { name: '알감자와 방아페스토', price: '8,000원' },
+          { name: '부라타 치즈, 하우스된장 소스', price: '10,000원' },
+          { name: '통가지구이, 지중해식 토마토 마리네이드', price: '12,000원' },
+          { name: '오리가슴살잠봉', price: '14,000원' },
+          { name: '4가지 치즈플레이트, 다양한소스', price: '18,000원' },
+        ],
+      },
+      {
+        category: 'MAIN DISH',
+        items: [
+          { name: '숯에구운 삼치 국수', price: '25,000원' },
+          { name: '파리지엔 뇨끼', price: '18,000원' },
+          { name: '페코리노 치즈 까르보나라 (생면)', price: '20,000원' },
+          { name: '돼지안심스테이크, 페루식소스, 당근퓨레', price: '29,000원' },
+        ],
+      },
+      {
+        category: 'PREMIUM',
+        items: [
+          { name: '한우비프웰링턴 half 단품', price: '50,000원' },
+          { name: '한우웰링턴 디너코스', price: '80,000원', desc: '2인 이상 주문 가능. 웰링턴 중심의 코스구성으로 준비됩니다.' },
+        ],
+      },
     ],
     media: {
       interior: { src: '/interiors/muvet-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/muvet-360.jpg' },
