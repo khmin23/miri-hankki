@@ -1207,19 +1207,22 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
 
           <div className="detail-divider" />
 
-          {item.photos?.length > 0 && (
-            <div className="detail-section">
-              <h3>음식 사진</h3>
-              <div className="detail-photo-grid">
-                {item.photos.map((p, i) => (
-                  <figure key={p.src} className="detail-photo-fig" onClick={() => setPhotoIdx(i)}>
-                    <img src={asset(p.src)} alt={p.alt} loading="lazy" />
-                    <figcaption>{p.caption}</figcaption>
-                  </figure>
-                ))}
+          {item.photos?.length > 0 && (() => {
+            const galleryPhotos = item.banner ? item.photos : item.photos.slice(1)
+            return galleryPhotos.length > 0 ? (
+              <div className="detail-section">
+                <h3>음식 사진</h3>
+                <div className="detail-photo-grid">
+                  {galleryPhotos.map((p, i) => (
+                    <figure key={p.src} className="detail-photo-fig" onClick={() => setPhotoIdx(i)}>
+                      <img src={asset(p.src)} alt={p.alt} loading="lazy" />
+                      <figcaption>{p.caption}</figcaption>
+                    </figure>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            ) : null
+          })()}
 
           {item.media?.interior?.src && (
             <div className="detail-section">
