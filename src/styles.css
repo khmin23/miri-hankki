@@ -2041,6 +2041,78 @@ img { display: block; width: 100%; object-fit: cover; }
 .my-settings-texts p { font-size: 0.72rem; color: var(--text-muted); margin: 2px 0 0; }
 .my-chevron { color: var(--text-muted); font-size: 1.1rem; }
 
+/* 토스트 */
+.my-toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(30,30,40,0.92);
+  color: white;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 999px;
+  white-space: nowrap;
+  z-index: 200;
+  pointer-events: none;
+  animation: toastIn 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* 방문 기록 삭제 버튼 */
+.my-visit-del {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  padding: 4px 6px;
+  border-radius: 6px;
+  align-self: flex-start;
+}
+.my-visit-del:hover { color: var(--coral); }
+
+/* 리뷰 수정 인라인 에디터 */
+.my-review-edit-area { margin-top: 6px; }
+.my-review-textarea {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  font-family: inherit;
+  resize: none;
+  background: white;
+  color: var(--text);
+  outline: none;
+}
+.my-review-textarea:focus { border-color: var(--sea); }
+.my-review-edit-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  justify-content: flex-end;
+}
+.my-review-save-btn {
+  padding: 5px 14px;
+  background: var(--sea);
+  color: white;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.my-review-cancel-btn {
+  padding: 5px 14px;
+  background: var(--beige-md);
+  color: var(--text-md);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .my-app-info {
   text-align: center; color: var(--text-muted);
   font-size: 0.75rem; padding: 4px 0 8px;

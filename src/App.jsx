@@ -1065,16 +1065,20 @@ function SavedScreen({ savedIds, onToggleSave, onSelect }) {
 }
 
 /* ─── 마이 화면 ─────────────────────────────────────────── */
-function MyScreen({ savedIds, onToggleSave, onSelect, isInstalledApp, installPrompt, onInstall, showInstallGuide, setShowInstallGuide }) {
+function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, isInstalledApp, installPrompt, onInstall, showInstallGuide, setShowInstallGuide }) {
   const [activeFilter, setActiveFilter] = useState('전체')
   const [rouletteItem, setRouletteItem] = useState(null)
   const [isSpinning, setIsSpinning] = useState(false)
+  const [toast, setToast] = useState('')
+  const [editingIdx, setEditingIdx] = useState(null)
+  const [editText, setEditText] = useState('')
 
-  const VISIT_RECORDS = [
+  const INIT_VISITS = [
     { restaurantId: 6, name: '바오하우스 광안점', icon: '🥟', dish: '토마토달걀볶음밥', date: '2025.05.18', revisit: true,  photo: '/restaurant-photos/baohaus-food.jpg', location: '광안리' },
     { restaurantId: 3, name: '까사부사노',       icon: '☕', dish: '아메리카노 + 크루아상',  date: '2025.05.15', revisit: true,  photo: null, location: '광안리' },
     { restaurantId: 4, name: '위킹홀리데이',     icon: '🥐', dish: '에그베네딕트 + 라떼',   date: '2025.05.10', revisit: true,  photo: null, location: '광안리' },
   ]
+  const [visitRecords, setVisitRecords] = useState(INIT_VISITS)
 
   const BADGES = [
     { icon: '🍱', label: '혼밥 입문자',    desc: '혼밥 3회 달성',  earned: true },
@@ -1092,11 +1096,12 @@ function MyScreen({ savedIds, onToggleSave, onSelect, isInstalledApp, installPro
     { label: '기타',        pct:  9, color: 'var(--text-muted)' },
   ]
 
-  const MY_REVIEWS = [
-    { name: '바오하우스',  rating: 5, text: '토마토달걀볶음밥 진짜 최고. 가성비 킹', date: '05.18' },
+  const INIT_REVIEWS = [
+    { name: '바오하우스',   rating: 5, text: '토마토달걀볶음밥 진짜 최고. 가성비 킹', date: '05.18' },
     { name: '위킹홀리데이', rating: 5, text: '오션뷰 대박. 브런치 맛있고 통창 뷰가 너무 예뻐', date: '05.10' },
-    { name: '까사부사노', rating: 4, text: '커피 향이 진하고 분위기 좋음. 혼자 오기 완벽', date: '05.15' },
+    { name: '까사부사노',   rating: 4, text: '커피 향이 진하고 분위기 좋음. 혼자 오기 완벽', date: '05.15' },
   ]
+  const [reviews, setReviews] = useState(INIT_REVIEWS)
 
   const FILTER_MAP = {
     '혼밥': ['혼밥가능'],
@@ -1112,6 +1117,39 @@ function MyScreen({ savedIds, onToggleSave, onSelect, isInstalledApp, installPro
     ? savedRestaurants
     : savedRestaurants.filter((r) => (FILTER_MAP[activeFilter] || []).some((kw) => r.tags?.includes(kw)))
 
+  function showToast(msg) {
+    setToast(msg)
+    window.setTimeout(() => setToast(''), 2000)
+  }
+
+  function deleteVisit(i) {
+    setVisitRecords((prev) => prev.filter((_, idx) => idx !== i))
+    showToast('기록을 삭제했어요')
+  }
+
+  function deleteReview(i) {
+    setReviews((prev) => prev.filter((_, idx) => idx !== i))
+    showToast('리뷰를 삭제했어요')
+  }
+
+  function startEdit(i) {
+    setEditingIdx(i)
+    setEditText(reviews[i].text)
+  }
+
+  function saveEdit(i) {
+    setReviews((prev) => prev.map((r, idx) => idx === i ? { ...r, text: editText } : r))
+    setEditingIdx(null)
+    showToast('리뷰를 수정했어요')
+  }
+
+  const SETTINGS = [
+    { icon: '🔔', label: '알림 설정',  sub: '새 맛집 알림 켜짐',   action: () => showToast('알림 설정은 준비 중이에요') },
+    { icon: '👤', label: '계정 설정',  sub: '닉네임·프로필 수정', action: () => showToast('계정 설정은 준비 중이에요') },
+    { icon: '💬', label: '문의하기',   sub: '의견을 보내주세요',  action: () => showToast('문의: contact@mirihankki.com') },
+    { icon: '🚪', label: '로그아웃',   sub: '',                   action: () => showToast('로그아웃 기능은 준비 중이에요') },
+  ]
+
   function spin() {
     if (isSpinning) return
     setIsSpinning(true)
@@ -1126,6 +1164,9 @@ function MyScreen({ savedIds, onToggleSave, onSelect, isInstalledApp, installPro
   return (
     <div className="my-screen">
 
+      {/* 토스트 알림 */}
+      {toast && <div className="my-toast">{toast}</div>}
+
       {/* ── 1. 프로필 헤로 ── */}
       <div className="my-hero">
         <div className="my-hero-content">
@@ -1137,9 +1178,9 @@ function MyScreen({ savedIds, onToggleSave, onSelect, isInstalledApp, installPro
         </div>
         <div className="my-stats-row">
           {[
-            { num: 3,              label: '이번 달 방문' },
-            { num: savedIds.length, label: '저장한 맛집' },
-            { num: MY_REVIEWS.length, label: '작성한 리뷰' },
+            { num: visitRecords.length, label: '이번 달 방문' },
+            { num: savedIds.length,     label: '저장한 맛집' },
+            { num: reviews.length,      label: '작성한 리뷰' },
           ].map((s) => (
             <div key={s.label} className="my-stat-card">
               <span className="my-stat-num">{s.num}</span>
@@ -1171,33 +1212,42 @@ function MyScreen({ savedIds, onToggleSave, onSelect, isInstalledApp, installPro
       <section className="my-section">
         <div className="my-section-hd">
           <span className="my-section-title">🍽️ 내 음식 기록</span>
-          <button className="my-more-btn">전체보기 ›</button>
+          <span className="my-section-count">{visitRecords.length}건</span>
         </div>
-        <div className="my-visits">
-          {VISIT_RECORDS.map((v, i) => (
-            <div key={i} className="my-visit-card">
-              <div className="my-visit-thumb">
-                {v.photo
-                  ? <img src={asset(v.photo)} alt={v.dish} />
-                  : <span>{v.icon}</span>
-                }
-              </div>
-              <div className="my-visit-info">
-                <div className="my-visit-top">
-                  <strong>{v.name}</strong>
-                  <span className="my-visit-date">{v.date}</span>
+        {visitRecords.length === 0 ? (
+          <div className="my-saved-empty"><span>🍽️</span><p>방문 기록이 없어요</p></div>
+        ) : (
+          <div className="my-visits">
+            {visitRecords.map((v, i) => (
+              <div key={i} className="my-visit-card" onClick={() => onSelect(v.restaurantId)} style={{ cursor: 'pointer' }}>
+                <div className="my-visit-thumb">
+                  {v.photo
+                    ? <img src={asset(v.photo)} alt={v.dish} />
+                    : <span>{v.icon}</span>
+                  }
                 </div>
-                <p className="my-visit-dish">{v.dish}</p>
-                <div className="my-visit-tags">
-                  <span className="my-tag my-tag-loc">📍 {v.location}</span>
-                  <span className={`my-tag ${v.revisit ? 'my-tag-yes' : 'my-tag-no'}`}>
-                    {v.revisit ? '✅ 재방문 예정' : '❌ 비추'}
-                  </span>
+                <div className="my-visit-info">
+                  <div className="my-visit-top">
+                    <strong>{v.name}</strong>
+                    <span className="my-visit-date">{v.date}</span>
+                  </div>
+                  <p className="my-visit-dish">{v.dish}</p>
+                  <div className="my-visit-tags">
+                    <span className="my-tag my-tag-loc">📍 {v.location}</span>
+                    <span className={`my-tag ${v.revisit ? 'my-tag-yes' : 'my-tag-no'}`}>
+                      {v.revisit ? '✅ 재방문 예정' : '❌ 비추'}
+                    </span>
+                  </div>
                 </div>
+                <button
+                  className="my-visit-del"
+                  onClick={(e) => { e.stopPropagation(); deleteVisit(i) }}
+                  aria-label="기록 삭제"
+                >✕</button>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* ── 3. 저장한 맛집 ── */}
@@ -1231,7 +1281,7 @@ function MyScreen({ savedIds, onToggleSave, onSelect, isInstalledApp, installPro
                 </div>
                 <button
                   className="my-saved-heart"
-                  onClick={(e) => { e.stopPropagation(); onToggleSave(r.id) }}
+                  onClick={(e) => { e.stopPropagation(); onToggleSave(r.id); showToast('저장을 해제했어요') }}
                   aria-label="저장 해제"
                 >❤️</button>
               </div>
@@ -1276,7 +1326,11 @@ function MyScreen({ savedIds, onToggleSave, onSelect, isInstalledApp, installPro
         </div>
         <div className="my-badges-grid">
           {BADGES.map((b, i) => (
-            <div key={i} className={`my-badge ${b.earned ? 'earned' : 'locked'}`}>
+            <div
+              key={i}
+              className={`my-badge ${b.earned ? 'earned' : 'locked'}`}
+              onClick={() => showToast(b.earned ? `🏅 "${b.label}" 배지 획득!` : `🔒 ${b.desc} 달성하면 열려요`)}
+            >
               <span className="my-badge-icon">{b.icon}</span>
               <span className="my-badge-label">{b.label}</span>
               <span className="my-badge-desc">{b.desc}</span>
@@ -1301,6 +1355,15 @@ function MyScreen({ savedIds, onToggleSave, onSelect, isInstalledApp, installPro
         <button className={`roulette-btn ${isSpinning ? 'spinning' : ''}`} onClick={spin} disabled={isSpinning}>
           {isSpinning ? '고르는 중...' : '🎲 룰렛 돌리기'}
         </button>
+        {rouletteItem && !isSpinning && (
+          <button
+            className="my-more-btn"
+            style={{ marginTop: 10, display: 'block', textAlign: 'center', width: '100%' }}
+            onClick={() => onSelect(rouletteItem.id)}
+          >
+            {rouletteItem.name} 상세보기 →
+          </button>
+        )}
       </div>
 
       {/* ── 6. 내 지도 기록 ── */}
@@ -1309,8 +1372,8 @@ function MyScreen({ savedIds, onToggleSave, onSelect, isInstalledApp, installPro
           <span className="my-section-title">🗺️ 내 음식 지도</span>
         </div>
         <div className="my-map-pins">
-          {VISIT_RECORDS.map((v, i) => (
-            <div key={i} className="my-map-pin-row">
+          {visitRecords.map((v, i) => (
+            <div key={i} className="my-map-pin-row" onClick={() => onSelect(v.restaurantId)} style={{ cursor: 'pointer' }}>
               <span className="my-map-pin-icon">{v.icon}</span>
               <div className="my-map-pin-info">
                 <strong>{v.name}</strong>
@@ -1320,31 +1383,50 @@ function MyScreen({ savedIds, onToggleSave, onSelect, isInstalledApp, installPro
             </div>
           ))}
         </div>
-        <button className="my-map-cta">🗺️ 내 음식 지도 보기</button>
+        <button className="my-map-cta" onClick={onGoMap}>🗺️ 내 음식 지도 보기</button>
       </section>
 
       {/* ── 7. 리뷰 & 메모 ── */}
       <section className="my-section">
         <div className="my-section-hd">
           <span className="my-section-title">✏️ 내 리뷰 &amp; 메모</span>
-          <button className="my-more-btn">전체보기 ›</button>
+          <span className="my-section-count">{reviews.length}건</span>
         </div>
-        <div className="my-reviews">
-          {MY_REVIEWS.map((rev, i) => (
-            <div key={i} className="my-review-item">
-              <div className="my-review-top">
-                <strong>{rev.name}</strong>
-                <div className="my-review-actions">
-                  <span className="my-review-date">{rev.date}</span>
-                  <button className="my-review-edit">수정</button>
-                  <button className="my-review-del">삭제</button>
+        {reviews.length === 0 ? (
+          <div className="my-saved-empty"><span>✏️</span><p>작성한 리뷰가 없어요</p></div>
+        ) : (
+          <div className="my-reviews">
+            {reviews.map((rev, i) => (
+              <div key={i} className="my-review-item">
+                <div className="my-review-top">
+                  <strong>{rev.name}</strong>
+                  <div className="my-review-actions">
+                    <span className="my-review-date">{rev.date}</span>
+                    <button className="my-review-edit" onClick={() => startEdit(i)}>수정</button>
+                    <button className="my-review-del" onClick={() => deleteReview(i)}>삭제</button>
+                  </div>
                 </div>
+                <div className="my-review-stars">{'⭐'.repeat(rev.rating)}</div>
+                {editingIdx === i ? (
+                  <div className="my-review-edit-area">
+                    <textarea
+                      className="my-review-textarea"
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      rows={3}
+                    />
+                    <div className="my-review-edit-btns">
+                      <button className="my-review-save-btn" onClick={() => saveEdit(i)}>저장</button>
+                      <button className="my-review-cancel-btn" onClick={() => setEditingIdx(null)}>취소</button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="my-review-text">{rev.text}</p>
+                )}
               </div>
-              <div className="my-review-stars">{'⭐'.repeat(rev.rating)}</div>
-              <p className="my-review-text">{rev.text}</p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* ── 8. 설정 ── */}
@@ -1353,13 +1435,8 @@ function MyScreen({ savedIds, onToggleSave, onSelect, isInstalledApp, installPro
           <span className="my-section-title">⚙️ 설정</span>
         </div>
         <div className="my-settings-list">
-          {[
-            { icon: '🔔', label: '알림 설정',  sub: '새 맛집 알림 켜짐' },
-            { icon: '👤', label: '계정 설정',  sub: '닉네임·프로필 수정' },
-            { icon: '💬', label: '문의하기',   sub: '의견을 보내주세요' },
-            { icon: '🚪', label: '로그아웃',   sub: '' },
-          ].map((item, i) => (
-            <div key={i} className="my-settings-item">
+          {SETTINGS.map((item, i) => (
+            <div key={i} className="my-settings-item" onClick={item.action}>
               <span className="my-settings-icon">{item.icon}</span>
               <div className="my-settings-texts">
                 <strong>{item.label}</strong>
@@ -1760,6 +1837,7 @@ export default function App() {
                   savedIds={savedIds}
                   onToggleSave={toggleSave}
                   onSelect={setSelectedId}
+                  onGoMap={() => setActiveTab('map')}
                   isInstalledApp={isInstalledApp}
                   installPrompt={installPrompt}
                   onInstall={handleInstallApp}
