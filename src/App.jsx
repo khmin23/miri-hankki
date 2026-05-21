@@ -1504,13 +1504,13 @@ export default function App() {
                   onOpenMapItem={(id) => { setMapSelectedId(id); setActiveTab('map') }}
                 />
               )}
-              {activeTab === 'search' && (
+              <div style={{ display: activeTab === 'search' ? 'block' : 'none' }}>
                 <SearchScreen
                   savedIds={savedIds}
                   onToggleSave={toggleSave}
                   onSelect={setSelectedId}
                 />
-              )}
+              </div>
               {activeTab === 'map' && (
                 <MapScreen
                   mapSelectedId={mapSelectedId}
