@@ -791,10 +791,6 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
   const [allResults, setAllResults] = useState(null)
   const inputRef = useRef(null)
 
-  useEffect(() => {
-    inputRef.current?.focus()
-  }, [])
-
   function handleSearch() {
     if (!query.trim()) return
     const ranked = restaurants
