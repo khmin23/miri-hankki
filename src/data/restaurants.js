@@ -886,6 +886,11 @@ export const restaurants = [
         alt: '바오하우스 마파두부, 볶음밥, 튀김 메뉴 한상',
         caption: '마파두부, 볶음밥, 튀김 메뉴를 함께 담은 실제 방문 음식 사진',
       },
+      {
+        src: '/restaurant-photos/baohaus-menu.jpg',
+        alt: '바오하우스 대표메뉴 소개',
+        caption: '토마토달걀볶음, 우육미엔&딴딴미엔, 마파두부, 계란볶음밥 대표메뉴',
+      },
     ],
     links: {
       naver: 'https://map.naver.com/p/search/%EB%B0%94%EC%98%A4%ED%95%98%EC%9A%B0%EC%8A%A4%20%EA%B4%91%EC%95%88%EC%A0%90',
