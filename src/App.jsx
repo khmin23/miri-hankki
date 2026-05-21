@@ -247,8 +247,9 @@ function SideNav({ bp, activeTab, onTabChange, savedCount }) {
 /* ─── 서브 컴포넌트 ──────────────────────────────────────── */
 
 function PhotoThumb({ item, className = '' }) {
-  if (item.photos?.[0]) {
-    return <img src={asset(item.photos[0].src)} alt={item.name} className={className} />
+  const src = item.banner ?? item.photos?.[0]?.src
+  if (src) {
+    return <img src={asset(src)} alt={item.name} className={className} />
   }
   return (
     <div className={`emoji-thumb ${accentClassNames[item.accent]} ${className}`}>
