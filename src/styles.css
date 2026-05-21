@@ -1634,36 +1634,108 @@ img { display: block; width: 100%; object-fit: cover; }
 /* ═══════════════════════════════════════════════════════════
    마이 화면
 ═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   MyScreen – 마이페이지
+═══════════════════════════════════════════════════════════ */
 .my-screen {
-  padding: 20px;
+  padding: 0 0 40px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
-.my-profile-card {
+/* ── 프로필 히어로 ── */
+.my-hero {
+  background: linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 55%, #9c3220 100%);
+  padding: 28px 20px 22px;
+  position: relative;
+  overflow: hidden;
+}
+.my-hero::before {
+  content: '';
+  position: absolute;
+  top: -50px; right: -50px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  pointer-events: none;
+}
+.my-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -30px; left: -30px;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  pointer-events: none;
+}
+.my-hero-content {
   display: flex;
   align-items: center;
-  gap: 14px;
-  background: white;
-  border-radius: var(--radius-lg);
-  padding: 18px 20px;
-  box-shadow: var(--shadow-sm);
+  gap: 16px;
+  margin-bottom: 22px;
+  position: relative;
+  z-index: 1;
 }
-.my-avatar {
-  width: 52px;
-  height: 52px;
-  background: var(--beige-md);
+.my-avatar-lg {
+  width: 70px;
+  height: 70px;
+  background: rgba(255,255,255,0.2);
   border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.55);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.8rem;
+  font-size: 2.2rem;
   flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
 }
-.my-profile-card strong { font-size: 1rem; font-weight: 800; display: block; }
-.my-profile-card p { font-size: 0.8rem; color: var(--text-muted); margin: 3px 0 0; }
+.my-hero-name {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: white;
+  display: block;
+  letter-spacing: -0.02em;
+}
+.my-hero-bio {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.8);
+  margin-top: 5px;
+  line-height: 1.45;
+}
 
+/* 통계 3열 */
+.my-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+.my-stat-card {
+  background: rgba(255,255,255,0.17);
+  border-radius: 14px;
+  padding: 12px 6px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.22);
+}
+.my-stat-num {
+  display: block;
+  font-size: 1.55rem;
+  font-weight: 900;
+  color: white;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.my-stat-label {
+  display: block;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.75);
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+/* 앱 설치 배너 */
 .my-install-card {
   display: flex;
   align-items: center;
@@ -1672,6 +1744,7 @@ img { display: block; width: 100%; object-fit: cover; }
   border-radius: var(--radius-lg);
   padding: 16px 18px;
   border: 1px solid rgba(74,144,196,0.2);
+  margin: 0 12px;
 }
 .my-install-card strong { font-size: 0.9rem; font-weight: 800; display: block; }
 .my-install-card p { font-size: 0.78rem; color: var(--text-md); margin: 3px 0 0; }
@@ -1684,48 +1757,217 @@ img { display: block; width: 100%; object-fit: cover; }
   font-weight: 700;
   white-space: nowrap;
 }
-
 .install-guide-box {
   background: white;
   border-radius: var(--radius-md);
   padding: 14px 16px;
   position: relative;
   box-shadow: var(--shadow-sm);
+  margin: 0 12px;
 }
 .install-guide-box p { font-size: 0.85rem; margin: 4px 0; }
 .close-x {
   position: absolute;
-  top: 10px;
-  right: 12px;
+  top: 10px; right: 12px;
   color: var(--text-muted);
   font-size: 0.9rem;
 }
 
-.my-section-label {
-  font-size: 0.75rem;
-  font-weight: 700;
+/* 공통 섹션 카드 */
+.my-section {
+  background: white;
+  margin: 0 12px;
+  border-radius: var(--radius-lg);
+  padding: 18px 16px;
+  box-shadow: var(--shadow-sm);
+}
+.my-section-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.my-section-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text);
+}
+.my-section-count {
+  font-size: 0.78rem;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin: 0 0 10px;
+  font-weight: 700;
+}
+.my-more-btn {
+  font-size: 0.78rem;
+  color: var(--sea);
+  font-weight: 700;
 }
 
+/* ── 음식 기록 ── */
+.my-visits { display: flex; flex-direction: column; gap: 10px; }
+.my-visit-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: var(--beige);
+  border: 1px solid var(--border);
+}
+.my-visit-thumb {
+  width: 58px; height: 58px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--beige-md);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.9rem;
+}
+.my-visit-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.my-visit-info { flex: 1; min-width: 0; }
+.my-visit-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+.my-visit-top strong { font-size: 0.88rem; font-weight: 800; }
+.my-visit-date { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+.my-visit-dish { font-size: 0.78rem; color: var(--text-md); margin: 0 0 6px; }
+.my-visit-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+.my-tag {
+  font-size: 0.68rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 999px;
+}
+.my-tag-loc  { background: var(--beige-md); color: var(--text-md); }
+.my-tag-yes  { background: #edfff3; color: #2F7D46; }
+.my-tag-no   { background: #fff0eb; color: var(--coral-dark); }
+
+/* ── 필터 칩 ── */
+.my-filter-chips {
+  display: flex; gap: 6px;
+  overflow-x: auto; padding-bottom: 10px;
+  scrollbar-width: none; margin-bottom: 4px;
+}
+.my-filter-chips::-webkit-scrollbar { display: none; }
+.my-chip {
+  white-space: nowrap;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.78rem; font-weight: 700;
+  background: var(--beige-md); color: var(--text-md);
+  border: 1.5px solid transparent;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.my-chip.active {
+  background: var(--coral-light); color: var(--coral);
+  border-color: var(--coral);
+}
+
+/* ── 저장 맛집 ── */
+.my-saved-list { display: flex; flex-direction: column; gap: 8px; }
+.my-saved-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px; border-radius: var(--radius-md);
+  border: 1px solid var(--border); cursor: pointer;
+  transition: background 0.15s;
+}
+.my-saved-card:active { background: var(--beige); }
+.my-saved-thumb-wrap {
+  width: 54px; height: 54px;
+  border-radius: 12px; overflow: hidden;
+  background: var(--beige-md); flex-shrink: 0;
+}
+.my-saved-thumb {
+  width: 100%; height: 100%; object-fit: cover;
+  display: block;
+}
+.my-saved-thumb-wrap .emoji-thumb {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem;
+}
+.my-saved-info { flex: 1; min-width: 0; }
+.my-saved-info strong {
+  display: block; font-size: 0.88rem; font-weight: 800;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.my-saved-loc { font-size: 0.72rem; color: var(--text-muted); margin: 2px 0 0; }
+.my-saved-price { font-size: 0.72rem; color: var(--coral); font-weight: 700; margin: 2px 0 0; }
+.my-saved-heart { font-size: 1.1rem; flex-shrink: 0; opacity: 0.85; }
+.my-saved-empty { text-align: center; padding: 24px 0; color: var(--text-muted); }
+.my-saved-empty span { font-size: 2rem; display: block; margin-bottom: 8px; }
+.my-saved-empty p { font-size: 0.85rem; }
+
+/* ── 취향 분석 ── */
+.my-taste-bars { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }
+.my-taste-row { display: flex; align-items: center; gap: 8px; }
+.my-taste-label { font-size: 0.76rem; color: var(--text-md); font-weight: 600; width: 76px; flex-shrink: 0; }
+.my-taste-bar {
+  flex: 1; height: 8px;
+  background: var(--beige-md); border-radius: 999px; overflow: hidden;
+}
+.my-taste-fill { height: 100%; border-radius: 999px; }
+.my-taste-pct { font-size: 0.72rem; font-weight: 800; color: var(--text-md); width: 30px; text-align: right; flex-shrink: 0; }
+.my-taste-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.my-taste-chip {
+  font-size: 0.72rem; font-weight: 700;
+  padding: 5px 11px; border-radius: 999px;
+  background: var(--beige-md); color: var(--text-md);
+}
+
+/* ── 배지 ── */
+.my-badges-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.my-badge {
+  display: flex; flex-direction: column;
+  align-items: center; text-align: center;
+  gap: 4px; padding: 14px 6px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #fff8f3, #fff0eb);
+  border: 1.5px solid rgba(232,101,74,0.18);
+  transition: transform 0.15s;
+}
+.my-badge.earned { cursor: default; }
+.my-badge.locked {
+  background: var(--beige-md);
+  border-color: var(--border);
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+.my-badge-icon { font-size: 1.9rem; line-height: 1; }
+.my-badge-label {
+  font-size: 0.68rem; font-weight: 800;
+  color: var(--text); line-height: 1.2;
+}
+.my-badge-desc { font-size: 0.6rem; color: var(--text-muted); }
+
+/* 룰렛 카드 */
+.my-section-label {
+  font-size: 0.75rem; font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin: 0 0 10px;
+}
 .my-roulette-card {
   background: white;
   border-radius: var(--radius-lg);
   padding: 20px;
   text-align: center;
   box-shadow: var(--shadow-sm);
+  margin: 0 12px;
 }
-
 .roulette-display {
   min-height: 80px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin: 12px 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 6px; margin: 12px 0;
 }
 .roulette-display.spinning { animation: spin-anim 0.18s linear infinite; }
 @keyframes spin-anim {
@@ -1735,46 +1977,95 @@ img { display: block; width: 100%; object-fit: cover; }
 }
 .roulette-icon { font-size: 2.8rem; line-height: 1; }
 .roulette-display strong { font-size: 1.1rem; font-weight: 800; }
-
 .roulette-btn {
-  width: 100%;
-  padding: 13px;
-  background: var(--coral);
-  color: white;
+  width: 100%; padding: 13px;
+  background: var(--coral); color: white;
   border-radius: var(--radius-md);
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-size: 0.95rem; font-weight: 700;
 }
 .roulette-btn.spinning { background: var(--text-muted); }
 
-.my-list-section {
-  background: white;
-  border-radius: var(--radius-lg);
-  padding: 18px 20px;
-  box-shadow: var(--shadow-sm);
+/* ── 지도 기록 ── */
+.my-map-pins { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.my-map-pin-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px;
+  background: var(--beige); border-radius: var(--radius-md);
+  position: relative;
 }
-.my-list-items { display: flex; flex-direction: column; }
-.my-list-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
+.my-map-pin-icon { font-size: 1.4rem; flex-shrink: 0; }
+.my-map-pin-info { flex: 1; min-width: 0; }
+.my-map-pin-info strong { font-size: 0.85rem; font-weight: 800; display: block; }
+.my-map-pin-info p { font-size: 0.7rem; color: var(--text-muted); margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.my-map-pin-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--coral); flex-shrink: 0;
+}
+.my-map-cta {
+  width: 100%; padding: 13px;
+  background: linear-gradient(90deg, var(--coral), var(--coral-dark));
+  color: white; border-radius: var(--radius-md);
+  font-size: 0.92rem; font-weight: 700;
+}
+
+/* ── 리뷰 & 메모 ── */
+.my-reviews { display: flex; flex-direction: column; gap: 10px; }
+.my-review-item {
+  padding: 12px; background: var(--beige);
+  border-radius: var(--radius-md); border: 1px solid var(--border);
+}
+.my-review-top {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 4px;
+}
+.my-review-top strong { font-size: 0.88rem; font-weight: 800; }
+.my-review-actions { display: flex; align-items: center; gap: 6px; }
+.my-review-date { font-size: 0.7rem; color: var(--text-muted); }
+.my-review-edit { font-size: 0.7rem; color: var(--sea); font-weight: 700; }
+.my-review-del  { font-size: 0.7rem; color: var(--coral); font-weight: 700; }
+.my-review-stars { font-size: 0.82rem; margin-bottom: 4px; }
+.my-review-text { font-size: 0.82rem; color: var(--text-md); line-height: 1.5; }
+
+/* ── 설정 ── */
+.my-settings-section { padding: 16px; }
+.my-settings-list { display: flex; flex-direction: column; }
+.my-settings-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
   cursor: pointer;
 }
-.my-list-item:last-child { border-bottom: none; padding-bottom: 0; }
-.my-list-item span:first-child { font-size: 1.2rem; }
-.my-list-item strong { flex: 1; font-size: 0.9rem; }
-.my-list-count { font-size: 0.82rem; color: var(--text-muted); font-weight: 600; }
+.my-settings-item:last-child { border-bottom: none; padding-bottom: 0; }
+.my-settings-icon { font-size: 1.2rem; }
+.my-settings-texts { flex: 1; }
+.my-settings-texts strong { font-size: 0.88rem; font-weight: 800; display: block; }
+.my-settings-texts p { font-size: 0.72rem; color: var(--text-muted); margin: 2px 0 0; }
 .my-chevron { color: var(--text-muted); font-size: 1.1rem; }
 
 .my-app-info {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  padding: 4px 0 8px;
+  text-align: center; color: var(--text-muted);
+  font-size: 0.75rem; padding: 4px 0 8px;
 }
 .my-app-info p { margin: 2px 0; }
+
+/* 웹/태블릿 반응형 */
+@media (min-width: 720px) {
+  .my-hero { padding: 36px 32px 28px; }
+  .my-hero-content { gap: 22px; }
+  .my-avatar-lg { width: 84px; height: 84px; font-size: 2.6rem; }
+  .my-hero-name { font-size: 1.5rem; }
+  .my-hero-bio { font-size: 0.85rem; }
+  .my-stat-num { font-size: 1.8rem; }
+  .my-stat-label { font-size: 0.72rem; }
+
+  .my-section, .my-install-card, .my-roulette-card { margin: 0 20px; }
+  .my-section { padding: 22px 22px; }
+
+  .my-visits { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .my-badges-grid { grid-template-columns: repeat(6, 1fr); }
+  .my-saved-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .my-taste-chips { gap: 8px; }
+  .my-map-pins { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+}
 
 /* ═══════════════════════════════════════════════════════════
    상세 모달

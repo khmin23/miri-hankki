@@ -1065,9 +1065,52 @@ function SavedScreen({ savedIds, onToggleSave, onSelect }) {
 }
 
 /* ─── 마이 화면 ─────────────────────────────────────────── */
-function MyScreen({ savedIds, isInstalledApp, installPrompt, onInstall, showInstallGuide, setShowInstallGuide }) {
+function MyScreen({ savedIds, onToggleSave, onSelect, isInstalledApp, installPrompt, onInstall, showInstallGuide, setShowInstallGuide }) {
+  const [activeFilter, setActiveFilter] = useState('전체')
   const [rouletteItem, setRouletteItem] = useState(null)
   const [isSpinning, setIsSpinning] = useState(false)
+
+  const VISIT_RECORDS = [
+    { restaurantId: 6, name: '바오하우스 광안점', icon: '🥟', dish: '토마토달걀볶음밥', date: '2025.05.18', revisit: true,  photo: '/restaurant-photos/baohaus-food.jpg', location: '광안리' },
+    { restaurantId: 3, name: '까사부사노',       icon: '☕', dish: '아메리카노 + 크루아상',  date: '2025.05.15', revisit: true,  photo: null, location: '광안리' },
+    { restaurantId: 4, name: '위킹홀리데이',     icon: '🥐', dish: '에그베네딕트 + 라떼',   date: '2025.05.10', revisit: true,  photo: null, location: '광안리' },
+  ]
+
+  const BADGES = [
+    { icon: '🍱', label: '혼밥 입문자',    desc: '혼밥 3회 달성',  earned: true },
+    { icon: '☕', label: '카페 헌터',      desc: '카페 5곳 방문',  earned: true },
+    { icon: '🌙', label: '야식러',         desc: '밤 방문 3회',    earned: true },
+    { icon: '🌶️', label: '매운맛 챌린저', desc: '매운 음식 5회',  earned: false },
+    { icon: '🍜', label: '국밥 탐험가',   desc: '국밥류 5회',     earned: false },
+    { icon: '💝', label: '단골 마스터',    desc: '같은 가게 3회', earned: false },
+  ]
+
+  const TASTE_CATS = [
+    { label: '아시안·퓨전', pct: 42, color: 'var(--coral)' },
+    { label: '카페·브런치', pct: 31, color: 'var(--sea)' },
+    { label: '한식',        pct: 18, color: '#5db75d' },
+    { label: '기타',        pct:  9, color: 'var(--text-muted)' },
+  ]
+
+  const MY_REVIEWS = [
+    { name: '바오하우스',  rating: 5, text: '토마토달걀볶음밥 진짜 최고. 가성비 킹', date: '05.18' },
+    { name: '위킹홀리데이', rating: 5, text: '오션뷰 대박. 브런치 맛있고 통창 뷰가 너무 예뻐', date: '05.10' },
+    { name: '까사부사노', rating: 4, text: '커피 향이 진하고 분위기 좋음. 혼자 오기 완벽', date: '05.15' },
+  ]
+
+  const FILTER_MAP = {
+    '혼밥': ['혼밥가능'],
+    '카페': ['카페', '에스프레소바'],
+    '야식': ['야식', '저녁추천'],
+    '데이트': ['데이트'],
+    '재방문': [],
+  }
+  const FILTER_TAGS = ['전체', '혼밥', '카페', '야식', '데이트', '재방문']
+
+  const savedRestaurants = restaurants.filter((r) => savedIds.includes(r.id))
+  const filteredSaved = activeFilter === '전체' || activeFilter === '재방문'
+    ? savedRestaurants
+    : savedRestaurants.filter((r) => (FILTER_MAP[activeFilter] || []).some((kw) => r.tags?.includes(kw)))
 
   function spin() {
     if (isSpinning) return
@@ -1082,14 +1125,31 @@ function MyScreen({ savedIds, isInstalledApp, installPrompt, onInstall, showInst
 
   return (
     <div className="my-screen">
-      <div className="my-profile-card">
-        <div className="my-avatar">🧑</div>
-        <div>
-          <strong>부산 미리한끼 유저</strong>
-          <p>저장 {savedIds.length}곳 · 방문 예정 {savedIds.length}곳</p>
+
+      {/* ── 1. 프로필 헤로 ── */}
+      <div className="my-hero">
+        <div className="my-hero-content">
+          <div className="my-avatar-lg">🌊</div>
+          <div className="my-hero-info">
+            <strong className="my-hero-name">광안 미식가</strong>
+            <p className="my-hero-bio">혼밥도 맛있게, 부산의 숨은 맛집을 찾아서 🗺️</p>
+          </div>
+        </div>
+        <div className="my-stats-row">
+          {[
+            { num: 3,              label: '이번 달 방문' },
+            { num: savedIds.length, label: '저장한 맛집' },
+            { num: MY_REVIEWS.length, label: '작성한 리뷰' },
+          ].map((s) => (
+            <div key={s.label} className="my-stat-card">
+              <span className="my-stat-num">{s.num}</span>
+              <span className="my-stat-label">{s.label}</span>
+            </div>
+          ))}
         </div>
       </div>
 
+      {/* 앱 설치 배너 */}
       {!isInstalledApp && (
         <div className="my-install-card">
           <div>
@@ -1107,6 +1167,125 @@ function MyScreen({ savedIds, isInstalledApp, installPrompt, onInstall, showInst
         </div>
       )}
 
+      {/* ── 2. 내 음식 기록 ── */}
+      <section className="my-section">
+        <div className="my-section-hd">
+          <span className="my-section-title">🍽️ 내 음식 기록</span>
+          <button className="my-more-btn">전체보기 ›</button>
+        </div>
+        <div className="my-visits">
+          {VISIT_RECORDS.map((v, i) => (
+            <div key={i} className="my-visit-card">
+              <div className="my-visit-thumb">
+                {v.photo
+                  ? <img src={asset(v.photo)} alt={v.dish} />
+                  : <span>{v.icon}</span>
+                }
+              </div>
+              <div className="my-visit-info">
+                <div className="my-visit-top">
+                  <strong>{v.name}</strong>
+                  <span className="my-visit-date">{v.date}</span>
+                </div>
+                <p className="my-visit-dish">{v.dish}</p>
+                <div className="my-visit-tags">
+                  <span className="my-tag my-tag-loc">📍 {v.location}</span>
+                  <span className={`my-tag ${v.revisit ? 'my-tag-yes' : 'my-tag-no'}`}>
+                    {v.revisit ? '✅ 재방문 예정' : '❌ 비추'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── 3. 저장한 맛집 ── */}
+      <section className="my-section">
+        <div className="my-section-hd">
+          <span className="my-section-title">🔖 저장한 맛집</span>
+          <span className="my-section-count">{savedIds.length}곳</span>
+        </div>
+        <div className="my-filter-chips">
+          {FILTER_TAGS.map((tag) => (
+            <button
+              key={tag}
+              className={`my-chip ${activeFilter === tag ? 'active' : ''}`}
+              onClick={() => setActiveFilter(tag)}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+        {filteredSaved.length > 0 ? (
+          <div className="my-saved-list">
+            {filteredSaved.map((r) => (
+              <div key={r.id} className="my-saved-card" onClick={() => onSelect(r.id)}>
+                <div className="my-saved-thumb-wrap">
+                  <PhotoThumb item={r} className="my-saved-thumb" />
+                </div>
+                <div className="my-saved-info">
+                  <strong>{r.name}</strong>
+                  <p className="my-saved-loc">📍 {r.location}</p>
+                  <p className="my-saved-price">{r.price}</p>
+                </div>
+                <button
+                  className="my-saved-heart"
+                  onClick={(e) => { e.stopPropagation(); onToggleSave(r.id) }}
+                  aria-label="저장 해제"
+                >❤️</button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="my-saved-empty">
+            <span>🔖</span>
+            <p>{activeFilter === '전체' ? '저장한 맛집이 없어요' : `'${activeFilter}' 맛집이 없어요`}</p>
+          </div>
+        )}
+      </section>
+
+      {/* ── 4. 취향 분석 ── */}
+      <section className="my-section">
+        <div className="my-section-hd">
+          <span className="my-section-title">📊 내 취향 분석</span>
+        </div>
+        <div className="my-taste-bars">
+          {TASTE_CATS.map((c) => (
+            <div key={c.label} className="my-taste-row">
+              <span className="my-taste-label">{c.label}</span>
+              <div className="my-taste-bar">
+                <div className="my-taste-fill" style={{ width: `${c.pct}%`, background: c.color }} />
+              </div>
+              <span className="my-taste-pct">{c.pct}%</span>
+            </div>
+          ))}
+        </div>
+        <div className="my-taste-chips">
+          {['🍱 혼밥 비율 68%', '🌙 야식 비율 24%', '💰 선호 가격대 1~2만원', '📍 단골 지역 광안리'].map((c) => (
+            <span key={c} className="my-taste-chip">{c}</span>
+          ))}
+        </div>
+      </section>
+
+      {/* ── 5. 배지 ── */}
+      <section className="my-section">
+        <div className="my-section-hd">
+          <span className="my-section-title">🏅 내 배지</span>
+          <span className="my-section-count">{BADGES.filter((b) => b.earned).length}/{BADGES.length} 획득</span>
+        </div>
+        <div className="my-badges-grid">
+          {BADGES.map((b, i) => (
+            <div key={i} className={`my-badge ${b.earned ? 'earned' : 'locked'}`}>
+              <span className="my-badge-icon">{b.icon}</span>
+              <span className="my-badge-label">{b.label}</span>
+              <span className="my-badge-desc">{b.desc}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── 룰렛 ── */}
       <div className="my-roulette-card">
         <p className="my-section-label">오늘 뭐 먹지?</p>
         <div className={`roulette-display ${isSpinning ? 'spinning' : ''}`}>
@@ -1124,23 +1303,73 @@ function MyScreen({ savedIds, isInstalledApp, installPrompt, onInstall, showInst
         </button>
       </div>
 
-      <div className="my-list-section">
-        <p className="my-section-label">내 리스트</p>
-        <div className="my-list-items">
+      {/* ── 6. 내 지도 기록 ── */}
+      <section className="my-section">
+        <div className="my-section-hd">
+          <span className="my-section-title">🗺️ 내 음식 지도</span>
+        </div>
+        <div className="my-map-pins">
+          {VISIT_RECORDS.map((v, i) => (
+            <div key={i} className="my-map-pin-row">
+              <span className="my-map-pin-icon">{v.icon}</span>
+              <div className="my-map-pin-info">
+                <strong>{v.name}</strong>
+                <p>{v.dish} · {v.date}</p>
+              </div>
+              <span className="my-map-pin-dot" />
+            </div>
+          ))}
+        </div>
+        <button className="my-map-cta">🗺️ 내 음식 지도 보기</button>
+      </section>
+
+      {/* ── 7. 리뷰 & 메모 ── */}
+      <section className="my-section">
+        <div className="my-section-hd">
+          <span className="my-section-title">✏️ 내 리뷰 &amp; 메모</span>
+          <button className="my-more-btn">전체보기 ›</button>
+        </div>
+        <div className="my-reviews">
+          {MY_REVIEWS.map((rev, i) => (
+            <div key={i} className="my-review-item">
+              <div className="my-review-top">
+                <strong>{rev.name}</strong>
+                <div className="my-review-actions">
+                  <span className="my-review-date">{rev.date}</span>
+                  <button className="my-review-edit">수정</button>
+                  <button className="my-review-del">삭제</button>
+                </div>
+              </div>
+              <div className="my-review-stars">{'⭐'.repeat(rev.rating)}</div>
+              <p className="my-review-text">{rev.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── 8. 설정 ── */}
+      <section className="my-section my-settings-section">
+        <div className="my-section-hd">
+          <span className="my-section-title">⚙️ 설정</span>
+        </div>
+        <div className="my-settings-list">
           {[
-            { icon: '🔖', label: '저장한 맛집', count: savedIds.length },
-            { icon: '📍', label: '광안리', count: restaurants.filter((r) => r.location === '광안리').length },
-            { icon: '🍽️', label: '전체 등록 맛집', count: restaurants.length },
-          ].map((item) => (
-            <div key={item.label} className="my-list-item">
-              <span>{item.icon}</span>
-              <strong>{item.label}</strong>
-              <span className="my-list-count">{item.count}</span>
+            { icon: '🔔', label: '알림 설정',  sub: '새 맛집 알림 켜짐' },
+            { icon: '👤', label: '계정 설정',  sub: '닉네임·프로필 수정' },
+            { icon: '💬', label: '문의하기',   sub: '의견을 보내주세요' },
+            { icon: '🚪', label: '로그아웃',   sub: '' },
+          ].map((item, i) => (
+            <div key={i} className="my-settings-item">
+              <span className="my-settings-icon">{item.icon}</span>
+              <div className="my-settings-texts">
+                <strong>{item.label}</strong>
+                {item.sub && <p>{item.sub}</p>}
+              </div>
               <span className="my-chevron">›</span>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
       <div className="my-app-info">
         <p>부산 미리한끼 v1.0</p>
@@ -1529,6 +1758,8 @@ export default function App() {
               {activeTab === 'my' && (
                 <MyScreen
                   savedIds={savedIds}
+                  onToggleSave={toggleSave}
+                  onSelect={setSelectedId}
                   isInstalledApp={isInstalledApp}
                   installPrompt={installPrompt}
                   onInstall={handleInstallApp}
