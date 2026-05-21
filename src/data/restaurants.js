@@ -880,12 +880,8 @@ export const restaurants = [
       interior: { src: '/interiors/baohaus-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/baohaus-360.jpg' },
       route: { src: '', poster: '', suggestedPath: '/videos/baohaus-route.mp4' },
     },
+    banner: '/restaurant-photos/baohaus-food.jpg',
     photos: [
-      {
-        src: '/restaurant-photos/baohaus-food.jpg',
-        alt: '바오하우스 마파두부, 볶음밥, 튀김 메뉴 한상',
-        caption: '마파두부, 볶음밥, 튀김 메뉴를 함께 담은 실제 방문 음식 사진',
-      },
       {
         src: '/restaurant-photos/baohaus-menu.jpg',
         alt: '바오하우스 대표메뉴 소개',

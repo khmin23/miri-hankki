@@ -1121,9 +1121,9 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
       <div className="detail-panel" ref={scrollRef}>
 
         <div className="detail-photo-wrap">
-          {item.photos?.length > 0 ? (
+          {(item.banner || item.photos?.length > 0) ? (
             <img
-              src={asset(item.photos[photoIdx]?.src ?? item.photos[0].src)}
+              src={asset(item.banner ?? (item.photos[photoIdx]?.src ?? item.photos[0].src))}
               alt={item.name}
               className="detail-photo-img"
             />
@@ -1136,7 +1136,7 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave })
             <button className="detail-back-btn" onClick={onClose} aria-label="닫기">←</button>
             <button className="detail-share-btn" onClick={() => onShare(item)} aria-label="공유">↗</button>
           </div>
-          {item.photos?.length > 1 && (
+          {!item.banner && item.photos?.length > 1 && (
             <div className="photo-counter">{photoIdx + 1}/{item.photos.length}</div>
           )}
         </div>
