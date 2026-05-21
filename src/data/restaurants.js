@@ -691,7 +691,7 @@ export const restaurants = [
     address: '부산광역시 남구 분포로 145 W스퀘어 1층',
     phone: '051-612-4512',
     hero: '깔끔하고 맑은 국물의 돼지곰탕으로 유명한 로컬 맛집',
-    highlight: ['돼지곰탕', '고기 칼국수', '삼겹구이'],
+    highlight: ['돼지곰탕', '고기칼국수', '삼겹구이 300g'],
     tags: ['남구', '한식', '혼밥가능', '국밥'],
     accent: 'forest',
     icon: '🍚',
@@ -699,7 +699,7 @@ export const restaurants = [
     eta: '차량 약 12분',
     distance: 4.0,
     deliveryTag: '든든한 한식',
-    price: '1인 10,000 ~ 18,000원대',
+    price: '1인 8,000 ~ 29,000원대',
     recommend: '부담 없이 정갈한 한 끼를 먹고 싶을 때',
     experience: {
       waitTime: '12~13시 30분 이상 · 13~15시 10분',
@@ -718,6 +718,45 @@ export const restaurants = [
       '바 테이블이 있어 혼자서도 부담 없이 식사 가능',
       '고기의 질이 좋고 국물이 맑고 깔끔함',
       'W스퀘어 인근이라 주차 접근성이 좋음',
+    ],
+    menu: [
+      {
+        category: '메인 메뉴',
+        items: [
+          { name: '돼지곰탕', price: '11,000원', desc: '90% 채수와 돈사골을 블렌딩한 맑은 돼지곰탕' },
+          { name: '(특)돼지곰탕', price: '15,000원', desc: '고기 양 2배 · 고기만 먹어도 배부른 맑은 곰탕' },
+          { name: '고기칼국수', price: '12,000원', desc: '돼지곰탕에 생면 칼국수를 넣어 끓인 메뉴' },
+          { name: '칼국수', price: '8,000원', desc: '비법 육수와 볶은 한우를 넣은 생면 칼국수' },
+          { name: '맛보기 수육 (국내산) 110g', price: '10,000원', desc: '부담 없이 맛볼 수 있는 수육' },
+          { name: '삼겹구이 (국내산) 300g', price: '29,000원', desc: '통마늘과 함께 구어낸 삼겹살' },
+          { name: '수육 (국내산) 300g', price: '29,000원', desc: '당일 삶아 부드럽고 촉촉한 수육' },
+        ],
+      },
+      {
+        category: '사이드 메뉴',
+        items: [
+          { name: '한우 주먹밥', price: '5,000원', desc: '볶은 한우와 양념을 넣어 직접 만들어 먹는 주먹밥' },
+          { name: '수제 물만두', price: '7,000원', desc: '손으로 빚어 피는 쫄깃, 속은 탱글한 만두' },
+          { name: '전통주 잔술 (조선주조사)', price: '3,000원', desc: '한잔씩 맛보는 우리나라 청주' },
+        ],
+      },
+      {
+        category: '전통주 & 증류주',
+        items: [
+          { name: '매실원주 (13%, 375ml)', price: '11,000원', desc: '매실주원액 100%로 만든 프리미엄 매실주' },
+          { name: '운암 24 (24%, 375ml)', price: '15,000원', desc: '감압식 증류로 고유의 맛과 향을 그대로' },
+          { name: '조선주조사 (14%, 300ml)', price: '9,000원', desc: '특유의 누룩향이 없는 깔끔한 청주' },
+          { name: '독도소주 (17%, 375ml)', price: '10,000원', desc: '우리 쌀과 울릉도 해양심층수로 만든 제품' },
+        ],
+      },
+      {
+        category: '소주 · 맥주 · 음료',
+        items: [
+          { name: '소주 (진로 / 대선 / 좋은데이)', price: '5,000원' },
+          { name: '맥주 (카스 / 테라 / 켈리)', price: '5,000원' },
+          { name: '탄산음료 (콜라 / 사이다 / 제로)', price: '2,000원' },
+        ],
+      },
     ],
     media: {
       interior: { src: '/interiors/namakjip-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/namakjip-360.html' },
