@@ -1941,25 +1941,35 @@ img { display: block; width: 100%; object-fit: cover; }
   margin-left: 8px;
 }
 .menu-category {
-  margin-bottom: 4px;
+  margin-bottom: 12px;
+  background: var(--beige);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
 }
 .menu-category-label {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 900;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--text-muted);
-  padding: 10px 0 6px;
-  border-bottom: 1.5px solid var(--border);
-  margin-bottom: 2px;
+  color: var(--coral);
+  background: var(--coral-light);
+  padding: 7px 12px;
+  margin: 0;
 }
-.menu-category:first-child .menu-category-label {
-  padding-top: 0;
+.menu-category .detail-menu-item {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  background: white;
+}
+.menu-category .detail-menu-item:last-child {
+  border-bottom: none;
 }
 .menu-name-wrap {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex: 1;
+  min-width: 0;
 }
 .menu-name-wrap > span:first-child {
   font-size: 0.88rem;
@@ -1971,6 +1981,7 @@ img { display: block; width: 100%; object-fit: cover; }
   font-weight: 400 !important;
   color: var(--text-muted) !important;
   line-height: 1.5;
+  word-break: keep-all;
 }
 
 /* 액션 버튼 */
