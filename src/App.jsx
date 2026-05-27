@@ -1283,7 +1283,7 @@ function SavedScreen({ savedIds, onToggleSave, onSelect }) {
 }
 
 /* ─── 마이 화면 ─────────────────────────────────────────── */
-function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, setVisitRecords, reviews, setReviews, isInstalledApp, installPrompt, onInstall, showInstallGuide, setShowInstallGuide, profile, onEditProfile }) {
+function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, setVisitRecords, reviews, setReviews, isInstalledApp, installPrompt, onInstall, showInstallGuide, setShowInstallGuide, profile, onEditProfile, onLogout }) {
   const [activeFilter, setActiveFilter] = useState('전체')
   const [rouletteItem, setRouletteItem] = useState(null)
   const [isSpinning, setIsSpinning] = useState(false)
@@ -1407,15 +1407,8 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, set
       if (newName && newName.trim()) onEditProfile({ ...profile, name: newName.trim() })
     }},
     { icon: '💬', label: '문의하기',   sub: '의견을 보내주세요',  action: () => showToast('문의: contact@mirihankki.com') },
-    { icon: '🚪', label: '로그아웃',   sub: firebaseConfigured ? '계정에서 로그아웃' : '',
-      action: async () => {
-        if (firebaseConfigured) {
-          await signOut()
-          showToast('로그아웃 됐어요')
-        } else {
-          showToast('로그아웃 기능은 준비 중이에요')
-        }
-      }
+    { icon: '🚪', label: '로그아웃', sub: '계정에서 로그아웃',
+      action: async () => { await signOut(); onLogout() }
     },
   ]
 
@@ -2113,20 +2106,17 @@ export default function App() {
   const isWeb   = bp !== 'mobile'
   const userLoc = useUserLocation()
 
-  const [firebaseUser, setFirebaseUser]   = useState(undefined) // undefined=로딩중, null=미로그인
-  const [showAuth, setShowAuth]           = useState(false)
+  const [firebaseUser, setFirebaseUser]   = useState(() => {
+    // 로컬 세션 즉시 확인 (동기)
+    try { const s = localStorage.getItem('miri-hankki-session'); return s ? JSON.parse(s) : null }
+    catch { return null }
+  })
   const [profile, setProfile] = useState(() => {
     try { const s = window.localStorage.getItem('miri-hankki-profile'); return s ? JSON.parse(s) : null }
     catch { return null }
   })
   const [showSplash, setShowSplash]       = useState(() => !isWeb)
   const [showProfileSetup, setShowProfileSetup] = useState(false)
-
-  // Firebase 인증 상태 감지
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged((user) => setFirebaseUser(user ?? null))
-    return unsubscribe
-  }, [])
   const [activeTab, setActiveTab]         = useState('home')
   const [selectedId, setSelectedId]       = useState(null)
   const [mapSelectedId, setMapSelectedId] = useState(restaurants[0].id)
@@ -2241,17 +2231,13 @@ export default function App() {
     <div className="app-wrapper">
       <div className="app-frame">
         {showSplash && !isWeb ? (
-          <Splash onDone={() => {
-            setShowSplash(false)
-            if (firebaseConfigured && !firebaseUser) setShowAuth(true)
-            else if (!profile) setShowProfileSetup(true)
-          }} />
-        ) : showAuth && firebaseConfigured && !firebaseUser ? (
-          <AuthScreen onDone={() => {
-            setShowAuth(false)
+          <Splash onDone={() => setShowSplash(false)} />
+        ) : !firebaseUser ? (
+          <AuthScreen onDone={(user) => {
+            setFirebaseUser(user)
             if (!profile) setShowProfileSetup(true)
           }} />
-        ) : showProfileSetup ? (
+        ) : showProfileSetup || !profile ? (
           <ProfileSetup onDone={(p) => { setProfile(p); setShowProfileSetup(false) }} />
         ) : (
           <div className={`app-layout${isWeb ? ' app-layout-web' : ''}`}>
@@ -2314,6 +2300,7 @@ export default function App() {
                   setShowInstallGuide={setShowInstallGuide}
                   profile={profile}
                   onEditProfile={(p) => { setProfile(p); window.localStorage.setItem('miri-hankki-profile', JSON.stringify(p)) }}
+                  onLogout={() => { setFirebaseUser(null); setProfile(null) }}
                 />
               )}
             </main>
