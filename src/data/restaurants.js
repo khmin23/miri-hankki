@@ -759,7 +759,7 @@ export const restaurants = [
       },
     ],
     media: {
-      interior: { src: '/restaurant-photos/namakjip-interior.jpg', type: 'image', poster: '' },
+      interior: { src: '/interiors/namakjip-360.html', type: 'html360', poster: '' },
       route: { src: '', poster: '', suggestedPath: '/videos/namakjip-route.mp4' },
     },
     photos: [
@@ -767,6 +767,11 @@ export const restaurants = [
         src: '/restaurant-photos/namakjip-food-v2.jpg',
         alt: '나막집 돼지곰탕, 고기 칼국수, 삼겹구이 한상',
         caption: '맑은 돼지곰탕, 고기 칼국수, 삼겹구이를 함께 담은 실제 방문 음식 사진',
+      },
+      {
+        src: '/restaurant-photos/namakjip-interior.jpg',
+        alt: '나막집 가게 내부 파노라마',
+        caption: '탁 트인 오픈 키친과 바석이 인상적인 가게 내부',
       },
     ],
     links: {
