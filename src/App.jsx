@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { restaurants } from './data/restaurants'
-import { signUp, signIn, signOut, onAuthStateChanged, isConfigured as firebaseConfigured } from './firebase'
+import { signUp, signIn, signOut, onAuthStateChanged, isConfigured as firebaseConfigured, loadUserData, saveUserData } from './firebase'
 
 const BASE = import.meta.env.BASE_URL
 
@@ -2148,6 +2148,10 @@ export default function App() {
     } catch { return false }
   })
   const [showAuthOverlay, setShowAuthOverlay] = useState(false)
+  // Firestore 로드 완료 여부 (로드 전엔 자동 저장 막기)
+  const [dataLoaded, setDataLoaded] = useState(() => !(() => {
+    try { return !!localStorage.getItem('miri-hankki-session') } catch { return false }
+  })())
   const [activeTab, setActiveTab]         = useState('home')
   const [selectedId, setSelectedId]       = useState(null)
   const [mapSelectedId, setMapSelectedId] = useState(restaurants[0].id)
@@ -2177,15 +2181,32 @@ export default function App() {
     catch { return [] }
   })
 
-  // Firebase 인증 상태 실시간 동기화
+  // Firebase 인증 상태 실시간 동기화 + Firestore 데이터 로드
   useEffect(() => {
-    const unsub = onAuthStateChanged((user) => {
+    const unsub = onAuthStateChanged(async (user) => {
       setFirebaseUser(user)
       if (user) {
         localStorage.setItem('miri-hankki-session', JSON.stringify(user))
-        if (!profile) setShowProfileSetup(true)
+        // Firestore에서 유저 데이터 로드
+        const data = await loadUserData(user.uid)
+        if (data) {
+          if (Array.isArray(data.savedIds))     setSavedIds(data.savedIds)
+          if (Array.isArray(data.visitRecords)) setVisitRecords(data.visitRecords)
+          if (Array.isArray(data.reviews))      setReviews(data.reviews)
+          if (data.profile) {
+            setProfile(data.profile)
+            localStorage.setItem('miri-hankki-profile', JSON.stringify(data.profile))
+          } else {
+            setShowProfileSetup(true)
+          }
+        } else {
+          // 신규 유저 또는 Firestore 데이터 없음
+          if (!profile) setShowProfileSetup(true)
+        }
+        setDataLoaded(true)
       } else {
         localStorage.removeItem('miri-hankki-session')
+        setDataLoaded(true)
       }
     })
     return unsub
@@ -2232,6 +2253,15 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem('miri-hankki-reviews-v2', JSON.stringify(reviews))
   }, [reviews])
+
+  // Firestore 자동 저장 (로그인 상태 + 로드 완료 후)
+  useEffect(() => {
+    if (!firebaseUser || !dataLoaded) return
+    const t = setTimeout(() => {
+      saveUserData(firebaseUser.uid, { savedIds, visitRecords, reviews, profile })
+    }, 1500) // 1.5초 debounce
+    return () => clearTimeout(t)
+  }, [savedIds, visitRecords, reviews, profile, firebaseUser, dataLoaded])
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' })
@@ -2338,7 +2368,13 @@ export default function App() {
                   setShowInstallGuide={setShowInstallGuide}
                   profile={profile}
                   onEditProfile={(p) => { setProfile(p); window.localStorage.setItem('miri-hankki-profile', JSON.stringify(p)) }}
-                  onLogout={() => { setFirebaseUser(null); setProfile(null) }}
+                  onLogout={() => {
+                    setFirebaseUser(null); setProfile(null)
+                    setSavedIds([]); setVisitRecords([]); setReviews([])
+                    setDataLoaded(true)
+                    localStorage.removeItem('miri-hankki-session')
+                    localStorage.removeItem('miri-hankki-profile')
+                  }}
                   firebaseUser={firebaseUser}
                   onLogin={() => setShowAuthOverlay(true)}
                 />

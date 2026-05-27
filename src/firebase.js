@@ -6,6 +6,7 @@ import {
   signOut as fbSignOut,
   onAuthStateChanged as fbOnAuthStateChanged,
 } from 'firebase/auth'
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
@@ -20,6 +21,7 @@ export const isConfigured = !!firebaseConfig.apiKey
 
 const app  = isConfigured ? initializeApp(firebaseConfig) : null
 const auth = app ? getAuth(app) : null
+const db   = app ? getFirestore(app) : null
 
 export async function signUp(email, password) {
   if (!auth) throw new Error('Firebase not configured')
@@ -43,4 +45,20 @@ export function onAuthStateChanged(callback) {
   return fbOnAuthStateChanged(auth, (user) => {
     callback(user ? { uid: user.uid, email: user.email } : null)
   })
+}
+
+/* ── Firestore: 유저 데이터 로드 / 저장 ── */
+export async function loadUserData(uid) {
+  if (!db) return null
+  try {
+    const snap = await getDoc(doc(db, 'users', uid))
+    return snap.exists() ? snap.data() : null
+  } catch { return null }
+}
+
+export async function saveUserData(uid, data) {
+  if (!db) return
+  try {
+    await setDoc(doc(db, 'users', uid), data, { merge: true })
+  } catch { /* ignore */ }
 }
