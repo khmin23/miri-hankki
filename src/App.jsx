@@ -1836,9 +1836,6 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
             <button className="detail-back-btn" onClick={onClose} aria-label="닫기">←</button>
             <button className="detail-share-btn" onClick={() => onShare(item)} aria-label="공유">↗</button>
           </div>
-          {!item.banner && item.photos?.length > 1 && (
-            <div className="photo-counter">{photoIdx + 1}/{item.photos.length}</div>
-          )}
         </div>
 
         <div className="detail-body">
@@ -1924,30 +1921,15 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
             ) : null
           })()}
 
-          {item.media?.interior?.src && (
+          {item.media?.interior?.src && item.media.interior.type === 'image' && (
             <div className="detail-section">
               <h3>가게 내부</h3>
               <div className="interior-viewer-card">
-                {item.media.interior.type === 'html360' ? (
-                  <iframe
-                    title={`${item.name} 가게 내부`}
-                    src={asset(item.media.interior.src)}
-                    loading="lazy"
-                  />
-                ) : item.media.interior.type === 'image' ? (
-                  <img
-                    src={asset(item.media.interior.src)}
-                    alt={`${item.name} 가게 내부`}
-                    style={{ width: '100%', borderRadius: '12px', display: 'block' }}
-                  />
-                ) : (
-                  <video
-                    controls
-                    playsInline
-                    poster={item.media.interior.poster ? asset(item.media.interior.poster) : undefined}
-                    src={asset(item.media.interior.src)}
-                  />
-                )}
+                <img
+                  src={asset(item.media.interior.src)}
+                  alt={`${item.name} 가게 내부`}
+                  style={{ width: '100%', borderRadius: '12px', display: 'block' }}
+                />
               </div>
             </div>
           )}
