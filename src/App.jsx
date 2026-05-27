@@ -405,8 +405,7 @@ function SituationCard({ item, reason, onSelect, onOpenMap }) {
 const LOCATION_OPTIONS = ['내 위치', '광안리', '남천', '민락', '수영', '해운대']
 
 /* ─── 상단 앱바 ─── */
-function AppTopBar({ onGoSearch }) {
-  const [area, setArea] = useState('내 위치')
+function AppTopBar({ onGoSearch, area, setArea }) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -679,13 +678,19 @@ function Splash({ onDone }) {
 function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onOpenMapItem }) {
   const [moodFilter, setMoodFilter] = useState('전체')
   const [situation, setSituation]   = useState('혼밥')
+  const [area, setArea]             = useState('내 위치')
+
+  const areaFiltered = useMemo(() => {
+    if (area === '내 위치') return restaurants
+    return restaurants.filter((item) => item.location.includes(area))
+  }, [area])
 
   const filtered = useMemo(() => {
-    if (moodFilter === '전체') return restaurants
+    if (moodFilter === '전체') return areaFiltered
     const cat = cuisineCategories.find((c) => c.id === moodFilter)
-    if (!cat || cat.keywords.length === 0) return restaurants
-    return restaurants.filter((item) => cat.keywords.some((k) => item.category.includes(k)))
-  }, [moodFilter])
+    if (!cat || cat.keywords.length === 0) return areaFiltered
+    return areaFiltered.filter((item) => cat.keywords.some((k) => item.category.includes(k)))
+  }, [moodFilter, areaFiltered])
 
   const situationItems = useMemo(() => getSituationRecommendations(situation), [situation])
 
@@ -693,7 +698,7 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
     <div className="home-screen">
 
       {/* ── 상단 앱바 ── */}
-      <AppTopBar onGoSearch={onGoSearch} />
+      <AppTopBar onGoSearch={onGoSearch} area={area} setArea={setArea} />
 
       {/* ── 프로모 배너 ── */}
       <div className="home-promo">

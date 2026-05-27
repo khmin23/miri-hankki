@@ -685,7 +685,7 @@ export const restaurants = [
     name: '나막집',
     category: '한식 · 돼지곰탕',
     mood: ['혼밥가능', '점심추천', '깔끔한식사'],
-    location: '남구',
+    location: '남천',
     lat: 35.1344273,
     lng: 129.1120947,
     address: '부산광역시 남구 분포로 145 W스퀘어 1층',
