@@ -708,7 +708,7 @@ function MyFoodMap({ visitRecords, onSelect }) {
 }
 
 /* ─── 로그인 / 회원가입 화면 ───────────────────────────── */
-function AuthScreen({ onDone }) {
+function AuthScreen({ onDone, onSkip }) {
   const [mode, setMode]         = useState('login')   // 'login' | 'signup'
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
@@ -744,6 +744,9 @@ function AuthScreen({ onDone }) {
 
   return (
     <div className="auth-screen">
+      {onSkip && (
+        <button className="auth-close-btn" onClick={onSkip} aria-label="닫기">✕</button>
+      )}
       <div className="auth-inner">
         <div className="auth-logo">🌊</div>
         <h1 className="auth-title">부산 미리한끼</h1>
@@ -1283,7 +1286,7 @@ function SavedScreen({ savedIds, onToggleSave, onSelect }) {
 }
 
 /* ─── 마이 화면 ─────────────────────────────────────────── */
-function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, setVisitRecords, reviews, setReviews, isInstalledApp, installPrompt, onInstall, showInstallGuide, setShowInstallGuide, profile, onEditProfile, onLogout }) {
+function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, setVisitRecords, reviews, setReviews, isInstalledApp, installPrompt, onInstall, showInstallGuide, setShowInstallGuide, profile, onEditProfile, onLogout, firebaseUser, onLogin }) {
   const [activeFilter, setActiveFilter] = useState('전체')
   const [rouletteItem, setRouletteItem] = useState(null)
   const [isSpinning, setIsSpinning] = useState(false)
@@ -1421,6 +1424,27 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, set
       count++
       if (count >= 20) { window.clearInterval(t); setIsSpinning(false) }
     }, 90)
+  }
+
+  if (!firebaseUser) {
+    return (
+      <div className="my-login-wall">
+        <div className="my-login-icon">👤</div>
+        <h2 className="my-login-title">로그인이 필요해요</h2>
+        <p className="my-login-desc">
+          마이 기능을 이용하려면<br />로그인 또는 회원가입이 필요해요
+        </p>
+        <ul className="my-login-features">
+          <li>🍽️ 내 음식 기록 저장</li>
+          <li>📊 취향 분석</li>
+          <li>🏅 배지 수집</li>
+          <li>✏️ 리뷰 &amp; 메모 작성</li>
+          <li>🗺️ 내 음식 지도</li>
+        </ul>
+        <button className="my-login-btn" onClick={onLogin}>로그인 / 회원가입</button>
+        <p className="my-login-notice">회원가입은 무료이며 언제든지 탈퇴할 수 있어요</p>
+      </div>
+    )
   }
 
   return (
@@ -2116,7 +2140,14 @@ export default function App() {
     catch { return null }
   })
   const [showSplash, setShowSplash]       = useState(() => !isWeb)
-  const [showProfileSetup, setShowProfileSetup] = useState(false)
+  const [showProfileSetup, setShowProfileSetup] = useState(() => {
+    try {
+      const s = localStorage.getItem('miri-hankki-session')
+      const p = localStorage.getItem('miri-hankki-profile')
+      return !!(s && !p)
+    } catch { return false }
+  })
+  const [showAuthOverlay, setShowAuthOverlay] = useState(false)
   const [activeTab, setActiveTab]         = useState('home')
   const [selectedId, setSelectedId]       = useState(null)
   const [mapSelectedId, setMapSelectedId] = useState(restaurants[0].id)
@@ -2232,13 +2263,6 @@ export default function App() {
       <div className="app-frame">
         {showSplash && !isWeb ? (
           <Splash onDone={() => setShowSplash(false)} />
-        ) : !firebaseUser ? (
-          <AuthScreen onDone={(user) => {
-            setFirebaseUser(user)
-            if (!profile) setShowProfileSetup(true)
-          }} />
-        ) : showProfileSetup || !profile ? (
-          <ProfileSetup onDone={(p) => { setProfile(p); setShowProfileSetup(false) }} />
         ) : (
           <div className={`app-layout${isWeb ? ' app-layout-web' : ''}`}>
             {isWeb && (
@@ -2301,6 +2325,8 @@ export default function App() {
                   profile={profile}
                   onEditProfile={(p) => { setProfile(p); window.localStorage.setItem('miri-hankki-profile', JSON.stringify(p)) }}
                   onLogout={() => { setFirebaseUser(null); setProfile(null) }}
+                  firebaseUser={firebaseUser}
+                  onLogin={() => setShowAuthOverlay(true)}
                 />
               )}
             </main>
@@ -2320,6 +2346,21 @@ export default function App() {
               </nav>
             )}
           </div>
+        )}
+
+        {/* 로그인 / 프로필 오버레이 */}
+        {showAuthOverlay && (
+          <AuthScreen
+            onDone={(user) => {
+              setFirebaseUser(user)
+              setShowAuthOverlay(false)
+              if (!profile) setShowProfileSetup(true)
+            }}
+            onSkip={() => setShowAuthOverlay(false)}
+          />
+        )}
+        {showProfileSetup && firebaseUser && !profile && (
+          <ProfileSetup onDone={(p) => { setProfile(p); setShowProfileSetup(false) }} />
         )}
 
         {showCopyMessage && <div className="toast">📋 링크를 복사했어요.</div>}

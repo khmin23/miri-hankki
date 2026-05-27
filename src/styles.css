@@ -2023,6 +2023,53 @@ img { display: block; width: 100%; object-fit: cover; }
   transition: opacity 0.15s; margin-top: 4px;
 }
 .auth-submit.loading { opacity: 0.6; }
+.auth-close-btn {
+  position: absolute; top: 20px; right: 20px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(0,0,0,0.08); color: var(--text);
+  font-size: 1rem; display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.auth-close-btn:hover { background: rgba(0,0,0,0.15); }
+
+/* ── 마이 로그인 안내 ── */
+.my-login-wall {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center;
+  padding: 48px 28px; min-height: 60vh; gap: 12px;
+}
+.my-login-icon {
+  font-size: 4rem; margin-bottom: 8px;
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--card-bg); display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+}
+.my-login-title {
+  font-size: 1.4rem; font-weight: 900; color: var(--text); margin: 0;
+}
+.my-login-desc {
+  font-size: 0.92rem; color: var(--text-muted); margin: 0; line-height: 1.6;
+}
+.my-login-features {
+  list-style: none; padding: 0; margin: 8px 0;
+  background: var(--card-bg); border-radius: 16px;
+  border: 1.5px solid var(--border); width: 100%; max-width: 300px;
+}
+.my-login-features li {
+  padding: 12px 20px; font-size: 0.92rem; color: var(--text);
+  border-bottom: 1px solid var(--border); text-align: left;
+}
+.my-login-features li:last-child { border-bottom: none; }
+.my-login-btn {
+  width: 100%; max-width: 300px; padding: 15px;
+  background: linear-gradient(90deg, var(--coral), var(--coral-dark));
+  color: white; border-radius: 14px; font-size: 1rem; font-weight: 900;
+  margin-top: 4px; transition: opacity 0.15s;
+}
+.my-login-btn:active { opacity: 0.85; }
+.my-login-notice {
+  font-size: 0.78rem; color: var(--text-muted); margin: 0;
+}
 
 /* ── 프로필 설정 화면 ── */
 .profile-setup {
