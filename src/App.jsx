@@ -679,11 +679,17 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
   const [moodFilter, setMoodFilter] = useState('전체')
   const [situation, setSituation]   = useState('혼밥')
   const [area, setArea]             = useState('내 위치')
+  const userLoc                     = useContext(UserLocCtx)
+
+  const NEARBY_KM = 5
 
   const areaFiltered = useMemo(() => {
-    if (area === '내 위치') return restaurants
+    if (area === '내 위치') {
+      if (!userLoc) return restaurants
+      return restaurants.filter((item) => haversine(userLoc.lat, userLoc.lng, item.lat, item.lng) <= NEARBY_KM)
+    }
     return restaurants.filter((item) => item.location.includes(area))
-  }, [area])
+  }, [area, userLoc])
 
   const filtered = useMemo(() => {
     if (moodFilter === '전체') return areaFiltered
@@ -724,9 +730,14 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
       </div>
 
       {/* ── 결과 헤더 ── */}
+      {area === '내 위치' && !userLoc && (
+        <div className="home-loc-notice">
+          📍 위치 권한을 허용하면 주변 가게만 보여드려요
+        </div>
+      )}
       <div className="home-list-hd">
         <span className="home-cnt">
-          {filtered.length}곳{moodFilter !== '전체' ? ` · ${moodFilter}` : ''}
+          {filtered.length}곳{moodFilter !== '전체' ? ` · ${moodFilter}` : ''}{area !== '내 위치' ? ` · ${area}` : ''}
         </span>
         <button className="home-sort" onClick={onGoMap}>🗺️ 지도로 보기</button>
       </div>

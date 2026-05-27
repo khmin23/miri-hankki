@@ -1210,6 +1210,18 @@ img { display: block; width: 100%; object-fit: cover; }
   box-shadow: 0 2px 8px rgba(232,101,74,0.35);
 }
 
+/* 위치 안내 배너 */
+.home-loc-notice {
+  margin: 0 16px 4px;
+  padding: 10px 14px;
+  background: #fff8f0;
+  border: 1px solid #fde8d0;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  color: var(--coral);
+  font-weight: 600;
+}
+
 /* 리스트 헤더 */
 .home-list-hd {
   display: flex;
