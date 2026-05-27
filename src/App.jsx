@@ -1110,21 +1110,74 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, set
   const [editingIdx, setEditingIdx] = useState(null)
   const [editText, setEditText] = useState('')
 
-  const BADGES = [
-    { icon: '🍱', label: '혼밥 입문자',    desc: '혼밥 3회 달성',  earned: true },
-    { icon: '☕', label: '카페 헌터',      desc: '카페 5곳 방문',  earned: true },
-    { icon: '🌙', label: '야식러',         desc: '밤 방문 3회',    earned: true },
-    { icon: '🌶️', label: '매운맛 챌린저', desc: '매운 음식 5회',  earned: false },
-    { icon: '🍜', label: '국밥 탐험가',   desc: '국밥류 5회',     earned: false },
-    { icon: '💝', label: '단골 마스터',    desc: '같은 가게 3회', earned: false },
-  ]
+  // ── 뱃지: 실제 기록 기반 계산 ──
+  const visitCounts = useMemo(() => {
+    const counts = {}
+    visitRecords.forEach((v) => { counts[v.restaurantId] = (counts[v.restaurantId] || 0) + 1 })
+    return counts
+  }, [visitRecords])
 
-  const TASTE_CATS = [
-    { label: '아시안·퓨전', pct: 42, color: 'var(--coral)' },
-    { label: '카페·브런치', pct: 31, color: 'var(--sea)' },
-    { label: '한식',        pct: 18, color: '#5db75d' },
-    { label: '기타',        pct:  9, color: 'var(--text-muted)' },
-  ]
+  const BADGES = useMemo(() => {
+    const soloVisits = visitRecords.filter((v) => {
+      const r = restaurants.find((r) => r.id === v.restaurantId)
+      return r?.experience?.soloOk
+    }).length
+    const cafeVisits = visitRecords.filter((v) => {
+      const r = restaurants.find((r) => r.id === v.restaurantId)
+      return r?.category?.includes('카페') || r?.category?.includes('브런치') || r?.category?.includes('에스프레소')
+    }).length
+    const spicyVisits = visitRecords.filter((v) => {
+      const r = restaurants.find((r) => r.id === v.restaurantId)
+      return r?.category?.includes('마라') || r?.tags?.includes('매운맛') || r?.mood?.includes('얼큰')
+    }).length
+    const revisitCount = visitRecords.filter((v) => v.revisit).length
+    const maxSameVisits = Math.max(0, ...Object.values(visitCounts))
+    return [
+      { icon: '🍱', label: '혼밥 입문자',    desc: '혼밥 가능 가게 3회 방문',  earned: soloVisits >= 3 },
+      { icon: '☕', label: '카페 헌터',      desc: '카페·브런치 3회 방문',      earned: cafeVisits >= 3 },
+      { icon: '📝', label: '리뷰 마스터',    desc: '리뷰 3개 작성',             earned: reviews.length >= 3 },
+      { icon: '🌶️', label: '매운맛 챌린저', desc: '얼큰한 가게 3회 방문',      earned: spicyVisits >= 3 },
+      { icon: '🔄', label: '재방문왕',       desc: '재방문 5회 달성',           earned: revisitCount >= 5 },
+      { icon: '💝', label: '단골 마스터',    desc: '같은 가게 3회 방문',        earned: maxSameVisits >= 3 },
+    ]
+  }, [visitRecords, reviews, visitCounts])
+
+  // ── 취향 분석: 실제 기록 기반 계산 ──
+  const TASTE_CATS = useMemo(() => {
+    if (visitRecords.length === 0) return []
+    const GROUP_COLORS = { '카페·브런치': 'var(--sea)', '아시안·퓨전': 'var(--coral)', '한식': '#5db75d', '양식': '#9b59b6', '기타': 'var(--text-muted)' }
+    const catCount = {}
+    visitRecords.forEach((v) => {
+      const r = restaurants.find((r) => r.id === v.restaurantId)
+      if (!r) return
+      const cat = r.category || ''
+      const group = (cat.includes('카페') || cat.includes('브런치') || cat.includes('에스프레소')) ? '카페·브런치'
+        : (cat.includes('아시안') || cat.includes('중식') || cat.includes('마라') || cat.includes('바오')) ? '아시안·퓨전'
+        : (cat.includes('한식') || cat.includes('곰탕') || cat.includes('국밥')) ? '한식'
+        : (cat.includes('양식') || cat.includes('다이닝') || cat.includes('와인')) ? '양식'
+        : '기타'
+      catCount[group] = (catCount[group] || 0) + 1
+    })
+    return Object.entries(catCount)
+      .map(([label, count]) => ({ label, pct: Math.round(count / visitRecords.length * 100), color: GROUP_COLORS[label] || 'var(--text-muted)' }))
+      .sort((a, b) => b.pct - a.pct)
+  }, [visitRecords])
+
+  // ── 취향 분석 칩 ──
+  const TASTE_CHIPS = useMemo(() => {
+    if (visitRecords.length === 0) return []
+    const chips = []
+    const soloRatio = Math.round(visitRecords.filter((v) => { const r = restaurants.find((r) => r.id === v.restaurantId); return r?.experience?.soloOk }).length / visitRecords.length * 100)
+    if (soloRatio > 0) chips.push(`🍱 혼밥 비율 ${soloRatio}%`)
+    const revisitRatio = Math.round(visitRecords.filter((v) => v.revisit).length / visitRecords.length * 100)
+    if (revisitRatio > 0) chips.push(`🔄 재방문 비율 ${revisitRatio}%`)
+    const locCount = {}
+    visitRecords.forEach((v) => { if (v.location) locCount[v.location] = (locCount[v.location] || 0) + 1 })
+    const topLoc = Object.entries(locCount).sort((a, b) => b[1] - a[1])[0]
+    if (topLoc) chips.push(`📍 단골 지역 ${topLoc[0]}`)
+    if (savedIds.length > 0) chips.push(`🔖 저장한 가게 ${savedIds.length}곳`)
+    return chips
+  }, [visitRecords, savedIds])
 
   const FILTER_MAP = {
     '혼밥': ['혼밥가능'],
@@ -1323,22 +1376,30 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, set
         <div className="my-section-hd">
           <span className="my-section-title">📊 내 취향 분석</span>
         </div>
-        <div className="my-taste-bars">
-          {TASTE_CATS.map((c) => (
-            <div key={c.label} className="my-taste-row">
-              <span className="my-taste-label">{c.label}</span>
-              <div className="my-taste-bar">
-                <div className="my-taste-fill" style={{ width: `${c.pct}%`, background: c.color }} />
-              </div>
-              <span className="my-taste-pct">{c.pct}%</span>
+        {TASTE_CATS.length === 0 ? (
+          <div className="my-saved-empty"><span>📊</span><p>방문 기록이 쌓이면 취향을 분석해드려요</p></div>
+        ) : (
+          <>
+            <div className="my-taste-bars">
+              {TASTE_CATS.map((c) => (
+                <div key={c.label} className="my-taste-row">
+                  <span className="my-taste-label">{c.label}</span>
+                  <div className="my-taste-bar">
+                    <div className="my-taste-fill" style={{ width: `${c.pct}%`, background: c.color }} />
+                  </div>
+                  <span className="my-taste-pct">{c.pct}%</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        <div className="my-taste-chips">
-          {['🍱 혼밥 비율 68%', '🌙 야식 비율 24%', '💰 선호 가격대 1~2만원', '📍 단골 지역 광안리'].map((c) => (
-            <span key={c} className="my-taste-chip">{c}</span>
-          ))}
-        </div>
+            {TASTE_CHIPS.length > 0 && (
+              <div className="my-taste-chips">
+                {TASTE_CHIPS.map((c) => (
+                  <span key={c} className="my-taste-chip">{c}</span>
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </section>
 
       {/* ── 5. 배지 ── */}
@@ -1885,25 +1946,15 @@ export default function App() {
   const [showCopyMessage, setShowCopyMessage] = useState(false)
 
   // 방문 기록 (전역 공유)
-  const INIT_VISITS = [
-    { restaurantId: 6, name: '바오하우스 광안점', icon: '🥟', dish: '토마토달걀볶음밥', date: '2025.05.18', revisit: true,  photo: '/restaurant-photos/baohaus-food.jpg', location: '광안리' },
-    { restaurantId: 3, name: '까사부사노',        icon: '☕', dish: '아메리카노 + 크루아상',  date: '2025.05.15', revisit: true,  photo: null, location: '광안리' },
-    { restaurantId: 4, name: '위킹홀리데이',      icon: '🥐', dish: '에그베네딕트 + 라떼',   date: '2025.05.10', revisit: true,  photo: null, location: '광안리' },
-  ]
   const [visitRecords, setVisitRecords] = useState(() => {
-    try { const s = window.localStorage.getItem('miri-hankki-visits'); return s ? JSON.parse(s) : INIT_VISITS }
-    catch { return INIT_VISITS }
+    try { const s = window.localStorage.getItem('miri-hankki-visits-v2'); return s ? JSON.parse(s) : [] }
+    catch { return [] }
   })
 
   // 리뷰 (전역 공유)
-  const INIT_REVIEWS = [
-    { restaurantId: 6, name: '바오하우스',   rating: 5, text: '토마토달걀볶음밥 진짜 최고. 가성비 킹', date: '05.18' },
-    { restaurantId: 4, name: '위킹홀리데이', rating: 5, text: '오션뷰 대박. 브런치 맛있고 통창 뷰가 너무 예뻐', date: '05.10' },
-    { restaurantId: 3, name: '까사부사노',   rating: 4, text: '커피 향이 진하고 분위기 좋음. 혼자 오기 완벽', date: '05.15' },
-  ]
   const [reviews, setReviews] = useState(() => {
-    try { const s = window.localStorage.getItem('miri-hankki-reviews'); return s ? JSON.parse(s) : INIT_REVIEWS }
-    catch { return INIT_REVIEWS }
+    try { const s = window.localStorage.getItem('miri-hankki-reviews-v2'); return s ? JSON.parse(s) : [] }
+    catch { return [] }
   })
 
   // 웹 환경에서는 스플래시 자동 스킵
@@ -1941,11 +1992,11 @@ export default function App() {
   }, [savedIds])
 
   useEffect(() => {
-    window.localStorage.setItem('miri-hankki-visits', JSON.stringify(visitRecords))
+    window.localStorage.setItem('miri-hankki-visits-v2', JSON.stringify(visitRecords))
   }, [visitRecords])
 
   useEffect(() => {
-    window.localStorage.setItem('miri-hankki-reviews', JSON.stringify(reviews))
+    window.localStorage.setItem('miri-hankki-reviews-v2', JSON.stringify(reviews))
   }, [reviews])
 
   useEffect(() => {
