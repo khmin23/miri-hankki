@@ -402,7 +402,7 @@ function SituationCard({ item, reason, onSelect, onOpenMap }) {
   )
 }
 
-const LOCATION_OPTIONS = ['내 위치', '광안리', '남천', '민락', '수영', '해운대']
+const LOCATION_OPTIONS = ['내 위치', '광안리', '해운대', '서면', '남포']
 
 /* ─── 상단 앱바 ─── */
 function AppTopBar({ onGoSearch, area, setArea }) {
