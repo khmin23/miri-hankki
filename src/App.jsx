@@ -2131,7 +2131,7 @@ export default function App() {
   const userLoc = useUserLocation()
 
   const [firebaseUser, setFirebaseUser]   = useState(() => {
-    // 로컬 세션 즉시 확인 (동기)
+    // 초기값: localStorage 세션 확인 (Firebase가 로드되기 전 깜빡임 방지)
     try { const s = localStorage.getItem('miri-hankki-session'); return s ? JSON.parse(s) : null }
     catch { return null }
   })
@@ -2176,6 +2176,20 @@ export default function App() {
     try { const s = window.localStorage.getItem('miri-hankki-reviews-v2'); return s ? JSON.parse(s) : [] }
     catch { return [] }
   })
+
+  // Firebase 인증 상태 실시간 동기화
+  useEffect(() => {
+    const unsub = onAuthStateChanged((user) => {
+      setFirebaseUser(user)
+      if (user) {
+        localStorage.setItem('miri-hankki-session', JSON.stringify(user))
+        if (!profile) setShowProfileSetup(true)
+      } else {
+        localStorage.removeItem('miri-hankki-session')
+      }
+    })
+    return unsub
+  }, [])
 
   // 웹 환경에서는 스플래시 자동 스킵
   useEffect(() => {

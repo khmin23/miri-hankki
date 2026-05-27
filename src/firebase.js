@@ -1,62 +1,46 @@
-// 로컬 이메일+비밀번호 인증 (Web Crypto API 사용)
-const STORE_KEY = 'miri-hankki-users'
-const SESSION_KEY = 'miri-hankki-session'
+import { initializeApp } from 'firebase/app'
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut as fbSignOut,
+  onAuthStateChanged as fbOnAuthStateChanged,
+} from 'firebase/auth'
 
-async function hashPassword(password) {
-  const encoded = new TextEncoder().encode(password)
-  const hashBuf = await crypto.subtle.digest('SHA-256', encoded)
-  return Array.from(new Uint8Array(hashBuf)).map((b) => b.toString(16).padStart(2, '0')).join('')
+const firebaseConfig = {
+  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId:             import.meta.env.VITE_FIREBASE_APP_ID,
 }
 
-function getUsers() {
-  try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}') } catch { return {} }
-}
+export const isConfigured = !!firebaseConfig.apiKey
 
-function saveUsers(users) {
-  localStorage.setItem(STORE_KEY, JSON.stringify(users))
-}
-
-function getSession() {
-  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null') } catch { return null }
-}
-
-function saveSession(user) {
-  localStorage.setItem(SESSION_KEY, JSON.stringify(user))
-}
+const app  = isConfigured ? initializeApp(firebaseConfig) : null
+const auth = app ? getAuth(app) : null
 
 export async function signUp(email, password) {
-  const users = getUsers()
-  const key = email.toLowerCase().trim()
-  if (users[key]) throw Object.assign(new Error(), { code: 'auth/email-already-in-use' })
-  const hash = await hashPassword(password)
-  const user = { uid: crypto.randomUUID(), email: key, createdAt: Date.now() }
-  users[key] = { ...user, hash }
-  saveUsers(users)
-  saveSession(user)
-  return user
+  if (!auth) throw new Error('Firebase not configured')
+  const cred = await createUserWithEmailAndPassword(auth, email, password)
+  return { uid: cred.user.uid, email: cred.user.email }
 }
 
 export async function signIn(email, password) {
-  const users = getUsers()
-  const key = email.toLowerCase().trim()
-  const stored = users[key]
-  if (!stored) throw Object.assign(new Error(), { code: 'auth/user-not-found' })
-  const hash = await hashPassword(password)
-  if (hash !== stored.hash) throw Object.assign(new Error(), { code: 'auth/wrong-password' })
-  const user = { uid: stored.uid, email: stored.email }
-  saveSession(user)
-  return user
+  if (!auth) throw new Error('Firebase not configured')
+  const cred = await signInWithEmailAndPassword(auth, email, password)
+  return { uid: cred.user.uid, email: cred.user.email }
 }
 
 export function signOut() {
-  localStorage.removeItem(SESSION_KEY)
-  return Promise.resolve()
+  if (!auth) return Promise.resolve()
+  return fbSignOut(auth)
 }
 
 export function onAuthStateChanged(callback) {
-  const user = getSession()
-  callback(user)
-  return () => {}
+  if (!auth) { callback(null); return () => {} }
+  return fbOnAuthStateChanged(auth, (user) => {
+    callback(user ? { uid: user.uid, email: user.email } : null)
+  })
 }
-
-export const isConfigured = true
