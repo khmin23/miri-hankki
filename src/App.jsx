@@ -903,7 +903,9 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect, bp }) {
 
   const filteredItems = useMemo(() => {
     if (categoryFilter === '전체') return restaurants
-    return restaurants.filter((r) => getCuisineCategory(r) === categoryFilter)
+    const cat = cuisineCategories.find((c) => c.id === categoryFilter)
+    if (!cat || cat.keywords.length === 0) return restaurants
+    return restaurants.filter((r) => cat.keywords.some((k) => r.category.includes(k)))
   }, [categoryFilter])
 
   const mapItem = useMemo(
