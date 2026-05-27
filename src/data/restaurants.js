@@ -759,7 +759,7 @@ export const restaurants = [
       },
     ],
     media: {
-      interior: { src: '/interiors/namakjip-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/namakjip-360.html' },
+      interior: { src: '/restaurant-photos/namakjip-interior.jpg', type: 'image', poster: '' },
       route: { src: '', poster: '', suggestedPath: '/videos/namakjip-route.mp4' },
     },
     photos: [

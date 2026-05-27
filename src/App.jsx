@@ -1934,6 +1934,12 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
                     src={asset(item.media.interior.src)}
                     loading="lazy"
                   />
+                ) : item.media.interior.type === 'image' ? (
+                  <img
+                    src={asset(item.media.interior.src)}
+                    alt={`${item.name} 가게 내부`}
+                    style={{ width: '100%', borderRadius: '12px', display: 'block' }}
+                  />
                 ) : (
                   <video
                     controls
