@@ -768,11 +768,6 @@ export const restaurants = [
         alt: '나막집 돼지곰탕, 고기 칼국수, 삼겹구이 한상',
         caption: '맑은 돼지곰탕, 고기 칼국수, 삼겹구이를 함께 담은 실제 방문 음식 사진',
       },
-      {
-        src: '/restaurant-photos/namakjip-food.jpg',
-        alt: '나막집 음식 사진',
-        caption: '나막집 대표 메뉴',
-      },
     ],
     links: {
       naver: 'https://map.naver.com/p/search/%EB%82%98%EB%A7%89%EC%A7%91',
