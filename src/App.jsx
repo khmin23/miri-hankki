@@ -402,15 +402,40 @@ function SituationCard({ item, reason, onSelect, onOpenMap }) {
   )
 }
 
+const LOCATION_OPTIONS = ['내 위치', '광안리', '남천', '민락', '수영', '해운대']
+
 /* ─── 상단 앱바 ─── */
 function AppTopBar({ onGoSearch }) {
+  const [area, setArea] = useState('내 위치')
+  const [open, setOpen] = useState(false)
+
   return (
     <header className="app-top-bar">
-      <button className="atb-location">
-        <span className="atb-pin">📍</span>
-        <span className="atb-area">광안리 근처</span>
-        <svg className="atb-caret" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
+      <div className="atb-location-wrap">
+        <button className="atb-location" onClick={() => setOpen((v) => !v)}>
+          <span className="atb-pin">📍</span>
+          <span className="atb-area">{area}</span>
+          <svg className="atb-caret" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        {open && (
+          <>
+            <div className="atb-backdrop" onClick={() => setOpen(false)} />
+            <ul className="atb-dropdown">
+              {LOCATION_OPTIONS.map((loc) => (
+                <li key={loc}>
+                  <button
+                    className={`atb-dropdown-item${area === loc ? ' active' : ''}`}
+                    onClick={() => { setArea(loc); setOpen(false) }}
+                  >
+                    {area === loc && <span className="atb-check">✓</span>}
+                    {loc}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
       <div className="atb-actions">
         <button className="atb-btn" onClick={onGoSearch} aria-label="검색">
           <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>

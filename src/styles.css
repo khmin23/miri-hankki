@@ -1100,6 +1100,31 @@ img { display: block; width: 100%; object-fit: cover; }
 }
 .atb-pin { font-size: 1rem; }
 .atb-caret { color: var(--text-muted); margin-top: 1px; }
+.atb-location-wrap { position: relative; }
+.atb-backdrop { position: fixed; inset: 0; z-index: 99; }
+.atb-dropdown {
+  position: absolute; top: calc(100% + 8px); left: 0;
+  background: white; border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+  border: 1px solid var(--border);
+  min-width: 140px; z-index: 100;
+  padding: 6px; list-style: none; margin: 0;
+  animation: dropIn 0.15s ease;
+}
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.atb-dropdown-item {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 10px 14px;
+  font-size: 0.92rem; font-weight: 600; color: var(--text);
+  border-radius: 9px; text-align: left;
+  transition: background 0.12s;
+}
+.atb-dropdown-item:hover { background: var(--beige); }
+.atb-dropdown-item.active { color: var(--coral); }
+.atb-check { font-size: 0.85rem; color: var(--coral); }
 .atb-actions { display: flex; gap: 4px; }
 .atb-btn {
   width: 38px; height: 38px;
