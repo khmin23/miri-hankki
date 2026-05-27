@@ -1921,15 +1921,30 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
             ) : null
           })()}
 
-          {item.media?.interior?.src && item.media.interior.type === 'image' && (
+          {item.media?.interior?.src && (
             <div className="detail-section">
               <h3>가게 내부</h3>
               <div className="interior-viewer-card">
-                <img
-                  src={asset(item.media.interior.src)}
-                  alt={`${item.name} 가게 내부`}
-                  style={{ width: '100%', borderRadius: '12px', display: 'block' }}
-                />
+                {item.media.interior.type === 'html360' ? (
+                  <iframe
+                    title={`${item.name} 가게 내부`}
+                    src={asset(item.media.interior.src)}
+                    loading="lazy"
+                  />
+                ) : item.media.interior.type === 'image' ? (
+                  <img
+                    src={asset(item.media.interior.src)}
+                    alt={`${item.name} 가게 내부`}
+                    style={{ width: '100%', borderRadius: '12px', display: 'block' }}
+                  />
+                ) : (
+                  <video
+                    controls
+                    playsInline
+                    poster={item.media.interior.poster ? asset(item.media.interior.poster) : undefined}
+                    src={asset(item.media.interior.src)}
+                  />
+                )}
               </div>
             </div>
           )}
