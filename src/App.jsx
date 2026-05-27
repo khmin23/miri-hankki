@@ -17,12 +17,11 @@ function haversine(lat1, lon1, lat2, lon2) {
 function getEta(item, userLoc) {
   if (!userLoc) return item.eta
   const km = haversine(userLoc.lat, userLoc.lng, item.lat, item.lng)
-  if (km < 2.5) {
-    const mins = Math.max(1, Math.round(km / 5 * 60))
-    return `도보 약 ${mins}분`
+  if (km < 1) {
+    const m = Math.round(km * 1000 / 10) * 10
+    return `${m}m`
   } else {
-    const mins = Math.max(1, Math.round(km / 40 * 60))
-    return `차량 약 ${mins}분`
+    return `${km.toFixed(1)}km`
   }
 }
 
