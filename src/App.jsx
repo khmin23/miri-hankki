@@ -1905,7 +1905,7 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
           <div className="detail-divider" />
 
           {item.photos?.length > 0 && (() => {
-            const galleryPhotos = item.banner ? item.photos : item.photos.slice(1)
+            const galleryPhotos = item.photos
             return galleryPhotos.length > 0 ? (
               <div className="detail-section">
                 <h3>음식 사진</h3>
