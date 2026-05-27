@@ -706,6 +706,56 @@ function MyFoodMap({ visitRecords, onSelect }) {
   )
 }
 
+/* ─── 프로필 설정 화면 ─────────────────────────────────── */
+const PROFILE_AVATARS = ['🌊','🍱','🥢','🍜','☕','🥐','🍖','🌶️','🍣','🥗','🍙','🍷']
+
+function ProfileSetup({ onDone }) {
+  const [name, setName]     = useState('')
+  const [avatar, setAvatar] = useState('🌊')
+
+  const handleSubmit = () => {
+    const trimmed = name.trim()
+    if (!trimmed) return
+    const profile = { name: trimmed, avatar }
+    window.localStorage.setItem('miri-hankki-profile', JSON.stringify(profile))
+    onDone(profile)
+  }
+
+  return (
+    <div className="profile-setup">
+      <div className="ps-inner">
+        <div className="ps-selected-avatar">{avatar}</div>
+        <h1 className="ps-title">미리한끼에<br/>오신 걸 환영해요 🎉</h1>
+        <p className="ps-sub">닉네임과 아바타를 설정해주세요</p>
+
+        <div className="ps-avatar-grid">
+          {PROFILE_AVATARS.map((em) => (
+            <button
+              key={em}
+              className={`ps-avatar-btn${avatar === em ? ' active' : ''}`}
+              onClick={() => setAvatar(em)}
+            >{em}</button>
+          ))}
+        </div>
+
+        <input
+          className="ps-name-input"
+          placeholder="닉네임 입력 (예: 광안 미식가)"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+          maxLength={12}
+        />
+        <button
+          className={`ps-submit${name.trim() ? '' : ' disabled'}`}
+          onClick={handleSubmit}
+          disabled={!name.trim()}
+        >🍽️ 시작하기</button>
+      </div>
+    </div>
+  )
+}
+
 /* ─── 스플래시 화면 ─────────────────────────────────────── */
 function Splash({ onDone }) {
   useEffect(() => {
@@ -1164,7 +1214,7 @@ function SavedScreen({ savedIds, onToggleSave, onSelect }) {
 }
 
 /* ─── 마이 화면 ─────────────────────────────────────────── */
-function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, setVisitRecords, reviews, setReviews, isInstalledApp, installPrompt, onInstall, showInstallGuide, setShowInstallGuide }) {
+function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, setVisitRecords, reviews, setReviews, isInstalledApp, installPrompt, onInstall, showInstallGuide, setShowInstallGuide, profile, onEditProfile }) {
   const [activeFilter, setActiveFilter] = useState('전체')
   const [rouletteItem, setRouletteItem] = useState(null)
   const [isSpinning, setIsSpinning] = useState(false)
@@ -1308,11 +1358,15 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, set
       {/* ── 1. 프로필 헤로 ── */}
       <div className="my-hero">
         <div className="my-hero-content">
-          <div className="my-avatar-lg">🌊</div>
+          <div className="my-avatar-lg">{profile?.avatar ?? '🌊'}</div>
           <div className="my-hero-info">
-            <strong className="my-hero-name">광안 미식가</strong>
-            <p className="my-hero-bio">혼밥도 맛있게, 부산의 숨은 맛집을 찾아서 🗺️</p>
+            <strong className="my-hero-name">{profile?.name ?? '미식가'}</strong>
+            <p className="my-hero-bio">부산의 숨은 맛집을 찾아서 🗺️</p>
           </div>
+          <button className="my-edit-profile-btn" onClick={() => {
+            const newName = window.prompt('닉네임을 입력하세요', profile?.name ?? '')
+            if (newName && newName.trim()) onEditProfile({ ...profile, name: newName.trim() })
+          }} aria-label="프로필 수정">✏️</button>
         </div>
         <div className="my-stats-row">
           {[
@@ -1978,7 +2032,12 @@ export default function App() {
   const isWeb   = bp !== 'mobile'
   const userLoc = useUserLocation()
 
+  const [profile, setProfile] = useState(() => {
+    try { const s = window.localStorage.getItem('miri-hankki-profile'); return s ? JSON.parse(s) : null }
+    catch { return null }
+  })
   const [showSplash, setShowSplash]       = useState(() => !isWeb)
+  const [showProfileSetup, setShowProfileSetup] = useState(false)
   const [activeTab, setActiveTab]         = useState('home')
   const [selectedId, setSelectedId]       = useState(null)
   const [mapSelectedId, setMapSelectedId] = useState(restaurants[0].id)
@@ -2093,7 +2152,9 @@ export default function App() {
     <div className="app-wrapper">
       <div className="app-frame">
         {showSplash && !isWeb ? (
-          <Splash onDone={() => setShowSplash(false)} />
+          <Splash onDone={() => { setShowSplash(false); if (!profile) setShowProfileSetup(true) }} />
+        ) : showProfileSetup ? (
+          <ProfileSetup onDone={(p) => { setProfile(p); setShowProfileSetup(false) }} />
         ) : (
           <div className={`app-layout${isWeb ? ' app-layout-web' : ''}`}>
             {isWeb && (
@@ -2153,6 +2214,8 @@ export default function App() {
                   onInstall={handleInstallApp}
                   showInstallGuide={showInstallGuide}
                   setShowInstallGuide={setShowInstallGuide}
+                  profile={profile}
+                  onEditProfile={(p) => { setProfile(p); window.localStorage.setItem('miri-hankki-profile', JSON.stringify(p)) }}
                 />
               )}
             </main>

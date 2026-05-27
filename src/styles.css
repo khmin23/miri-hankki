@@ -1981,6 +1981,54 @@ img { display: block; width: 100%; object-fit: cover; }
   gap: 12px;
 }
 
+/* ── 프로필 설정 화면 ── */
+.profile-setup {
+  position: fixed; inset: 0; z-index: 200;
+  background: linear-gradient(160deg, #fff5f3 0%, #ffe8e2 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.ps-inner {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 18px; width: 100%; max-width: 360px;
+}
+.ps-selected-avatar { font-size: 4rem; line-height: 1; }
+.ps-title { font-size: 1.4rem; font-weight: 900; text-align: center; color: var(--text); line-height: 1.4; margin: 0; }
+.ps-sub { font-size: 0.88rem; color: var(--text-muted); margin: 0; }
+.ps-avatar-grid {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; width: 100%;
+}
+.ps-avatar-btn {
+  font-size: 1.6rem; padding: 8px; border-radius: 12px;
+  background: white; border: 2px solid var(--border);
+  transition: all 0.15s; line-height: 1;
+}
+.ps-avatar-btn.active { border-color: var(--coral); background: #fff0ed; transform: scale(1.12); }
+.ps-name-input {
+  width: 100%; padding: 14px 16px; border-radius: 14px;
+  border: 2px solid var(--border); font-size: 1rem; font-weight: 600;
+  outline: none; box-sizing: border-box; background: white;
+  transition: border-color 0.15s;
+}
+.ps-name-input:focus { border-color: var(--coral); }
+.ps-submit {
+  width: 100%; padding: 16px;
+  background: linear-gradient(90deg, var(--coral), var(--coral-dark));
+  color: white; border-radius: 14px; font-size: 1.05rem; font-weight: 900;
+  transition: opacity 0.15s;
+}
+.ps-submit.disabled { opacity: 0.4; }
+
+/* 프로필 수정 버튼 */
+.my-edit-profile-btn {
+  position: absolute; top: 0; right: 0;
+  font-size: 1rem; padding: 6px 10px;
+  color: rgba(255,255,255,0.8);
+  border-radius: 8px;
+  transition: color 0.15s;
+}
+.my-edit-profile-btn:hover { color: white; }
+
 /* ── 프로필 히어로 ── */
 .my-hero {
   background: linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 55%, #9c3220 100%);
@@ -2010,6 +2058,7 @@ img { display: block; width: 100%; object-fit: cover; }
   display: flex;
   align-items: center;
   gap: 16px;
+  position: relative;
   margin-bottom: 22px;
   position: relative;
   z-index: 1;
