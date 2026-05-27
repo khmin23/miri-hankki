@@ -621,7 +621,12 @@ function InteractiveMap({ items, activeId, onActive, mode = 'overview' }) {
 }
 
 /* ─── 스플래시 화면 ─────────────────────────────────────── */
-function Splash({ onEnter, onKeyword }) {
+function Splash({ onDone }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, 2000)
+    return () => clearTimeout(t)
+  }, [onDone])
+
   return (
     <div className="splash">
       <div className="splash-bg">
@@ -639,10 +644,6 @@ function Splash({ onEnter, onKeyword }) {
             <span className="title-ko accent">미리한끼</span>
           </h1>
           <p className="splash-subtitle">부산에서, 미리 만나는 맛있는 한 끼 ❤️</p>
-        </div>
-        <div className="splash-actions">
-          <button className="splash-btn-primary" onClick={onEnter}>🍽️ 맛집 찾기</button>
-          <button className="splash-btn-secondary" onClick={onKeyword}>🔍 키워드 추천받기</button>
         </div>
       </div>
     </div>
@@ -1824,7 +1825,7 @@ export default function App() {
   const isWeb   = bp !== 'mobile'
   const userLoc = useUserLocation()
 
-  const [showSplash, setShowSplash]       = useState(false)
+  const [showSplash, setShowSplash]       = useState(() => !isWeb)
   const [activeTab, setActiveTab]         = useState('home')
   const [selectedId, setSelectedId]       = useState(null)
   const [mapSelectedId, setMapSelectedId] = useState(restaurants[0].id)
@@ -1948,7 +1949,9 @@ export default function App() {
     <UserLocCtx.Provider value={userLoc}>
     <div className="app-wrapper">
       <div className="app-frame">
-        {false ? null : (
+        {showSplash && !isWeb ? (
+          <Splash onDone={() => setShowSplash(false)} />
+        ) : (
           <div className={`app-layout${isWeb ? ' app-layout-web' : ''}`}>
             {isWeb && (
               <SideNav
