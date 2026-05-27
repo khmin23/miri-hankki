@@ -407,6 +407,62 @@ function SituationCard({ item, reason, onSelect, onOpenMap }) {
   )
 }
 
+/* ─── 상단 앱바 ─── */
+function AppTopBar({ onGoSearch }) {
+  return (
+    <header className="app-top-bar">
+      <button className="atb-location">
+        <span className="atb-pin">📍</span>
+        <span className="atb-area">광안리 근처</span>
+        <svg className="atb-caret" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div className="atb-actions">
+        <button className="atb-btn" onClick={onGoSearch} aria-label="검색">
+          <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <button className="atb-btn" aria-label="알림">
+          <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+      </div>
+    </header>
+  )
+}
+
+/* ─── 모던 카드 ─── */
+function ModernCard({ item, saved, onToggleSave, onSelect }) {
+  const userLoc = useContext(UserLocCtx)
+  const hours = operatingHours[item.id] || ''
+  const tags  = item.tags?.slice(0, 2) || []
+  return (
+    <article className="m-card" onClick={() => onSelect(item.id)}>
+      <div className="m-card-img-wrap">
+        <PhotoThumb item={item} className="m-card-img" />
+        <button
+          className={`m-heart ${saved ? 'on' : ''}`}
+          onClick={(e) => { e.stopPropagation(); onToggleSave(item.id) }}
+          aria-label="찜"
+        >{saved ? '❤️' : '🤍'}</button>
+        {item.experience?.soloOk && <span className="m-badge">혼밥 OK</span>}
+      </div>
+      <div className="m-card-body">
+        <strong className="m-card-name">{item.name}</strong>
+        <div className="m-card-meta">
+          <span className="m-card-dist">{getEta(item, userLoc)}</span>
+          <span className="m-sep">·</span>
+          <span className="m-card-cat">{item.category}</span>
+        </div>
+        <div className="m-card-tags">
+          {tags.map((t) => <span key={t} className="m-tag">{t}</span>)}
+        </div>
+        <div className="m-card-foot">
+          {hours && <span className="m-card-hours">🕐 {hours}</span>}
+          <span className="m-card-price">{item.price}</span>
+        </div>
+      </div>
+    </article>
+  )
+}
+
 /** 지도 SVG */
 function ApproximateMap({ items, selectedId, onSelect }) {
   return (
@@ -601,70 +657,37 @@ function Splash({ onEnter, onKeyword }) {
 
 /* ─── 홈 화면 ───────────────────────────────────────────── */
 function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onOpenMapItem }) {
-  const userLoc = useContext(UserLocCtx)
   const [moodFilter, setMoodFilter] = useState('전체')
-  const [heroSearch, setHeroSearch]  = useState('')
-  const [situation, setSituation]    = useState('혼밥')
-  const [selectedMapId, setSelectedMapId] = useState(restaurants[0].id)
+  const [situation, setSituation]   = useState('혼밥')
 
   const filtered = useMemo(() => {
-    return restaurants.filter((item) => {
-      if (moodFilter !== '전체' && getCuisineCategory(item) !== moodFilter) return false
-      if (heroSearch.trim()) {
-        const q = heroSearch.toLowerCase()
-        return (
-          item.name.toLowerCase().includes(q) ||
-          item.category.toLowerCase().includes(q) ||
-          item.location.toLowerCase().includes(q) ||
-          item.tags?.some((t) => t.toLowerCase().includes(q))
-        )
-      }
-      return true
-    })
-  }, [moodFilter, heroSearch])
-
-  useEffect(() => {
-    if (!filtered.some((item) => item.id === selectedMapId)) {
-      setSelectedMapId(filtered[0]?.id ?? restaurants[0].id)
-    }
-  }, [filtered, selectedMapId])
-
-  const selectedMapItem = useMemo(
-    () => filtered.find((item) => item.id === selectedMapId) ?? filtered[0] ?? restaurants[0],
-    [filtered, selectedMapId],
-  )
+    if (moodFilter === '전체') return restaurants
+    return restaurants.filter((item) => getCuisineCategory(item) === moodFilter)
+  }, [moodFilter])
 
   const situationItems = useMemo(() => getSituationRecommendations(situation), [situation])
 
   return (
     <div className="home-screen">
 
-      {/* ── Hero Banner ── */}
-      <div className="home-hero">
-        <div className="home-hero-inner">
-          <div className="home-hero-text">
-            <h1 className="home-hero-title">부산에서, 지금 딱 맞는 한 끼</h1>
-            <p className="home-hero-sub">광안리 · 남천동 로컬 맛집을 미리 골라두세요 🌊</p>
-          </div>
-          <div className="home-hero-search-wrap">
-            <input
-              className="home-hero-input"
-              value={heroSearch}
-              onChange={(e) => setHeroSearch(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && heroSearch && onGoSearch()}
-              placeholder="🔍 맛집, 지역, 음식을 검색해보세요"
-            />
-            <button className="home-hero-ai-btn" onClick={onGoSearch}>🔍 키워드 추천</button>
-          </div>
+      {/* ── 상단 앱바 ── */}
+      <AppTopBar onGoSearch={onGoSearch} />
+
+      {/* ── 프로모 배너 ── */}
+      <div className="home-promo">
+        <div className="promo-left">
+          <span className="promo-tag">#광안리 로컬 픽</span>
+          <p className="promo-title">지금 딱 맞는<br/><b>오늘의 한 끼</b>를 찾아보세요</p>
         </div>
+        <div className="promo-emoji">🌊</div>
       </div>
 
-      {/* ── Filter Bar ── */}
-      <div className="home-filter-bar">
+      {/* ── 카테고리 필터 ── */}
+      <div className="home-cat-row">
         {homeMoodCategories.map((c) => (
           <button
             key={c.id}
-            className={`home-filter-chip${moodFilter === c.id ? ' active' : ''}`}
+            className={`hcat-chip${moodFilter === c.id ? ' active' : ''}`}
             onClick={() => setMoodFilter(c.id)}
           >
             <span>{c.icon}</span>
@@ -673,113 +696,87 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
         ))}
       </div>
 
-      {/* ── Main Grid: Cards + Map Sidebar ── */}
-      <div className="home-main-grid">
-
-        {/* 카드 영역 */}
-        <div className="home-cards-col">
-          {(moodFilter !== '전체' || heroSearch) && (
-            <p className="home-results-label">
-              {filtered.length}곳
-              {moodFilter !== '전체' ? ` · ${moodFilter}` : ''}
-              {heroSearch ? ` · "${heroSearch}"` : ''}
-            </p>
-          )}
-          {filtered.length > 0 ? (
-            <div className="home-card-grid">
-              {filtered.map((item) => (
-                <RestaurantCard
-                  key={item.id}
-                  item={item}
-                  saved={savedIds.includes(item.id)}
-                  onToggleSave={onToggleSave}
-                  onSelect={onSelect}
-                  isSelected={selectedMapId === item.id}
-                  onHover={setSelectedMapId}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="empty-box">
-              <p>조건에 맞는 맛집이 없어요 😅</p>
-              <button onClick={() => { setMoodFilter('전체'); setHeroSearch('') }}>필터 초기화</button>
-            </div>
-          )}
-        </div>
-
-        {/* 지도 사이드바 */}
-        <div className="home-map-col">
-          <div className="home-map-sticky">
-            <div className="home-map-box">
-              <InteractiveMap
-                items={filtered.length > 0 ? filtered : restaurants}
-                activeId={selectedMapItem?.id}
-                onActive={setSelectedMapId}
-                mode="overview"
-              />
-            </div>
-
-            {selectedMapItem && (
-              <button className="home-sidebar-card" onClick={() => onSelect(selectedMapItem.id)}>
-                <div className="home-sidebar-thumb">
-                  <PhotoThumb item={selectedMapItem} />
-                </div>
-                <div className="home-sidebar-info">
-                  <strong>{selectedMapItem.name}</strong>
-                  <p>{getCuisineCategory(selectedMapItem)} · {selectedMapItem.location}</p>
-                  <em>{getEta(selectedMapItem, userLoc)}</em>
-                </div>
-                <span className="map-chevron">›</span>
-              </button>
-            )}
-
-            <div className="home-sidebar-btns">
-              <button onClick={() => selectedMapItem && onSelect(selectedMapItem.id)}>상세보기</button>
-              <button onClick={() => onGoMap()}>🗺️ 전체 지도</button>
-            </div>
-          </div>
-        </div>
+      {/* ── 결과 헤더 ── */}
+      <div className="home-list-hd">
+        <span className="home-cnt">
+          {filtered.length}곳{moodFilter !== '전체' ? ` · ${moodFilter}` : ''}
+        </span>
+        <button className="home-sort" onClick={onGoMap}>🗺️ 지도로 보기</button>
       </div>
 
+      {/* ── 메인 카드 그리드 ── */}
+      {filtered.length > 0 ? (
+        <div className="home-v2-grid">
+          {filtered.map((item) => (
+            <ModernCard
+              key={item.id}
+              item={item}
+              saved={savedIds.includes(item.id)}
+              onToggleSave={onToggleSave}
+              onSelect={onSelect}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="empty-box">
+          <p>조건에 맞는 맛집이 없어요 😅</p>
+          <button onClick={() => setMoodFilter('전체')}>전체 보기</button>
+        </div>
+      )}
+
       {/* ── 상황별 추천 ── */}
-      <section className="home-section situation-section">
-        <div className="section-header">
+      <section className="home-situation-section">
+        <div className="home-sit-hd">
           <h2>상황별 추천</h2>
         </div>
-        <div className="situation-chips">
-          {situationCategories.map((category) => (
+        <div className="home-sit-chips">
+          {situationCategories.map((cat) => (
             <button
-              key={category.id}
-              className={`situation-chip ${situation === category.id ? 'active' : ''}`}
-              onClick={() => setSituation(category.id)}
+              key={cat.id}
+              className={`sit-chip${situation === cat.id ? ' active' : ''}`}
+              onClick={() => setSituation(cat.id)}
             >
-              <span>{category.icon}</span>
-              <span>{category.label}</span>
+              <span>{cat.icon}</span>
+              <span>{cat.label}</span>
             </button>
           ))}
         </div>
-        <div className="situation-list">
+        <div className="home-sit-list">
           {situationItems.map(({ item, reason }) => (
-            <SituationCard
+            <ModernSituationCard
               key={`${situation}-${item.id}`}
               item={item}
               reason={reason}
               onSelect={onSelect}
-              onOpenMap={onOpenMapItem}
+              onGoMap={onOpenMapItem}
             />
           ))}
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="home-footer">
-        <div className="home-footer-inner">
-          <span className="home-footer-brand">🍽️ 부산 미리한끼</span>
-          <p>광안리 · 남천동 로컬 맛집 큐레이션</p>
-          <p className="home-footer-copy">© 2025 미리한끼. Made with ❤️ in Busan.</p>
-        </div>
-      </footer>
+      {/* ── 하단 여백 ── */}
+      <div style={{ height: 24 }} />
     </div>
+  )
+}
+
+function ModernSituationCard({ item, reason, onSelect, onGoMap }) {
+  const userLoc = useContext(UserLocCtx)
+  return (
+    <article className="msit-card" onClick={() => onSelect(item.id)}>
+      <div className="msit-thumb">
+        <PhotoThumb item={item} className="msit-img" />
+      </div>
+      <div className="msit-body">
+        <strong className="msit-name">{item.name}</strong>
+        <p className="msit-reason">{reason}</p>
+        <div className="msit-meta">
+          <span>📍 {getEta(item, userLoc)}</span>
+          <span>{item.price}</span>
+        </div>
+      </div>
+      <svg className="msit-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </article>
   )
 }
 
