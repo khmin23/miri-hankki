@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { restaurants } from './data/restaurants'
+import { signUp, signIn, signOut, onAuthStateChanged, isConfigured as firebaseConfigured } from './firebase'
 
 const BASE = import.meta.env.BASE_URL
 
@@ -706,6 +707,74 @@ function MyFoodMap({ visitRecords, onSelect }) {
   )
 }
 
+/* ─── 로그인 / 회원가입 화면 ───────────────────────────── */
+function AuthScreen({ onDone }) {
+  const [mode, setMode]         = useState('login')   // 'login' | 'signup'
+  const [email, setEmail]       = useState('')
+  const [password, setPassword] = useState('')
+  const [confirm, setConfirm]   = useState('')
+  const [error, setError]       = useState('')
+  const [loading, setLoading]   = useState(false)
+
+  const handleSubmit = async () => {
+    setError('')
+    if (!email.trim() || !password) { setError('이메일과 비밀번호를 입력해주세요'); return }
+    if (mode === 'signup' && password !== confirm) { setError('비밀번호가 일치하지 않아요'); return }
+    if (password.length < 6) { setError('비밀번호는 6자 이상이어야 해요'); return }
+    setLoading(true)
+    try {
+      const user = mode === 'signup'
+        ? await signUp(email.trim(), password)
+        : await signIn(email.trim(), password)
+      onDone(user)
+    } catch (e) {
+      const msg = {
+        'auth/email-already-in-use': '이미 사용 중인 이메일이에요',
+        'auth/user-not-found':       '등록되지 않은 이메일이에요',
+        'auth/wrong-password':       '비밀번호가 틀렸어요',
+        'auth/invalid-email':        '이메일 형식이 올바르지 않아요',
+        'auth/too-many-requests':    '잠시 후 다시 시도해주세요',
+        'auth/invalid-credential':   '이메일 또는 비밀번호가 틀렸어요',
+      }[e.code] || '오류가 발생했어요. 다시 시도해주세요'
+      setError(msg)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="auth-screen">
+      <div className="auth-inner">
+        <div className="auth-logo">🌊</div>
+        <h1 className="auth-title">부산 미리한끼</h1>
+        <p className="auth-sub">{mode === 'login' ? '다시 오셨군요! 로그인해주세요' : '부산 맛집 여정을 시작해요'}</p>
+
+        <div className="auth-tab-row">
+          <button className={`auth-tab${mode === 'login' ? ' active' : ''}`} onClick={() => { setMode('login'); setError('') }}>로그인</button>
+          <button className={`auth-tab${mode === 'signup' ? ' active' : ''}`} onClick={() => { setMode('signup'); setError('') }}>회원가입</button>
+        </div>
+
+        <div className="auth-form">
+          <input className="auth-input" type="email" placeholder="이메일" value={email}
+            onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
+          <input className="auth-input" type="password" placeholder="비밀번호 (6자 이상)" value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => mode === 'login' && e.key === 'Enter' && handleSubmit()} />
+          {mode === 'signup' && (
+            <input className="auth-input" type="password" placeholder="비밀번호 확인" value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSubmit()} />
+          )}
+          {error && <p className="auth-error">{error}</p>}
+          <button className={`auth-submit${loading ? ' loading' : ''}`} onClick={handleSubmit} disabled={loading}>
+            {loading ? '처리 중...' : mode === 'login' ? '로그인' : '회원가입'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /* ─── 프로필 설정 화면 ─────────────────────────────────── */
 const PROFILE_AVATARS = ['🌊','🍱','🥢','🍜','☕','🥐','🍖','🌶️','🍣','🥗','🍙','🍷']
 
@@ -1333,9 +1402,21 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, set
 
   const SETTINGS = [
     { icon: '🔔', label: '알림 설정',  sub: '새 맛집 알림 켜짐',   action: () => showToast('알림 설정은 준비 중이에요') },
-    { icon: '👤', label: '계정 설정',  sub: '닉네임·프로필 수정', action: () => showToast('계정 설정은 준비 중이에요') },
+    { icon: '👤', label: '계정 설정',  sub: '닉네임·프로필 수정', action: () => {
+      const newName = window.prompt('닉네임을 입력하세요', profile?.name ?? '')
+      if (newName && newName.trim()) onEditProfile({ ...profile, name: newName.trim() })
+    }},
     { icon: '💬', label: '문의하기',   sub: '의견을 보내주세요',  action: () => showToast('문의: contact@mirihankki.com') },
-    { icon: '🚪', label: '로그아웃',   sub: '',                   action: () => showToast('로그아웃 기능은 준비 중이에요') },
+    { icon: '🚪', label: '로그아웃',   sub: firebaseConfigured ? '계정에서 로그아웃' : '',
+      action: async () => {
+        if (firebaseConfigured) {
+          await signOut()
+          showToast('로그아웃 됐어요')
+        } else {
+          showToast('로그아웃 기능은 준비 중이에요')
+        }
+      }
+    },
   ]
 
   function spin() {
@@ -2032,12 +2113,20 @@ export default function App() {
   const isWeb   = bp !== 'mobile'
   const userLoc = useUserLocation()
 
+  const [firebaseUser, setFirebaseUser]   = useState(undefined) // undefined=로딩중, null=미로그인
+  const [showAuth, setShowAuth]           = useState(false)
   const [profile, setProfile] = useState(() => {
     try { const s = window.localStorage.getItem('miri-hankki-profile'); return s ? JSON.parse(s) : null }
     catch { return null }
   })
   const [showSplash, setShowSplash]       = useState(() => !isWeb)
   const [showProfileSetup, setShowProfileSetup] = useState(false)
+
+  // Firebase 인증 상태 감지
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged((user) => setFirebaseUser(user ?? null))
+    return unsubscribe
+  }, [])
   const [activeTab, setActiveTab]         = useState('home')
   const [selectedId, setSelectedId]       = useState(null)
   const [mapSelectedId, setMapSelectedId] = useState(restaurants[0].id)
@@ -2152,7 +2241,16 @@ export default function App() {
     <div className="app-wrapper">
       <div className="app-frame">
         {showSplash && !isWeb ? (
-          <Splash onDone={() => { setShowSplash(false); if (!profile) setShowProfileSetup(true) }} />
+          <Splash onDone={() => {
+            setShowSplash(false)
+            if (firebaseConfigured && !firebaseUser) setShowAuth(true)
+            else if (!profile) setShowProfileSetup(true)
+          }} />
+        ) : showAuth && firebaseConfigured && !firebaseUser ? (
+          <AuthScreen onDone={() => {
+            setShowAuth(false)
+            if (!profile) setShowProfileSetup(true)
+          }} />
         ) : showProfileSetup ? (
           <ProfileSetup onDone={(p) => { setProfile(p); setShowProfileSetup(false) }} />
         ) : (

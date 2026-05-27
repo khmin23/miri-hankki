@@ -1981,6 +1981,49 @@ img { display: block; width: 100%; object-fit: cover; }
   gap: 12px;
 }
 
+/* ── 로그인 / 회원가입 화면 ── */
+.auth-screen {
+  position: fixed; inset: 0; z-index: 200;
+  background: linear-gradient(160deg, #fff5f3 0%, #ffe8e2 100%);
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.auth-inner {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 16px; width: 100%; max-width: 360px;
+}
+.auth-logo { font-size: 3.5rem; }
+.auth-title { font-size: 1.5rem; font-weight: 900; color: var(--text); margin: 0; }
+.auth-sub { font-size: 0.88rem; color: var(--text-muted); margin: 0; text-align: center; }
+.auth-tab-row {
+  display: flex; width: 100%;
+  background: white; border-radius: 12px;
+  border: 1.5px solid var(--border); overflow: hidden;
+}
+.auth-tab {
+  flex: 1; padding: 12px; font-size: 0.95rem; font-weight: 700;
+  color: var(--text-muted); transition: all 0.15s;
+}
+.auth-tab.active { background: var(--coral); color: white; }
+.auth-form { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.auth-input {
+  width: 100%; padding: 14px 16px; border-radius: 12px;
+  border: 1.5px solid var(--border); font-size: 0.95rem;
+  outline: none; box-sizing: border-box; background: white;
+  transition: border-color 0.15s;
+}
+.auth-input:focus { border-color: var(--coral); }
+.auth-error {
+  font-size: 0.82rem; color: #e03030; font-weight: 600;
+  padding: 8px 12px; background: #fff0f0; border-radius: 8px; margin: 0;
+}
+.auth-submit {
+  width: 100%; padding: 15px;
+  background: linear-gradient(90deg, var(--coral), var(--coral-dark));
+  color: white; border-radius: 12px; font-size: 1rem; font-weight: 900;
+  transition: opacity 0.15s; margin-top: 4px;
+}
+.auth-submit.loading { opacity: 0.6; }
+
 /* ── 프로필 설정 화면 ── */
 .profile-setup {
   position: fixed; inset: 0; z-index: 200;
