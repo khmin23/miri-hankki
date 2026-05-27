@@ -153,8 +153,8 @@ const cuisineCategories = [
   { id: '한식',   keywords: ['한식', '곰탕', '국밥'] },
   { id: '중식',   keywords: ['중식', '마라'] },
   { id: '양식',   keywords: ['양식', '와인바', '다이닝바'] },
-  { id: '브런치', keywords: ['브런치'] },
-  { id: '카페',   keywords: ['카페', '에스프레소바'] },
+  { id: '브런치', keywords: ['브런치', '카페', '에스프레소바'] },
+  { id: '카페',   keywords: ['카페', '에스프레소바', '브런치'] },
   { id: '아시안', keywords: ['아시안퓨전', '바오번', '우육면', '마파'] },
 ]
 
@@ -657,7 +657,9 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
 
   const filtered = useMemo(() => {
     if (moodFilter === '전체') return restaurants
-    return restaurants.filter((item) => getCuisineCategory(item) === moodFilter)
+    const cat = cuisineCategories.find((c) => c.id === moodFilter)
+    if (!cat || cat.keywords.length === 0) return restaurants
+    return restaurants.filter((item) => cat.keywords.some((k) => item.category.includes(k)))
   }, [moodFilter])
 
   const situationItems = useMemo(() => getSituationRecommendations(situation), [situation])
