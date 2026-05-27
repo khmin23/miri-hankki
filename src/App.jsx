@@ -644,6 +644,68 @@ function InteractiveMap({ items, activeId, onActive, mode = 'overview' }) {
   )
 }
 
+/* ─── 내 음식 지도 ─────────────────────────────────────── */
+function MyFoodMap({ visitRecords, onSelect }) {
+  const [activeId, setActiveId] = useState(null)
+
+  // 방문한 식당 고유 목록 (방문 횟수 포함)
+  const visitedItems = useMemo(() => {
+    const countMap = {}
+    visitRecords.forEach((v) => {
+      if (!countMap[v.restaurantId]) countMap[v.restaurantId] = { count: 0, lastDish: v.dish, lastDate: v.date }
+      countMap[v.restaurantId].count += 1
+      countMap[v.restaurantId].lastDish = v.dish
+      countMap[v.restaurantId].lastDate = v.date
+    })
+    return restaurants
+      .filter((r) => countMap[r.id])
+      .map((r) => ({ ...r, visitCount: countMap[r.id].count, lastDish: countMap[r.id].lastDish, lastDate: countMap[r.id].lastDate }))
+  }, [visitRecords])
+
+  const activeItem = visitedItems.find((r) => r.id === activeId) ?? visitedItems[0] ?? null
+
+  if (visitedItems.length === 0) {
+    return <div className="my-saved-empty"><span>🗺️</span><p>방문 기록을 추가하면 지도에 표시돼요</p></div>
+  }
+
+  return (
+    <div className="my-food-map-wrap">
+      <InteractiveMap
+        items={visitedItems}
+        activeId={activeId ?? visitedItems[0]?.id}
+        onActive={setActiveId}
+        mode="overview"
+      />
+      {activeItem && (
+        <button className="my-food-map-info" onClick={() => onSelect(activeItem.id)}>
+          <span className="mfm-icon">{activeItem.icon}</span>
+          <div className="mfm-body">
+            <strong>{activeItem.name}</strong>
+            <p>{activeItem.lastDish} · {activeItem.lastDate}</p>
+          </div>
+          <div className="mfm-right">
+            <span className="mfm-cnt">{activeItem.visitCount}회</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </button>
+      )}
+      <div className="my-food-map-list">
+        {visitedItems.map((r) => (
+          <button
+            key={r.id}
+            className={`mfm-chip${activeId === r.id || (!activeId && visitedItems[0]?.id === r.id) ? ' active' : ''}`}
+            onClick={() => setActiveId(r.id)}
+          >
+            <span>{r.icon}</span>
+            <span>{r.name}</span>
+            <span className="mfm-chip-cnt">{r.visitCount}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 /* ─── 스플래시 화면 ─────────────────────────────────────── */
 function Splash({ onDone }) {
   useEffect(() => {
@@ -1450,24 +1512,13 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, set
         )}
       </div>
 
-      {/* ── 6. 내 지도 기록 ── */}
+      {/* ── 6. 내 음식 지도 ── */}
       <section className="my-section">
         <div className="my-section-hd">
           <span className="my-section-title">🗺️ 내 음식 지도</span>
+          {visitRecords.length > 0 && <span className="my-section-count">{[...new Set(visitRecords.map((v) => v.restaurantId))].length}곳</span>}
         </div>
-        <div className="my-map-pins">
-          {visitRecords.map((v, i) => (
-            <div key={i} className="my-map-pin-row" onClick={() => onSelect(v.restaurantId)} style={{ cursor: 'pointer' }}>
-              <span className="my-map-pin-icon">{v.icon}</span>
-              <div className="my-map-pin-info">
-                <strong>{v.name}</strong>
-                <p>{v.dish} · {v.date}</p>
-              </div>
-              <span className="my-map-pin-dot" />
-            </div>
-          ))}
-        </div>
-        <button className="my-map-cta" onClick={onGoMap}>🗺️ 내 음식 지도 보기</button>
+        <MyFoodMap visitRecords={visitRecords} onSelect={onSelect} />
       </section>
 
       {/* ── 7. 리뷰 & 메모 ── */}

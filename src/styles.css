@@ -2322,7 +2322,39 @@ img { display: block; width: 100%; object-fit: cover; }
 }
 .roulette-btn.spinning { background: var(--text-muted); }
 
-/* ── 지도 기록 ── */
+/* ── 내 음식 지도 ── */
+.my-food-map-wrap { display: flex; flex-direction: column; gap: 10px; }
+.my-food-map-wrap .interactive-map { height: 220px; border-radius: 14px; overflow: hidden; }
+.my-food-map-wrap .leaflet-map { border-radius: 14px; }
+.my-food-map-info {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; background: white;
+  border-radius: 12px; border: 1px solid var(--border);
+  width: 100%; text-align: left;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.mfm-icon { font-size: 1.6rem; flex-shrink: 0; }
+.mfm-body { flex: 1; min-width: 0; }
+.mfm-body strong { font-size: 0.88rem; font-weight: 800; display: block; }
+.mfm-body p { font-size: 0.72rem; color: var(--text-muted); margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mfm-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.mfm-cnt { font-size: 0.78rem; font-weight: 800; color: var(--coral); background: #fff0ed; padding: 2px 8px; border-radius: 20px; }
+.my-food-map-list { display: flex; gap: 6px; flex-wrap: wrap; }
+.mfm-chip {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 12px; border-radius: 20px;
+  background: white; border: 1.5px solid var(--border);
+  font-size: 0.8rem; font-weight: 600; color: var(--text-md);
+  transition: all 0.15s;
+}
+.mfm-chip.active { background: var(--coral); border-color: var(--coral); color: white; }
+.mfm-chip-cnt {
+  font-size: 0.7rem; font-weight: 800;
+  background: rgba(0,0,0,0.1); padding: 1px 6px; border-radius: 10px;
+}
+.mfm-chip.active .mfm-chip-cnt { background: rgba(255,255,255,0.3); }
+
+/* ── 지도 기록 (구버전 호환) ── */
 .my-map-pins { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
 .my-map-pin-row {
   display: flex; align-items: center; gap: 12px;
