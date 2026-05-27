@@ -1824,7 +1824,7 @@ export default function App() {
   const isWeb   = bp !== 'mobile'
   const userLoc = useUserLocation()
 
-  const [showSplash, setShowSplash]       = useState(() => !isWeb)
+  const [showSplash, setShowSplash]       = useState(false)
   const [activeTab, setActiveTab]         = useState('home')
   const [selectedId, setSelectedId]       = useState(null)
   const [mapSelectedId, setMapSelectedId] = useState(restaurants[0].id)
@@ -1948,12 +1948,7 @@ export default function App() {
     <UserLocCtx.Provider value={userLoc}>
     <div className="app-wrapper">
       <div className="app-frame">
-        {showSplash && !isWeb ? (
-          <Splash
-            onEnter={() => setShowSplash(false)}
-            onKeyword={() => { setShowSplash(false); setActiveTab('search') }}
-          />
-        ) : (
+        {false ? null : (
           <div className={`app-layout${isWeb ? ' app-layout-web' : ''}`}>
             {isWeb && (
               <SideNav
