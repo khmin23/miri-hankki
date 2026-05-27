@@ -15,7 +15,7 @@ function haversine(lat1, lon1, lat2, lon2) {
 }
 
 function getEta(item, userLoc) {
-  if (!userLoc) return item.eta
+  if (!userLoc) return ''
   const km = haversine(userLoc.lat, userLoc.lng, item.lat, item.lng)
   if (km < 1) {
     const m = Math.round(km * 1000 / 10) * 10
@@ -323,7 +323,7 @@ function TrendingItem({ item, saved, onToggleSave, onSelect }) {
       <div className="trending-body">
         <strong>{item.name}</strong>
         <p className="trending-sub">{item.category} · {item.location}</p>
-        <p className="trending-meta">{getEta(item, userLoc)}</p>
+        {getEta(item, userLoc) && <p className="trending-meta">{getEta(item, userLoc)}</p>}
       </div>
       <button
         className={`heart-btn sm ${saved ? 'saved' : ''}`}
@@ -366,7 +366,7 @@ function RestaurantCard({ item, saved, onToggleSave, onSelect, isSelected, onHov
           ))}
         </div>
         <div className="rest-card-foot">
-          <span className="rest-card-eta">📍 {getEta(item, userLoc)}</span>
+          {getEta(item, userLoc) && <span className="rest-card-eta">📍 {getEta(item, userLoc)}</span>}
           <span className="rest-card-price">{item.price}</span>
         </div>
       </div>
@@ -389,7 +389,7 @@ function SituationCard({ item, reason, onSelect, onOpenMap }) {
           </div>
           <p>{reason}</p>
           <div className="situation-meta">
-            <span>📍 {getEta(item, userLoc)}</span>
+            {getEta(item, userLoc) && <span>📍 {getEta(item, userLoc)}</span>}
             <span>⏳ {item.experience.waitTime}</span>
           </div>
         </div>
@@ -442,8 +442,7 @@ function ModernCard({ item, saved, onToggleSave, onSelect }) {
       <div className="m-card-body">
         <strong className="m-card-name">{item.name}</strong>
         <div className="m-card-meta">
-          <span className="m-card-dist">{getEta(item, userLoc)}</span>
-          <span className="m-sep">·</span>
+          {getEta(item, userLoc) && <><span className="m-card-dist">{getEta(item, userLoc)}</span><span className="m-sep">·</span></>}
           <span className="m-card-cat">{item.category}</span>
         </div>
         <div className="m-card-tags">
@@ -768,7 +767,7 @@ function ModernSituationCard({ item, reason, onSelect, onGoMap }) {
         <strong className="msit-name">{item.name}</strong>
         <p className="msit-reason">{reason}</p>
         <div className="msit-meta">
-          <span>📍 {getEta(item, userLoc)}</span>
+          {getEta(item, userLoc) && <span>📍 {getEta(item, userLoc)}</span>}
           <span>{item.price}</span>
         </div>
       </div>
@@ -866,7 +865,7 @@ function SearchScreen({ savedIds, onToggleSave, onSelect }) {
                   ))}
                 </div>
               )}
-              <p className="item-eta">{getEta(result.item, userLoc)}</p>
+              {getEta(result.item, userLoc) && <p className="item-eta">{getEta(result.item, userLoc)}</p>}
             </div>
           </div>
 
@@ -945,7 +944,7 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect, bp }) {
                 <div className="map-list-info">
                   <strong>{item.name}</strong>
                   <p>{getCuisineCategory(item)} · {item.location}</p>
-                  <p className="map-list-eta">{getEta(item, userLoc)}</p>
+                  {getEta(item, userLoc) && <p className="map-list-eta">{getEta(item, userLoc)}</p>}
                 </div>
                 {mapItem.id === item.id && <span className="map-list-active-dot" />}
               </button>
@@ -963,7 +962,7 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect, bp }) {
             <div className="map-selected-thumb"><PhotoThumb item={mapItem} /></div>
             <div className="map-selected-info">
               <strong>{mapItem.name}</strong>
-              <p>{mapItem.category} · {mapItem.location} · {getEta(mapItem, userLoc)}</p>
+              <p>{mapItem.category} · {mapItem.location}{getEta(mapItem, userLoc) ? ` · ${getEta(mapItem, userLoc)}` : ''}</p>
             </div>
             <span className="map-chevron">›</span>
           </div>
@@ -999,7 +998,7 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect, bp }) {
           <div className="map-bottom-info">
             <strong>{mapItem.name}</strong>
             <p>{mapItem.category} · {mapItem.location}</p>
-            <p className="item-eta">{getEta(mapItem, userLoc)}</p>
+            {getEta(mapItem, userLoc) && <p className="item-eta">{getEta(mapItem, userLoc)}</p>}
           </div>
           <span className="map-chevron">›</span>
         </div>
@@ -1022,7 +1021,7 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect, bp }) {
                   <span className="map-place-thumb"><PhotoThumb item={item} /></span>
                   <span className="map-place-copy">
                     <strong>{item.name}</strong>
-                    <small>{getCuisineCategory(item)} · {getEta(item, userLoc)}</small>
+                    <small>{getCuisineCategory(item)}{getEta(item, userLoc) ? ` · ${getEta(item, userLoc)}` : ''}</small>
                   </span>
                 </button>
               ))}
@@ -1549,7 +1548,7 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
           </div>
 
           <div className="detail-meta-grid">
-            <div className="meta-chip"><span>📍</span><span>{getEta(item, userLoc)}</span></div>
+            {getEta(item, userLoc) && <div className="meta-chip"><span>📍</span><span>{getEta(item, userLoc)}</span></div>}
             <div className="meta-chip"><span>🕐</span><span>{hours}</span></div>
             <div className="meta-chip"><span>🅿️</span><span>{parking}</span></div>
             <div className="meta-chip"><span>💬</span><span>{item.experience?.noise === '낮음' ? '조용함' : item.experience?.noise === '높음' ? '활발함' : '보통'}</span></div>
