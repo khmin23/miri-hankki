@@ -144,11 +144,6 @@ const accentColors = {
   ocean: '#4A90C4', forest: '#2F7D46', lime: '#7BAE3C',
 }
 
-const mapPinPositions = {
-  1: { x: 388, y: 136 }, 2: { x: 438, y: 152 }, 3: { x: 304, y: 232 },
-  4: { x: 350, y: 184 }, 5: { x: 202, y: 488 }, 6: { x: 272, y: 202 },
-}
-
 const cuisineCategories = [
   { id: '전체',   keywords: [] },
   { id: '한식',   keywords: ['한식', '곰탕', '국밥'] },
@@ -288,28 +283,6 @@ function PhotoThumb({ item, className = '' }) {
     <div className={`emoji-thumb ${accentClassNames[item.accent]} ${className}`}>
       <span>{item.icon}</span>
     </div>
-  )
-}
-
-/** 가로 스크롤 추천 카드 */
-function RecommendCard({ item, saved, onToggleSave, onSelect }) {
-  return (
-    <article className="rec-card" onClick={() => onSelect(item.id)}>
-      <div className="rec-card-img">
-        <PhotoThumb item={item} />
-        <button
-          className={`heart-btn ${saved ? 'saved' : ''}`}
-          onClick={(e) => { e.stopPropagation(); onToggleSave(item.id) }}
-          aria-label="찜"
-        >
-          {saved ? '❤️' : '🤍'}
-        </button>
-      </div>
-      <div className="rec-card-body">
-        <p className="rec-location">{item.location}</p>
-        <strong className="rec-name">{item.name.length > 8 ? item.name.slice(0, 8) + '…' : item.name}</strong>
-      </div>
-    </article>
   )
 }
 
@@ -479,42 +452,6 @@ function ModernCard({ item, saved, onToggleSave, onSelect }) {
         </div>
       </div>
     </article>
-  )
-}
-
-/** 지도 SVG */
-function ApproximateMap({ items, selectedId, onSelect }) {
-  return (
-    <div className="approx-map">
-      <svg viewBox="0 0 800 600" role="img">
-        <rect width="800" height="600" fill="#17304f" />
-        <path d="M 520 0 L 800 0 L 800 600 L 470 600 C 500 450 500 300 485 170 C 480 100 495 42 520 0 Z" fill="#256d93" />
-        <path d="M 0 0 H 520 C 492 70 480 132 486 200 C 496 322 492 450 470 600 H 0 Z" fill="#27384f" />
-        <path d="M 506 72 C 560 96 612 96 678 90 C 724 86 764 98 796 122" fill="none" stroke="#d7e7f6" strokeWidth="12" strokeLinecap="round" opacity="0.7" />
-        <path d="M 86 0 V 600 M 214 0 V 520 M 346 0 V 488 M 458 0 V 438" stroke="#42546d" strokeWidth="3" />
-        <path d="M 0 82 H 520 M 0 160 H 520 M 0 264 H 498 M 0 362 H 486 M 0 452 H 446" stroke="#42546d" strokeWidth="3" />
-        <text x="292" y="118" fill="#9db4d1" fontSize="22" fontWeight="800" textAnchor="middle">광안리</text>
-        <text x="178" y="318" fill="#8199b7" fontSize="18" fontWeight="800" textAnchor="middle">남천동</text>
-        <text x="652" y="74" fill="#b4d5e8" fontSize="16" fontWeight="800" textAnchor="middle">광안대교</text>
-        {items.map((item) => {
-          const pos = mapPinPositions[item.id]
-          const active = selectedId === item.id
-          return (
-            <g key={item.id} className="map-svg-pin" onClick={() => onSelect(item.id)} tabIndex="0" role="button" aria-label={`${item.name} 선택`}
-               onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onSelect(item.id)}>
-              <circle cx={pos.x} cy={pos.y} r={active ? 26 : 19} fill={active ? '#E8654A' : '#111827'} stroke={active ? '#ffd4c8' : '#74869d'} strokeWidth={active ? 5 : 2} />
-              <text x={pos.x} y={pos.y + 7} textAnchor="middle" fontSize={active ? 18 : 14}>{item.icon}</text>
-              {active && (
-                <>
-                  <rect x={pos.x - 62} y={pos.y - 64} width="124" height="30" rx="10" fill="#E8654A" />
-                  <text x={pos.x} y={pos.y - 44} textAnchor="middle" fontSize="13" fontWeight="900" fill="white">{item.name}</text>
-                </>
-              )}
-            </g>
-          )
-        })}
-      </svg>
-    </div>
   )
 }
 

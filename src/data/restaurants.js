@@ -1,13 +1,7 @@
-export const distanceBase = {
-  name: '광안리 해수욕장 중심',
-  note: '광안리 해수욕장 중앙 산책로 부근을 기준으로 한 대략 거리입니다.',
-}
-
 export const restaurants = [
   {
     id: 1,
     name: '푸안 광안점',
-    mapQuery: '푸안',
     category: '중식 · 마라 · 전골',
     mood: ['저녁모임', '친구모임', '캐주얼'],
     location: '광안리',
@@ -16,14 +10,10 @@ export const restaurants = [
     address: '부산광역시 수영구 민락로34번길 59-1 1층',
     phone: '0507-1365-1644',
     hero: '마라전골과 가지튀김, 볶음밥 조합으로 인기 있는 광안리 중식당',
-    highlight: ['보리새우 백짬뽕탕', '마라전골', '유린기'],
     tags: ['광안리', '중식', '마라전골', '저녁추천'],
     accent: 'sunset',
     icon: '🍲',
-    featuredMenu: '보리새우 백짬뽕탕',
     eta: '도보 약 13분',
-    distance: 0.9,
-    deliveryTag: '얼큰한 저녁',
     price: '1인 22,000 ~ 35,000원대',
     recommend: '친구들과 얼큰한 저녁 식사를 하고 싶을 때 추천',
     experience: {
@@ -31,13 +21,8 @@ export const restaurants = [
       soloOk: true,
       noise: '높음',
       vibe: '캐주얼',
-      touristRatio: '많음',
       portion: '많음',
-      spicy: '맵고 자극적',
-      singleOrder: true,
-      interior: '넓음',
       seating: '1인석 4개 · 다인석 10개 · 간격 넓음',
-      window: '있음',
     },
     points: [
       '전골 냄비 비주얼이 확실해서 사진 찍기 매우 좋음',
@@ -131,8 +116,7 @@ export const restaurants = [
       },
     ],
     media: {
-      interior: { src: '/interiors/puan-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/puan-360.jpg' },
-      route: { src: '', poster: '', suggestedPath: '/videos/puan-route.mp4' },
+      interior: { src: '/interiors/puan-360.html', type: 'html360', poster: '' },
     },
     photos: [
       {
@@ -164,14 +148,10 @@ export const restaurants = [
     address: '부산광역시 수영구 광안해변로 311 서희스타힐스 상가 1층',
     phone: '0507-1355-1254',
     hero: '와인과 함께 즐기는 양식 기반의 무드 있는 다이닝바',
-    highlight: ['훗카이도산 생관자', '한우 웰링턴', '파리지엔 뇨끼'],
     tags: ['광안리', '와인바', '양식', '데이트'],
     accent: 'night',
     icon: '🍷',
-    featuredMenu: '한우 웰링턴',
     eta: '도보 약 17분',
-    distance: 1.2,
-    deliveryTag: '데이트 무드',
     price: '1인 20,000 ~ 80,000원대',
     recommend: '무드 있는 데이트나 기념일 디너에 최적화된 공간',
     experience: {
@@ -179,13 +159,8 @@ export const restaurants = [
       soloOk: true,
       noise: '낮음',
       vibe: '감성',
-      touristRatio: '없음',
       portion: '적음',
-      spicy: '맵지 않음',
-      singleOrder: true,
-      interior: '좁음',
       seating: '바석 있음 · 다인석 5개 · 간격 좁음',
-      window: '있음',
     },
     points: [
       '프라이빗하고 조용한 분위기가 대화하기 좋음',
@@ -230,8 +205,7 @@ export const restaurants = [
       },
     ],
     media: {
-      interior: { src: '/interiors/muvet-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/muvet-360.jpg' },
-      route: { src: '', poster: '', suggestedPath: '/videos/muvet-route.mp4' },
+      interior: { src: '/interiors/muvet-360.html', type: 'html360', poster: '' },
     },
     photos: [
       {
@@ -263,14 +237,10 @@ export const restaurants = [
     address: '부산광역시 수영구 광안해변로 179',
     phone: '051-761-1250',
     hero: '광안리 해변가에서 에스프레소 한 잔의 여유를 즐기는 곳',
-    highlight: ['샤케라또', '레스프레소', '부사노 크림소다'],
     tags: ['광안리', '카페', '에스프레소바', '오션뷰'],
     accent: 'espresso',
     icon: '☕',
-    featuredMenu: '샤케라또',
     eta: '도보 약 3분',
-    distance: 0.2,
-    deliveryTag: '커피 한 잔',
     price: '1인 3,500 ~ 20,000원대 (위스키·와인 별도)',
     recommend: '에스프레소 한 잔부터 칵테일·위스키까지, 시간대별로 다른 매력의 공간',
     experience: {
@@ -278,13 +248,8 @@ export const restaurants = [
       soloOk: false,
       noise: '높음',
       vibe: '힙한',
-      touristRatio: '많음',
       portion: '적음',
-      spicy: '해당 없음',
-      singleOrder: true,
-      interior: '넓음',
       seating: '1인석 없음 · 다인석 많음 · 간격 좁음',
-      window: '있음',
     },
     points: [
       '클래식한 인테리어와 에스프레소 머신이 주는 전문적인 분위기',
@@ -483,8 +448,7 @@ export const restaurants = [
       },
     ],
     media: {
-      interior: { src: '/interiors/casabusano-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/casabusano-360.jpg' },
-      route: { src: '', poster: '', suggestedPath: '/videos/casabusano-route.mp4' },
+      interior: { src: '/interiors/casabusano-360.html', type: 'html360', poster: '' },
     },
     photos: [
       {
@@ -516,14 +480,10 @@ export const restaurants = [
     address: '부산광역시 수영구 광안해변로 235 3층',
     phone: '0507-1361-1142',
     hero: '광안대교를 한눈에 담으며 즐기는 프리미엄 브런치',
-    highlight: ['연어 에그베네딕트', '계절과일 팬케이크', '한우 채끝 스테이크'],
     tags: ['광안리', '브런치', '오션뷰', '점심추천'],
     accent: 'ocean',
     icon: '🥐',
-    featuredMenu: '연어 에그베네딕트',
     eta: '도보 약 4분',
-    distance: 0.3,
-    deliveryTag: '오션뷰 브런치',
     price: '1인 15,000 ~ 30,000원대',
     recommend: '오전의 햇살과 바다를 보며 여유로운 주말 브런치',
     experience: {
@@ -531,13 +491,8 @@ export const restaurants = [
       soloOk: false,
       noise: '높음',
       vibe: '감성',
-      touristRatio: '많음',
       portion: '적당함',
-      spicy: '맵지 않음',
-      singleOrder: true,
-      interior: '넓음',
       seating: '1인석 없음 · 다인석 10개 이상 · 간격 넓음',
-      window: '통창',
     },
     points: [
       '광안대교 정면 뷰가 가장 강력한 매력 포인트',
@@ -658,8 +613,7 @@ export const restaurants = [
       },
     ],
     media: {
-      interior: { src: '/interiors/walking-holiday-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/walking-holiday-360.jpg' },
-      route: { src: '', poster: '', suggestedPath: '/videos/walking-holiday-route.mp4' },
+      interior: { src: '/interiors/walking-holiday-360.html', type: 'html360', poster: '' },
     },
     photos: [
       {
@@ -691,14 +645,10 @@ export const restaurants = [
     address: '부산광역시 남구 분포로 145 W스퀘어 1층',
     phone: '051-612-4512',
     hero: '깔끔하고 맑은 국물의 돼지곰탕으로 유명한 로컬 맛집',
-    highlight: ['돼지곰탕', '고기칼국수', '삼겹구이 300g'],
     tags: ['남구', '한식', '혼밥가능', '국밥'],
     accent: 'forest',
     icon: '🍚',
-    featuredMenu: '돼지곰탕',
     eta: '차량 약 12분',
-    distance: 4.0,
-    deliveryTag: '든든한 한식',
     price: '1인 8,000 ~ 29,000원대',
     recommend: '부담 없이 정갈한 한 끼를 먹고 싶을 때',
     experience: {
@@ -706,13 +656,8 @@ export const restaurants = [
       soloOk: true,
       noise: '낮음',
       vibe: '캐주얼',
-      touristRatio: '낮음',
       portion: '적당함',
-      spicy: '담백 · 맵지 않음',
-      singleOrder: true,
-      interior: '좁음',
       seating: '1인석 많음 · 다인석 2개 · 간격 좁음',
-      window: '통창',
     },
     points: [
       '바 테이블이 있어 혼자서도 부담 없이 식사 가능',
@@ -760,7 +705,6 @@ export const restaurants = [
     ],
     media: {
       interior: { src: '/interiors/namakjip-360.html', type: 'html360', poster: '' },
-      route: { src: '', poster: '', suggestedPath: '/videos/namakjip-route.mp4' },
     },
     photos: [
       {
@@ -792,14 +736,10 @@ export const restaurants = [
     address: '부산광역시 수영구 광안로48번길 5 1층',
     phone: '0507-1413-2047',
     hero: '마파두부·볶음밥·우육면으로 유명한 광안리 아시안퓨전 맛집',
-    highlight: ['마파두부밥', '어향가지튀김', '우육미엔'],
     tags: ['광안리', '바오번', '점심추천', '이국적'],
     accent: 'lime',
     icon: '🥙',
-    featuredMenu: '마파두부밥',
     eta: '도보 약 8분',
-    distance: 0.5,
-    deliveryTag: '이국적인 점심',
     price: '1인 9,000 ~ 20,000원대',
     recommend: '향신료 향 가득한 이국적인 한 끼를 찾을 때 추천',
     experience: {
@@ -807,13 +747,8 @@ export const restaurants = [
       soloOk: false,
       noise: '높음',
       vibe: '캐주얼',
-      touristRatio: '낮음',
       portion: '많음',
-      spicy: '적당히 매움 · 향신료 강함',
-      singleOrder: true,
-      interior: '좁음',
       seating: '1인석 없음 · 다인석 8개 · 간격 좁음',
-      window: '있음',
     },
     points: [
       '마파두부와 볶음밥을 함께 먹으면 향신료와 고소함의 균형이 좋음',
@@ -877,8 +812,7 @@ export const restaurants = [
       },
     ],
     media: {
-      interior: { src: '/interiors/baohaus-360.html', type: 'html360', poster: '', suggestedPath: '/interiors/baohaus-360.jpg' },
-      route: { src: '', poster: '', suggestedPath: '/videos/baohaus-route.mp4' },
+      interior: { src: '/interiors/baohaus-360.html', type: 'html360', poster: '' },
     },
     banner: '/restaurant-photos/baohaus-food.jpg',
     photos: [
@@ -902,5 +836,3 @@ export const restaurants = [
   },
 ]
 
-export const locationOptions = ['전체', '광안리', '남구']
-export const moodOptions = ['전체', '데이트', '브런치', '혼밥가능', '오션뷰', '캐주얼', '감성카페']
