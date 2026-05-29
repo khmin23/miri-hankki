@@ -812,7 +812,7 @@ export const restaurants = [
       },
     ],
     media: {
-      interior: { src: '/restaurant-photos/baohaus-interior.jpg', type: 'image', poster: '' },
+      interior: { src: '/interiors/baohaus-360.html', type: 'html360', poster: '' },
     },
     banner: '/restaurant-photos/baohaus-food.jpg',
     photos: [
