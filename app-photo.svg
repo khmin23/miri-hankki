@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">부산 미리한끼 앱 아이콘</title>
+  <desc id="desc">아이콘 영역을 꽉 채우는 부산 미리한끼 앱 아이콘</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff9ef"/>
+      <stop offset=".55" stop-color="#fff1da"/>
+      <stop offset="1" stop-color="#ffd99b"/>
+    </linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8cd1f2"/>
+      <stop offset=".56" stop-color="#45a8d9"/>
+      <stop offset="1" stop-color="#2188bf"/>
+    </linearGradient>
+    <linearGradient id="sand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffd59a"/>
+      <stop offset="1" stop-color="#fff0c6"/>
+    </linearGradient>
+    <linearGradient id="mountain" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#a9cee7"/>
+      <stop offset="1" stop-color="#6eacd1"/>
+    </linearGradient>
+    <linearGradient id="city" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a9d9f1"/>
+      <stop offset="1" stop-color="#4b99ca"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+
+  <path d="M720 176c28-48 98-48 126 0 21-18 64-12 82 24H652c16-17 39-25 68-24z" fill="#fff"/>
+  <path d="M134 336c25-43 88-43 113 0 17-16 58-11 73 18H66c14-14 36-20 68-18z" fill="#fff"/>
+  <path d="M746 368c18-34 70-34 88 0 15-13 48-8 60 16H682c15-13 35-18 64-16z" fill="#fff"/>
+  <path d="M170 188c19-30 54-30 72 0M92 244c24-30 69-30 93 0M255 244c18-23 56-23 74 0" fill="none" stroke="#9ebed2" stroke-width="12" stroke-linecap="round"/>
+
+  <path d="M0 614c152-92 293-97 443-25 120 58 201 44 294 6 117-48 206-32 287 10v419H0z" fill="url(#mountain)"/>
+  <path d="M0 665c140-66 277-57 415 5 88 39 164 43 255 8 126-49 220-27 354 27v319H0z" fill="#7ab6d8" opacity=".42"/>
+
+  <g fill="#cfe8f5" opacity=".82">
+    <rect x="310" y="668" width="44" height="94" rx="8"/>
+    <rect x="376" y="632" width="58" height="130" rx="12"/>
+    <rect x="842" y="616" width="48" height="176" rx="14"/>
+    <rect x="900" y="570" width="54" height="222" rx="24"/>
+    <rect x="965" y="642" width="34" height="150" rx="12"/>
+  </g>
+
+  <g fill="url(#city)" opacity=".94">
+    <path d="M690 548c34-98 76-98 108 0v244H690z"/>
+    <path d="M798 560c38-126 90-126 122 0v232H798z"/>
+    <path d="M624 632c28-66 58-66 86 0v160H624z"/>
+    <path d="M566 684c24-48 50-48 72 0v108H566z"/>
+  </g>
+
+  <path d="M0 696c96-150 262-150 374 5v323H0z" fill="#4f8d61"/>
+  <path d="M0 738c101-76 225-76 338 5v281H0z" fill="#2e734f"/>
+  <path d="M0 744c162 15 272 73 424 93 151 20 301-33 600 54v133H0z" fill="url(#sea)"/>
+  <path d="M0 800c166-18 274 57 438 77 142 18 294-47 586-8v155H0z" fill="#287fb4" opacity=".34"/>
+  <path d="M0 790c134 10 202 40 281 90 93 59 191 79 317 57 148-25 260-34 426 15v72H0z" fill="url(#sand)"/>
+  <path d="M80 832c112 8 172 56 260 106 64 36 137 49 236 33" fill="none" stroke="#fff" stroke-width="20" stroke-linecap="round"/>
+  <path d="M584 834c133-24 275-17 390 20M696 908c83 0 148-13 226 0" fill="none" stroke="#d8f3ff" stroke-width="10" stroke-linecap="round" opacity=".86"/>
+
+  <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M324 736h596" stroke-width="15"/>
+    <path d="M384 736v-88M864 736v-88" stroke-width="10"/>
+    <path d="M384 648c107 96 373 96 480 0" stroke-width="10"/>
+    <path d="M384 648c96 64 384 64 480 0" stroke-width="6" opacity=".75"/>
+    <path d="M274 774h696" stroke-width="15"/>
+    <path d="M296 774c54-34 102-34 156 0M452 774c54-34 102-34 156 0M608 774c54-34 102-34 156 0M764 774c54-34 102-34 156 0" stroke-width="8"/>
+  </g>
+
+  <g transform="translate(338 142)">
+    <path d="M50 150c0-86 70-156 156-156s156 70 156 156" fill="#123b68"/>
+    <path d="M22 150h362" fill="none" stroke="#123b68" stroke-width="26" stroke-linecap="round"/>
+    <path d="M181 27c0-19 16-35 35-35s35 16 35 35" fill="#123b68"/>
+    <path d="M138 74c48-36 104-45 164-19" fill="none" stroke="#fff7ef" stroke-width="16" stroke-linecap="round"/>
+    <path d="M402 56c-54 0-98 44-98 98 0 80 98 161 98 161s98-81 98-161c0-54-44-98-98-98z" fill="#ef6952"/>
+    <circle cx="402" cy="154" r="35" fill="#fff7ef"/>
+    <path d="M380-10l-15-62M449 0l36-58M503 60l60-34" fill="none" stroke="#ef6952" stroke-width="19" stroke-linecap="round"/>
+  </g>
+
+  <text x="512" y="464" text-anchor="middle" font-family="Apple SD Gothic Neo, Pretendard, SUIT, Arial, sans-serif" font-size="184" font-weight="900" fill="#123b68">부산</text>
+  <text x="512" y="642" text-anchor="middle" font-family="Apple SD Gothic Neo, Pretendard, SUIT, Arial, sans-serif" font-size="148" font-weight="900">
+    <tspan fill="#ef6a53">미리</tspan><tspan fill="#123b68">한끼</tspan>
+  </text>
+</svg>

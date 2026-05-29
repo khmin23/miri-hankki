@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 844" preserveAspectRatio="xMidYMax slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fceee4"/>
+      <stop offset="100%" stop-color="#f5e6d8"/>
+    </linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a8d4ec"/>
+      <stop offset="100%" stop-color="#c8e8f4"/>
+    </linearGradient>
+    <linearGradient id="mountain" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b8cfe0"/>
+      <stop offset="100%" stop-color="#cddde8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 배경 하늘 -->
+  <rect width="390" height="844" fill="url(#sky)"/>
+
+  <!-- 구름 -->
+  <ellipse cx="290" cy="80" rx="42" ry="18" fill="white" opacity="0.82"/>
+  <ellipse cx="318" cy="72" rx="28" ry="14" fill="white" opacity="0.82"/>
+  <ellipse cx="268" cy="76" rx="22" ry="12" fill="white" opacity="0.72"/>
+
+  <ellipse cx="60" cy="130" rx="30" ry="13" fill="white" opacity="0.65"/>
+  <ellipse cx="82" cy="124" rx="20" ry="10" fill="white" opacity="0.65"/>
+
+  <!-- 새 -->
+  <path d="M48 58 Q52 54 56 58" fill="none" stroke="#b0b8c4" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M60 50 Q64 46 68 50" fill="none" stroke="#b0b8c4" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M72 62 Q76 58 80 62" fill="none" stroke="#b0b8c4" stroke-width="1.6" stroke-linecap="round"/>
+
+  <!-- 음식 아이콘 (떠다니는 느낌) -->
+  <!-- 국수 그릇 -->
+  <g transform="translate(68, 200)" opacity="0.5">
+    <ellipse cx="0" cy="0" rx="22" ry="14" fill="none" stroke="#d4a870" stroke-width="1.8"/>
+    <path d="M-14 0 Q-7 -6 0 0 Q7 6 14 0" fill="none" stroke="#d4a870" stroke-width="1.4"/>
+    <path d="M-10 3 Q-3 -3 4 3 Q9 7 14 3" fill="none" stroke="#d4a870" stroke-width="1.2"/>
+    <path d="M-16 4 Q0 16 16 4" fill="none" stroke="#d4a870" stroke-width="1.6"/>
+  </g>
+
+  <!-- 포크스푼 -->
+  <g transform="translate(218, 160)" opacity="0.45">
+    <line x1="-8" y1="-16" x2="-8" y2="16" stroke="#d4a870" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M-11 -16 L-11 -8 Q-8 -5 -5 -8 L-5 -16" fill="none" stroke="#d4a870" stroke-width="1.5"/>
+    <line x1="6" y1="-16" x2="6" y2="16" stroke="#d4a870" stroke-width="1.8" stroke-linecap="round"/>
+    <ellipse cx="6" cy="-8" rx="5" ry="7" fill="none" stroke="#d4a870" stroke-width="1.5"/>
+  </g>
+
+  <!-- 물고기 -->
+  <g transform="translate(318, 230)" opacity="0.48">
+    <ellipse cx="0" cy="0" rx="16" ry="10" fill="none" stroke="#d4a870" stroke-width="1.6"/>
+    <path d="M14 0 L22 -8 L22 8 Z" fill="none" stroke="#d4a870" stroke-width="1.6"/>
+    <circle cx="-6" cy="-2" r="2.5" fill="none" stroke="#d4a870" stroke-width="1.4"/>
+    <path d="M-4 4 Q2 8 8 4" fill="none" stroke="#d4a870" stroke-width="1.2"/>
+  </g>
+
+  <!-- 음료컵 -->
+  <g transform="translate(42, 370)" opacity="0.44">
+    <path d="M-10 -18 L-12 18 L12 18 L10 -18 Z" fill="none" stroke="#d4a870" stroke-width="1.6"/>
+    <line x1="0" y1="-18" x2="0" y2="-28" stroke="#d4a870" stroke-width="1.6" stroke-linecap="round"/>
+    <ellipse cx="0" cy="-18" rx="10" ry="4" fill="none" stroke="#d4a870" stroke-width="1.4"/>
+    <path d="M-6 -10 Q0 -6 6 -10" fill="none" stroke="#d4a870" stroke-width="1.2"/>
+  </g>
+
+  <!-- 접시/덮밥 -->
+  <g transform="translate(334, 390)" opacity="0.44">
+    <ellipse cx="0" cy="0" rx="20" ry="13" fill="none" stroke="#d4a870" stroke-width="1.6"/>
+    <ellipse cx="0" cy="-2" rx="13" ry="8" fill="none" stroke="#d4a870" stroke-width="1.3"/>
+    <path d="M-6 -4 Q0 2 6 -4" fill="none" stroke="#d4a870" stroke-width="1.2"/>
+  </g>
+
+  <!-- 산 실루엣 (뒷배경) -->
+  <path d="M0 560 Q60 480 130 500 Q180 470 230 490 Q280 460 340 480 Q370 470 390 478 L390 580 L0 580 Z"
+        fill="url(#mountain)" opacity="0.7"/>
+
+  <!-- 산 앞 실루엣 -->
+  <path d="M0 590 Q50 530 110 550 Q160 520 200 545 Q240 510 290 535 Q330 515 390 530 L390 600 L0 600 Z"
+        fill="#c8d8e4" opacity="0.6"/>
+
+  <!-- 도시 빌딩들 (오른쪽) -->
+  <!-- 왼쪽 낮은 빌딩들 -->
+  <rect x="200" y="565" width="18" height="60" rx="2" fill="#8ab4cc" opacity="0.85"/>
+  <rect x="222" y="550" width="22" height="75" rx="2" fill="#7aaac4" opacity="0.88"/>
+  <rect x="247" y="540" width="16" height="85" rx="2" fill="#8ab4cc" opacity="0.82"/>
+
+  <!-- 메인 고층 빌딩 3개 -->
+  <path d="M272 620 L272 495 Q280 480 288 495 L288 620 Z" fill="#6598bc" opacity="0.92"/>
+  <path d="M292 620 L292 470 Q302 450 312 470 L312 620 Z" fill="#5a8fb5" opacity="0.94"/>
+  <path d="M316 620 L316 500 Q323 485 330 500 L330 620 Z" fill="#6598bc" opacity="0.90"/>
+
+  <!-- 추가 빌딩 -->
+  <rect x="334" y="545" width="18" height="75" rx="2" fill="#7aaac4" opacity="0.85"/>
+  <rect x="356" y="558" width="14" height="62" rx="2" fill="#8ab4cc" opacity="0.80"/>
+  <rect x="374" y="568" width="16" height="52" rx="2" fill="#8ab4cc" opacity="0.78"/>
+
+  <!-- 빌딩 창문 반짝임 -->
+  <rect x="278" y="510" width="4" height="6" rx="1" fill="white" opacity="0.5"/>
+  <rect x="278" y="525" width="4" height="6" rx="1" fill="white" opacity="0.5"/>
+  <rect x="297" y="490" width="5" height="7" rx="1" fill="white" opacity="0.5"/>
+  <rect x="297" y="510" width="5" height="7" rx="1" fill="white" opacity="0.5"/>
+  <rect x="307" y="500" width="4" height="6" rx="1" fill="white" opacity="0.45"/>
+
+  <!-- 등대 (왼쪽) -->
+  <rect x="75" y="540" width="14" height="80" rx="3" fill="white" opacity="0.92"/>
+  <rect x="72" y="538" width="20" height="8" rx="2" fill="#d0dce6" opacity="0.85"/>
+  <path d="M78 538 L82 518 L86 538 Z" fill="white" opacity="0.92"/>
+  <circle cx="82" cy="514" r="7" fill="#4a7fa0" opacity="0.88"/>
+  <circle cx="82" cy="514" r="4" fill="white" opacity="0.9"/>
+  <rect x="74" y="618" width="16" height="6" rx="2" fill="#d0dce6" opacity="0.85"/>
+
+  <!-- 등대 아래 언덕/녹지 -->
+  <ellipse cx="65" cy="622" rx="38" ry="18" fill="#8fb88f" opacity="0.72"/>
+  <ellipse cx="95" cy="628" rx="28" ry="14" fill="#7fa87f" opacity="0.68"/>
+
+  <!-- 광안대교 -->
+  <!-- 다리 상판 -->
+  <line x1="20" y1="618" x2="370" y2="618" stroke="white" stroke-width="5" opacity="0.88"/>
+  <line x1="20" y1="626" x2="370" y2="626" stroke="#d8e6ee" stroke-width="3" opacity="0.75"/>
+
+  <!-- 교각 기둥 왼쪽 -->
+  <line x1="130" y1="590" x2="130" y2="640" stroke="white" stroke-width="4" opacity="0.85"/>
+  <line x1="148" y1="590" x2="148" y2="640" stroke="white" stroke-width="4" opacity="0.85"/>
+  <!-- 아치 왼쪽 -->
+  <path d="M100 618 Q139 575 178 618" fill="none" stroke="white" stroke-width="2.5" opacity="0.78"/>
+
+  <!-- 교각 기둥 오른쪽 -->
+  <line x1="220" y1="590" x2="220" y2="640" stroke="white" stroke-width="4" opacity="0.85"/>
+  <line x1="238" y1="590" x2="238" y2="640" stroke="white" stroke-width="4" opacity="0.85"/>
+  <!-- 아치 오른쪽 -->
+  <path d="M192 618 Q229 575 266 618" fill="none" stroke="white" stroke-width="2.5" opacity="0.78"/>
+
+  <!-- 케이블 와이어 -->
+  <line x1="130" y1="592" x2="100" y2="618" stroke="white" stroke-width="1.2" opacity="0.55"/>
+  <line x1="130" y1="592" x2="160" y2="618" stroke="white" stroke-width="1.2" opacity="0.55"/>
+  <line x1="148" y1="592" x2="118" y2="618" stroke="white" stroke-width="1.2" opacity="0.55"/>
+  <line x1="148" y1="592" x2="178" y2="618" stroke="white" stroke-width="1.2" opacity="0.55"/>
+  <line x1="220" y1="592" x2="192" y2="618" stroke="white" stroke-width="1.2" opacity="0.55"/>
+  <line x1="220" y1="592" x2="248" y2="618" stroke="white" stroke-width="1.2" opacity="0.55"/>
+  <line x1="238" y1="592" x2="210" y2="618" stroke="white" stroke-width="1.2" opacity="0.55"/>
+  <line x1="238" y1="592" x2="266" y2="618" stroke="white" stroke-width="1.2" opacity="0.55"/>
+
+  <!-- 바다 -->
+  <rect x="0" y="636" width="390" height="130" fill="url(#sea)"/>
+
+  <!-- 파도 -->
+  <path d="M0 648 Q48 638 96 648 Q144 658 192 648 Q240 638 288 648 Q336 658 390 648"
+        fill="none" stroke="white" stroke-width="1.8" opacity="0.55"/>
+  <path d="M0 664 Q50 654 100 664 Q150 674 200 664 Q250 654 300 664 Q345 674 390 664"
+        fill="none" stroke="white" stroke-width="1.4" opacity="0.40"/>
+
+  <!-- 해변 모래 -->
+  <path d="M0 730 Q100 720 200 728 Q300 736 390 724 L390 844 L0 844 Z" fill="#e8c99a" opacity="0.88"/>
+  <path d="M0 748 Q90 740 180 748 Q280 756 390 744 L390 844 L0 844 Z" fill="#dfc090" opacity="0.80"/>
+
+  <!-- 물가 반짝임 -->
+  <ellipse cx="240" cy="698" rx="6" ry="2" fill="white" opacity="0.60"/>
+  <ellipse cx="310" cy="712" rx="4" ry="1.5" fill="white" opacity="0.50"/>
+  <ellipse cx="160" cy="705" rx="5" ry="1.8" fill="white" opacity="0.55"/>
+</svg>
