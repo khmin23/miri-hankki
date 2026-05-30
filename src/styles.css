@@ -59,11 +59,7 @@ html, body, #root {
 
 body {
   color: var(--text);
-  background: var(--beige-md);
-  background-image: var(--app-bg-wide, none);
-  background-size: cover;
-  background-position: center center;
-  background-attachment: fixed;
+  background: #1a1a2e;
 }
 
 a { color: inherit; text-decoration: none; }
