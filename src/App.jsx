@@ -883,6 +883,78 @@ const TRAIT_FILTERS = [
   { id: '분위기있음', label: '분위기 있음',  icon: '✨', test: (item) => item.experience?.vibe === '감성' },
 ]
 
+/* ─── 하루 코스 데이터 ────────────────────────────────── */
+// id: 식당 id, slot: 시간대, tip: 이 시간에 여기를 추천하는 이유
+const DAY_COURSES = {
+  혼자: [
+    { slot: '브런치',    time: '09:00~',  id: 4, tip: '오션뷰 창가에서 조용히 혼자만의 아침' },
+    { slot: '점심',      time: '12:00~',  id: 5, tip: '바 테이블에서 혼자 앉기 편한 돼지곰탕' },
+    { slot: '카페',      time: '14:00~',  id: 3, tip: '해변 산책 후 에스프레소 한 잔' },
+    { slot: '저녁',      time: '18:00~',  id: 6, tip: '1인 주문 가능한 아시안 퓨전으로 마무리' },
+  ],
+  커플: [
+    { slot: '브런치',    time: '10:00~',  id: 4, tip: '광안대교 뷰와 함께 여유로운 브런치' },
+    { slot: '카페',      time: '14:00~',  id: 3, tip: '감성 에스프레소 바에서 커피 데이트' },
+    { slot: '저녁',      time: '19:00~',  id: 2, tip: '프라이빗한 분위기의 와인 다이닝' },
+  ],
+  친구들: [
+    { slot: '점심',      time: '11:30~',  id: 6, tip: '이국적인 바오번과 마파두부로 가볍게 시작' },
+    { slot: '카페',      time: '14:00~',  id: 3, tip: '힙한 분위기에서 커피 한 잔' },
+    { slot: '저녁',      time: '18:00~',  id: 1, tip: '마라전골로 얼큰하게 저녁 모임' },
+  ],
+}
+
+/* ─── 하루 코스 컴포넌트 ──────────────────────────────── */
+function DayCoursePlanner({ onSelect }) {
+  const [situation, setSituation] = useState(null)
+  const situations = ['혼자', '커플', '친구들']
+
+  const course = situation ? DAY_COURSES[situation] : null
+
+  return (
+    <section className="day-course-section">
+      <div className="day-course-hd">
+        <h2>🗓️ 하루 코스 짜줘</h2>
+        <p>상황을 선택하면 맞춤 코스를 추천해드려요</p>
+      </div>
+      <div className="day-course-chips">
+        {situations.map((s) => (
+          <button
+            key={s}
+            className={`day-chip${situation === s ? ' active' : ''}`}
+            onClick={() => setSituation(situation === s ? null : s)}
+          >{s === '혼자' ? '🍱 혼자' : s === '커플' ? '❤️ 커플' : '👫 친구들'}</button>
+        ))}
+      </div>
+      {course && (
+        <div className="day-course-timeline">
+          {course.map((step, i) => {
+            const rest = restaurants.find((r) => r.id === step.id)
+            if (!rest) return null
+            return (
+              <div key={i} className="day-step">
+                <div className="day-step-left">
+                  <div className="day-step-time">{step.time}</div>
+                  <div className={`day-step-dot${i === course.length - 1 ? ' last' : ''}`} />
+                  {i < course.length - 1 && <div className="day-step-line" />}
+                </div>
+                <button className="day-step-card" onClick={() => onSelect(rest.id)}>
+                  <div className="day-step-thumb"><PhotoThumb item={rest} /></div>
+                  <div className="day-step-info">
+                    <span className="day-step-slot">{step.slot}</span>
+                    <strong>{rest.name}</strong>
+                    <p>{step.tip}</p>
+                  </div>
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </section>
+  )
+}
+
 /* ─── 홈 화면 ───────────────────────────────────────────── */
 function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onOpenMapItem }) {
   const [moodFilter, setMoodFilter]   = useState('전체')
@@ -1031,6 +1103,9 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
           ))}
         </div>
       </section>
+
+      {/* ── 하루 코스 ── */}
+      <DayCoursePlanner onSelect={onSelect} />
 
       {/* ── 하단 여백 ── */}
       <div style={{ height: 24 }} />

@@ -1564,7 +1564,86 @@ img { display: block; width: 100%; object-fit: cover; }
   .home-cat-row { padding: 16px 20px 8px; }
   .home-list-hd { padding: 12px 22px 10px; }
   .home-situation-section { padding: 0 20px 10px; }
+  .day-course-section { margin: 0 20px; }
 }
+
+/* ─── 하루 코스 ─────────────────────────────────────────── */
+.day-course-section {
+  margin: 8px 14px 0;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 18px 16px 14px;
+  box-shadow: var(--glass-shadow);
+}
+.day-course-hd { margin-bottom: 14px; }
+.day-course-hd h2 { font-size: 1rem; font-weight: 900; margin: 0 0 3px; }
+.day-course-hd p  { font-size: 0.78rem; color: var(--text-muted); margin: 0; }
+.day-course-chips {
+  display: flex; gap: 8px; margin-bottom: 16px;
+}
+.day-chip {
+  flex: 1;
+  padding: 9px 0;
+  border-radius: 12px;
+  font-size: 0.82rem; font-weight: 800;
+  background: rgba(120,120,128,0.1);
+  border: 1.5px solid transparent;
+  color: var(--text-md);
+  transition: all 0.15s;
+}
+.day-chip.active {
+  background: var(--coral);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(232,101,74,0.3);
+}
+.day-course-timeline { display: flex; flex-direction: column; }
+.day-step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.day-step-left {
+  display: flex; flex-direction: column; align-items: center;
+  padding-top: 4px; flex-shrink: 0; width: 48px;
+}
+.day-step-time {
+  font-size: 0.65rem; font-weight: 800; color: var(--coral);
+  margin-bottom: 4px; white-space: nowrap;
+}
+.day-step-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--coral); flex-shrink: 0;
+}
+.day-step-dot.last { background: var(--navy); }
+.day-step-line {
+  width: 2px; flex: 1; min-height: 24px;
+  background: rgba(232,101,74,0.25);
+  margin: 3px 0;
+}
+.day-step-card {
+  flex: 1; display: flex; gap: 10px; align-items: center;
+  background: rgba(255,255,255,0.45);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: 14px; padding: 10px 12px;
+  margin-bottom: 8px; text-align: left;
+  cursor: pointer; transition: background 0.15s;
+}
+.day-step-card:active { background: rgba(255,255,255,0.75); }
+.day-step-thumb {
+  width: 46px; height: 46px; border-radius: 10px;
+  overflow: hidden; flex-shrink: 0; background: var(--beige-md);
+}
+.day-step-info { flex: 1; min-width: 0; }
+.day-step-slot {
+  font-size: 0.62rem; font-weight: 800; color: var(--coral);
+  display: block; margin-bottom: 1px;
+}
+.day-step-info strong { font-size: 0.88rem; font-weight: 800; display: block; margin-bottom: 2px; }
+.day-step-info p { font-size: 0.72rem; color: var(--text-md); margin: 0; line-height: 1.4; }
 
 /* ═══════════════════════════════════════════════════════════
    검색 / AI 추천 화면
