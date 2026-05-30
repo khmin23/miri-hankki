@@ -2638,9 +2638,9 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    document.body.style.overflow = selectedId ? 'hidden' : ''
+    document.body.style.overflow = (selectedId || activeTab === 'map') ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
-  }, [selectedId])
+  }, [selectedId, activeTab])
 
   useEffect(() => {
     window.localStorage.setItem('miri-hankki-saved', JSON.stringify(savedIds))

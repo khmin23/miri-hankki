@@ -1831,6 +1831,7 @@ img { display: block; width: 100%; object-fit: cover; }
   height: 100dvh;
   padding-bottom: 80px;
   background: var(--beige);
+  overflow: hidden;
 }
 
 .map-body {
@@ -1838,11 +1839,13 @@ img { display: block; width: 100%; object-fit: cover; }
   overflow: hidden;
   position: relative;
   min-height: 300px;
+  touch-action: none;
 }
 
 .map-svg-wrap, .map-real-wrap {
   width: 100%;
   height: 100%;
+  touch-action: none;
 }
 
 #map {
