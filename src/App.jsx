@@ -824,6 +824,15 @@ const PROMO_SLIDES = [
     bold:  '남포 맛집',
     emoji: '⚓',
   },
+  {
+    area:  '해운대',
+    img:   null,
+    grad:  'linear-gradient(135deg, #0a6e8a 0%, #1a9bb5 100%)',
+    tag:   '#해운대 오션뷰',
+    title: '바다를 품은',
+    bold:  '해운대 맛집',
+    emoji: '🏖️',
+  },
 ]
 
 function PromoBanner({ onAreaSelect }) {
