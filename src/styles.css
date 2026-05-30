@@ -1244,6 +1244,41 @@ img { display: block; width: 100%; object-fit: cover; }
   scrollbar-width: none;
 }
 .home-cat-row::-webkit-scrollbar { display: none; }
+
+/* 가격 + 특징 필터 */
+.home-filter-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 16px 8px;
+}
+.home-filter-group {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.home-filter-group::-webkit-scrollbar { display: none; }
+.filter-pill {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(255,255,255,0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--text-md);
+  border: 1px solid rgba(0,0,0,0.08);
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.filter-pill.active {
+  background: rgba(28,28,30,0.82);
+  color: white;
+  border-color: transparent;
+}
+
 .hcat-chip {
   display: flex;
   align-items: center;

@@ -873,12 +873,34 @@ function PromoBanner({ onAreaSelect }) {
   )
 }
 
+// 가격 문자열에서 최소 가격 추출 (e.g. "1인 15,000 ~ 25,000원대" → 15000)
+function parseMinPrice(priceStr) {
+  const m = priceStr?.replace(/,/g, '').match(/(\d+)/)
+  return m ? parseInt(m[1]) : 0
+}
+
+const PRICE_FILTERS = [
+  { id: '전체',    label: '전체',          test: () => true },
+  { id: '1만이하', label: '1만원 이하',    test: (item) => parseMinPrice(item.price) <= 10000 },
+  { id: '1~2만',   label: '1~2만원',       test: (item) => { const p = parseMinPrice(item.price); return p > 10000 && p <= 20000 } },
+  { id: '2만이상', label: '2만원 이상',    test: (item) => parseMinPrice(item.price) > 20000 },
+]
+
+const TRAIT_FILTERS = [
+  { id: '웨이팅적음', label: '웨이팅 적음', icon: '✅', test: (item) => !item.experience?.waitTime?.match(/30|이상|예약 필수/) },
+  { id: '조용함',     label: '조용함',       icon: '🤫', test: (item) => item.experience?.noise === '낮음' },
+  { id: '혼밥가능',   label: '혼밥 가능',    icon: '🍱', test: (item) => item.experience?.seating?.includes('1인석') },
+  { id: '사진맛집',   label: '사진 맛집',    icon: '📸', test: (item) => item.photos?.length > 0 },
+]
+
 /* ─── 홈 화면 ───────────────────────────────────────────── */
 function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onOpenMapItem }) {
-  const [moodFilter, setMoodFilter] = useState('전체')
-  const [situation, setSituation]   = useState('혼밥')
-  const [area, setArea]             = useState('내 위치')
-  const userLoc                     = useContext(UserLocCtx)
+  const [moodFilter, setMoodFilter]   = useState('전체')
+  const [priceFilter, setPriceFilter] = useState('전체')
+  const [traitFilter, setTraitFilter] = useState(null)
+  const [situation, setSituation]     = useState('혼밥')
+  const [area, setArea]               = useState('내 위치')
+  const userLoc                       = useContext(UserLocCtx)
 
   const NEARBY_KM = 5
 
@@ -891,11 +913,20 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
   }, [area, userLoc])
 
   const filtered = useMemo(() => {
-    if (moodFilter === '전체') return areaFiltered
-    const cat = cuisineCategories.find((c) => c.id === moodFilter)
-    if (!cat || cat.keywords.length === 0) return areaFiltered
-    return areaFiltered.filter((item) => cat.keywords.some((k) => item.category.includes(k)))
-  }, [moodFilter, areaFiltered])
+    let list = areaFiltered
+    // 음식 카테고리
+    if (moodFilter !== '전체') {
+      const cat = cuisineCategories.find((c) => c.id === moodFilter)
+      if (cat?.keywords.length > 0) list = list.filter((item) => cat.keywords.some((k) => item.category.includes(k)))
+    }
+    // 가격
+    const pf = PRICE_FILTERS.find((f) => f.id === priceFilter)
+    if (pf && pf.id !== '전체') list = list.filter(pf.test)
+    // 특징
+    const tf = TRAIT_FILTERS.find((f) => f.id === traitFilter)
+    if (tf) list = list.filter(tf.test)
+    return list
+  }, [moodFilter, priceFilter, traitFilter, areaFiltered])
 
   const situationItems = useMemo(() => getSituationRecommendations(situation), [situation])
 
@@ -908,7 +939,7 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
       {/* ── 프로모 배너 ── */}
       <PromoBanner onAreaSelect={(a) => setArea(a)} />
 
-      {/* ── 카테고리 필터 ── */}
+      {/* ── 음식 카테고리 필터 ── */}
       <div className="home-cat-row">
         {homeMoodCategories.map((c) => (
           <button
@@ -922,6 +953,28 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
         ))}
       </div>
 
+      {/* ── 가격 + 특징 필터 ── */}
+      <div className="home-filter-row">
+        <div className="home-filter-group">
+          {PRICE_FILTERS.map((f) => (
+            <button
+              key={f.id}
+              className={`filter-pill${priceFilter === f.id ? ' active' : ''}`}
+              onClick={() => setPriceFilter(f.id)}
+            >{f.label}</button>
+          ))}
+        </div>
+        <div className="home-filter-group">
+          {TRAIT_FILTERS.map((f) => (
+            <button
+              key={f.id}
+              className={`filter-pill${traitFilter === f.id ? ' active' : ''}`}
+              onClick={() => setTraitFilter(traitFilter === f.id ? null : f.id)}
+            >{f.icon} {f.label}</button>
+          ))}
+        </div>
+      </div>
+
       {/* ── 결과 헤더 ── */}
       {area === '내 위치' && !userLoc && (
         <div className="home-loc-notice">
@@ -930,7 +983,11 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
       )}
       <div className="home-list-hd">
         <span className="home-cnt">
-          {filtered.length}곳{moodFilter !== '전체' ? ` · ${moodFilter}` : ''}{area !== '내 위치' ? ` · ${area}` : ''}
+          {filtered.length}곳
+          {moodFilter !== '전체' ? ` · ${moodFilter}` : ''}
+          {priceFilter !== '전체' ? ` · ${PRICE_FILTERS.find(f=>f.id===priceFilter)?.label}` : ''}
+          {traitFilter ? ` · ${TRAIT_FILTERS.find(f=>f.id===traitFilter)?.label}` : ''}
+          {area !== '내 위치' ? ` · ${area}` : ''}
         </span>
         <button className="home-sort" onClick={onGoMap}>🗺️ 지도로 보기</button>
       </div>
