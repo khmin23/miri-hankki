@@ -7,7 +7,7 @@ import {
   onAuthStateChanged as fbOnAuthStateChanged,
 } from 'firebase/auth'
 import {
-  getFirestore, doc, getDoc, setDoc,
+  getFirestore, doc, getDoc, setDoc, deleteDoc,
   collection, addDoc, query, where, orderBy, getDocs, serverTimestamp, limit,
 } from 'firebase/firestore'
 
@@ -92,6 +92,19 @@ export async function getPublicReviews(restaurantId) {
     const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
     return docs.sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0))
   } catch { return [] }
+}
+
+export async function deletePublicReview(restaurantId, text) {
+  if (!db) return
+  try {
+    const q = query(
+      collection(db, 'publicReviews'),
+      where('restaurantId', '==', restaurantId),
+      where('text', '==', text),
+    )
+    const snap = await getDocs(q)
+    await Promise.all(snap.docs.map((d) => deleteDoc(doc(db, 'publicReviews', d.id))))
+  } catch { /* ignore */ }
 }
 
 export async function getAllPublicReviews(limitCount = 50) {

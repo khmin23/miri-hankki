@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { restaurants } from './data/restaurants'
-import { signUp, signIn, signOut, onAuthStateChanged, isConfigured as firebaseConfigured, loadUserData, saveUserData, savePublicReview, getPublicReviews, getAllPublicReviews } from './firebase'
+import { signUp, signIn, signOut, onAuthStateChanged, isConfigured as firebaseConfigured, loadUserData, saveUserData, savePublicReview, getPublicReviews, getAllPublicReviews, deletePublicReview } from './firebase'
 
 const BASE = import.meta.env.BASE_URL
 
@@ -1467,10 +1467,6 @@ function ReviewsFeedScreen({ reviews, profile, onSelect }) {
 
   return (
     <div className="reviews-feed-screen">
-      <div className="screen-title-row">
-        <h2>후기 모아보기</h2>
-        <span className="saved-count">{merged.length}개</span>
-      </div>
 
       {myReviewsForFeed.length === 0 && loading ? (
         <p className="reviews-feed-loading">불러오는 중...</p>
@@ -1632,7 +1628,9 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, set
   }
 
   function deleteReview(i) {
+    const r = reviews[i]
     setReviews((prev) => prev.filter((_, idx) => idx !== i))
+    deletePublicReview(r.restaurantId, r.text)
     showToast('리뷰를 삭제했어요')
   }
 
