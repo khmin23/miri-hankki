@@ -241,7 +241,7 @@ export const restaurants = [
     accent: 'espresso',
     icon: '☕',
     eta: '도보 약 3분',
-    price: '1인 3,500 ~ 20,000원대 (위스키·와인 별도)',
+    price: '1인 3,500 ~ 20,000원대',
     recommend: '에스프레소 한 잔부터 칵테일·위스키까지, 시간대별로 다른 매력의 공간',
     experience: {
       waitTime: '대기 없음',

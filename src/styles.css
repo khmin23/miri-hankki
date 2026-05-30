@@ -1620,6 +1620,7 @@ img { display: block; width: 100%; object-fit: cover; }
 .msit-meta {
   display: flex; gap: 8px;
   font-size: 0.68rem; color: var(--text-muted); font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .msit-arrow { color: var(--text-muted); flex-shrink: 0; }
 
