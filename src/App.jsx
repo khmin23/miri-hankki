@@ -63,11 +63,9 @@ const menuData = {
 
 /* ─── 네비게이션 ────────────────────────────────────────── */
 const navItems = [
-  { id: 'home',  label: '홈',   icon: '🏠' },
-  { id: 'search',label: '검색', icon: '🔍' },
-  { id: 'map',   label: '지도', icon: '🗺️' },
-  { id: 'saved', label: '저장', icon: '🔖' },
-  { id: 'my',    label: '마이', icon: '👤' },
+  { id: 'home', label: '홈',   icon: '🏠' },
+  { id: 'map',  label: '지도', icon: '🗺️' },
+  { id: 'my',   label: '마이', icon: '👤' },
 ]
 
 const moodCategories = [
@@ -2727,26 +2725,12 @@ export default function App() {
                   onOpenMapItem={(id) => { setMapSelectedId(id); setActiveTab('map') }}
                 />
               )}
-              <div style={{ display: activeTab === 'search' ? 'block' : 'none' }}>
-                <SearchScreen
-                  savedIds={savedIds}
-                  onToggleSave={toggleSave}
-                  onSelect={setSelectedId}
-                />
-              </div>
               {activeTab === 'map' && (
                 <MapScreen
                   mapSelectedId={mapSelectedId}
                   setMapSelectedId={setMapSelectedId}
                   onSelect={setSelectedId}
                   bp={bp}
-                />
-              )}
-              {activeTab === 'saved' && (
-                <SavedScreen
-                  savedIds={savedIds}
-                  onToggleSave={toggleSave}
-                  onSelect={setSelectedId}
                 />
               )}
               {activeTab === 'my' && (
