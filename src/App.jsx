@@ -33,7 +33,7 @@ function useUserLocation() {
     const id = navigator.geolocation.watchPosition(
       (pos) => setLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
       () => {},
-      { enableHighAccuracy: true, maximumAge: 10000 }
+      { enableHighAccuracy: false, maximumAge: 30000 }
     )
     return () => navigator.geolocation.clearWatch(id)
   }, [])
@@ -929,7 +929,7 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
       <AppTopBar onGoSearch={onGoSearch} area={area} setArea={setArea} />
 
       {/* ── 프로모 배너 ── */}
-      <PromoBanner />
+      <PromoBanner onAreaSelect={(a) => setArea(a)} />
 
       {/* ── 음식 카테고리 필터 ── */}
       <div className="home-cat-row">
