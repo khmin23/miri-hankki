@@ -1177,7 +1177,29 @@ img { display: block; width: 100%; object-fit: cover; }
   margin: 0;
 }
 .promo-title b { font-size: 1.08rem; font-weight: 900; display: block; }
-.promo-emoji { font-size: 3.8rem; opacity: 0.88; flex-shrink: 0; position: relative; z-index: 1; }
+.promo-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+.promo-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.45);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.25s;
+}
+.promo-dot.active {
+  width: 18px;
+  border-radius: 3px;
+  background: white;
+}
 
 /* 카테고리 필터 바 */
 .home-cat-row {

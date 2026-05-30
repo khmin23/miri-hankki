@@ -795,6 +795,92 @@ function Splash({ onDone }) {
   )
 }
 
+/* ─── 프로모 배너 슬라이드 ─────────────────────────────── */
+const PROMO_SLIDES = [
+  { img: '/promo-bg.jpg',   tag: '#광안리 로컬 픽',  title: '지금 딱 맞는',   bold: '오늘의 한 끼' },
+  { img: '/promo-bg2.jpg',  tag: '#주말 추천',       title: '이번 주말엔',     bold: '특별한 한 끼' },
+  { img: '/promo-bg3.jpg',  tag: '#광안리 데이트',   title: '분위기까지 챙기는', bold: '오늘의 데이트' },
+]
+
+function PromoBanner() {
+  const [idx, setIdx]       = useState(0)
+  const [drag, setDrag]     = useState(null)   // { startX, startIdx }
+  const [offset, setOffset] = useState(0)      // px 드래그 오프셋
+  const timerRef            = useRef(null)
+  const total               = PROMO_SLIDES.length
+
+  function resetTimer() {
+    clearInterval(timerRef.current)
+    timerRef.current = setInterval(() => setIdx((i) => (i + 1) % total), 4000)
+  }
+
+  useEffect(() => {
+    resetTimer()
+    return () => clearInterval(timerRef.current)
+  }, [])
+
+  function goTo(next) {
+    setIdx(((next % total) + total) % total)
+    setOffset(0)
+    resetTimer()
+  }
+
+  function onTouchStart(e) {
+    setDrag({ startX: e.touches[0].clientX, startIdx: idx })
+  }
+  function onTouchMove(e) {
+    if (!drag) return
+    setOffset(e.touches[0].clientX - drag.startX)
+  }
+  function onTouchEnd() {
+    if (!drag) return
+    if (offset < -50)       goTo(drag.startIdx + 1)
+    else if (offset > 50)   goTo(drag.startIdx - 1)
+    else                    setOffset(0)
+    setDrag(null)
+  }
+  function onMouseDown(e) {
+    setDrag({ startX: e.clientX, startIdx: idx })
+  }
+  function onMouseMove(e) {
+    if (!drag) return
+    setOffset(e.clientX - drag.startX)
+  }
+  function onMouseUp() {
+    if (!drag) return
+    if (offset < -50)       goTo(drag.startIdx + 1)
+    else if (offset > 50)   goTo(drag.startIdx - 1)
+    else                    setOffset(0)
+    setDrag(null)
+  }
+
+  const slide = PROMO_SLIDES[idx]
+
+  return (
+    <div
+      className="home-promo"
+      style={{ backgroundImage: `url("${asset(slide.img)}")`, cursor: drag ? 'grabbing' : 'grab' }}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={onMouseUp}
+      onMouseLeave={onMouseUp}
+    >
+      <div className="promo-left">
+        <span className="promo-tag">{slide.tag}</span>
+        <p className="promo-title">{slide.title}<br/><b>{slide.bold}</b>를 찾아보세요</p>
+      </div>
+      <div className="promo-dots">
+        {PROMO_SLIDES.map((_, i) => (
+          <button key={i} className={`promo-dot${i === idx ? ' active' : ''}`} onClick={() => goTo(i)} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 /* ─── 홈 화면 ───────────────────────────────────────────── */
 function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onOpenMapItem }) {
   const [moodFilter, setMoodFilter] = useState('전체')
@@ -828,12 +914,7 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
       <AppTopBar onGoSearch={onGoSearch} area={area} setArea={setArea} />
 
       {/* ── 프로모 배너 ── */}
-      <div className="home-promo" style={{ backgroundImage: `url("${asset('/promo-bg.jpg')}")` }}>
-        <div className="promo-left">
-          <span className="promo-tag">#광안리 로컬 픽</span>
-          <p className="promo-title">지금 딱 맞는<br/><b>오늘의 한 끼</b>를 찾아보세요</p>
-        </div>
-      </div>
+      <PromoBanner />
 
       {/* ── 카테고리 필터 ── */}
       <div className="home-cat-row">
