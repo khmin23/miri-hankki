@@ -1177,6 +1177,14 @@ img { display: block; width: 100%; object-fit: cover; }
   margin: 0;
 }
 .promo-title b { font-size: 1.08rem; font-weight: 900; display: block; }
+.promo-emoji-area {
+  font-size: 3.2rem;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  opacity: 0.9;
+  user-select: none;
+}
 .promo-dots {
   position: absolute;
   bottom: 12px;
