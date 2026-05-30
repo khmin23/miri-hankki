@@ -1388,96 +1388,89 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect, bp }) {
 }
 
 /* ─── 후기 피드 화면 ────────────────────────────────────── */
-function ReviewsFeedScreen({ reviews, onSelect }) {
-  const [tab, setTab] = useState('public')
-  const [allPublicReviews, setAllPublicReviews] = useState([])
-  const [loading, setLoading] = useState(false)
+function ReviewsFeedScreen({ reviews, profile, onSelect }) {
+  const [firestoreReviews, setFirestoreReviews] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (tab === 'public') {
-      setLoading(true)
-      getAllPublicReviews().then((data) => {
-        setAllPublicReviews(data)
-        setLoading(false)
-      })
-    }
-  }, [tab])
+    setLoading(true)
+    getAllPublicReviews().then((data) => {
+      setFirestoreReviews(data)
+      setLoading(false)
+    })
+  }, [])
+
+  // 내 리뷰를 공개 피드 형식으로 변환
+  const myNickname = profile?.name || '나'
+  const myReviewsForFeed = reviews.map((r, i) => ({
+    _key: `my-${i}`,
+    restaurantId: r.restaurantId,
+    restaurantName: r.name,
+    rating: r.rating,
+    text: r.text,
+    soloVisit: r.soloVisit,
+    nickname: myNickname,
+    isMe: true,
+    date: r.date,
+  }))
+
+  // Firestore 리뷰 중 내 리뷰와 중복되는 것 제거 (같은 가게 + 같은 텍스트)
+  const myTextSet = new Set(reviews.map((r) => `${r.restaurantId}::${r.text}`))
+  const othersReviews = firestoreReviews
+    .filter((r) => !myTextSet.has(`${r.restaurantId}::${r.text}`))
+    .map((r) => {
+      const restaurant = restaurants.find((rs) => rs.id === r.restaurantId)
+      return {
+        _key: r.id,
+        restaurantId: r.restaurantId,
+        restaurantName: restaurant?.name ?? '알 수 없는 가게',
+        rating: r.rating,
+        text: r.text,
+        soloVisit: r.soloVisit,
+        nickname: r.nickname,
+        isMe: false,
+        date: null,
+      }
+    })
+
+  // 내 리뷰 먼저, 그 다음 남들 리뷰
+  const merged = [...myReviewsForFeed, ...othersReviews]
 
   return (
     <div className="reviews-feed-screen">
       <div className="screen-title-row">
         <h2>후기 모아보기</h2>
-      </div>
-      <div className="reviews-feed-tabs">
-        <button
-          className={`reviews-tab-btn${tab === 'public' ? ' active' : ''}`}
-          onClick={() => setTab('public')}
-        >
-          후기
-        </button>
-        <button
-          className={`reviews-tab-btn${tab === 'my' ? ' active' : ''}`}
-          onClick={() => setTab('my')}
-        >
-          내 후기
-        </button>
+        <span className="saved-count">{merged.length}개</span>
       </div>
 
-      {tab === 'my' && (
-        <div className="reviews-feed-list">
-          {reviews.length === 0 ? (
-            <div className="reviews-feed-empty">
-              <span>✏️</span>
-              <p>아직 작성한 후기가 없어요</p>
-              <small>가게 상세 페이지에서 후기를 남겨보세요</small>
-            </div>
-          ) : (
-            reviews.map((r, i) => (
-              <div key={i} className="reviews-feed-item" onClick={() => onSelect(r.restaurantId)}>
-                <div className="reviews-feed-item-top">
-                  <strong className="reviews-feed-name">{r.name}</strong>
-                  <span className="reviews-feed-date">{r.date}</span>
-                </div>
-                <div className="reviews-feed-stars">{'⭐'.repeat(r.rating)}</div>
-                {r.soloVisit && <span className="reviews-feed-solo">🍱 혼밥</span>}
-                <p className="reviews-feed-text">{r.text}</p>
-              </div>
-            ))
-          )}
+      {loading ? (
+        <p className="reviews-feed-loading">불러오는 중...</p>
+      ) : merged.length === 0 ? (
+        <div className="reviews-feed-empty">
+          <span>💬</span>
+          <p>아직 등록된 후기가 없어요</p>
+          <small>가게 상세 페이지에서 첫 번째 후기를 남겨보세요!</small>
         </div>
-      )}
-
-      {tab === 'public' && (
+      ) : (
         <div className="reviews-feed-list">
-          {loading ? (
-            <p className="reviews-feed-loading">불러오는 중...</p>
-          ) : allPublicReviews.length === 0 ? (
-            <div className="reviews-feed-empty">
-              <span>💬</span>
-              <p>아직 등록된 후기가 없어요</p>
-              <small>첫 번째 후기를 남겨보세요!</small>
+          {merged.map((r) => (
+            <div
+              key={r._key}
+              className={`reviews-feed-item${r.isMe ? ' is-me' : ''}`}
+              onClick={() => onSelect(r.restaurantId)}
+            >
+              <div className="reviews-feed-item-top">
+                <strong className="reviews-feed-name">{r.restaurantName}</strong>
+                <span className={`reviews-feed-nick${r.isMe ? ' me' : ''}`}>
+                  {r.isMe ? '나' : r.nickname}
+                </span>
+              </div>
+              <div className="reviews-feed-stars">{'⭐'.repeat(r.rating)}</div>
+              {r.soloVisit && <span className="reviews-feed-solo">🍱 혼밥</span>}
+              <p className="reviews-feed-text">{r.text}</p>
+              {r.date && <span className="reviews-feed-date-bottom">{r.date}</span>}
             </div>
-          ) : (
-            allPublicReviews.map((r) => {
-              const restaurant = restaurants.find((rs) => rs.id === r.restaurantId)
-              return (
-                <div
-                  key={r.id}
-                  className="reviews-feed-item"
-                  onClick={() => restaurant && onSelect(r.restaurantId)}
-                  style={{ cursor: restaurant ? 'pointer' : 'default' }}
-                >
-                  <div className="reviews-feed-item-top">
-                    <strong className="reviews-feed-name">{restaurant?.name ?? '알 수 없는 가게'}</strong>
-                    <span className="reviews-feed-nick">{r.nickname}</span>
-                  </div>
-                  <div className="reviews-feed-stars">{'⭐'.repeat(r.rating)}</div>
-                  {r.soloVisit && <span className="reviews-feed-solo">🍱 혼밥</span>}
-                  <p className="reviews-feed-text">{r.text}</p>
-                </div>
-              )
-            })
-          )}
+          ))}
         </div>
       )}
     </div>
@@ -2669,6 +2662,7 @@ export default function App() {
               {activeTab === 'reviews' && (
                 <ReviewsFeedScreen
                   reviews={reviews}
+                  profile={profile}
                   onSelect={setSelectedId}
                 />
               )}

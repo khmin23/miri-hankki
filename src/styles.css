@@ -4348,6 +4348,19 @@ img { display: block; width: 100%; object-fit: cover; }
   font-weight: 700;
   flex-shrink: 0;
 }
+.reviews-feed-nick.me {
+  color: var(--coral);
+}
+.reviews-feed-item.is-me {
+  border-color: rgba(232,101,74,0.25);
+  background: rgba(232,101,74,0.04);
+}
+.reviews-feed-date-bottom {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
 .reviews-feed-stars { font-size: 0.82rem; margin-bottom: 4px; }
 .reviews-feed-solo {
   display: inline-block;
