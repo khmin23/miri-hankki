@@ -105,28 +105,26 @@ img { display: block; width: 100%; object-fit: cover; }
 
 /* ── 메인 콘텐츠 ────────────────────────────────────────── */
 .main-content {
-  padding-bottom: 80px; /* bottom-nav 높이 */
   min-height: 100dvh;
 }
 
 /* ── 하단 탭 ────────────────────────────────────────────── */
 .bottom-nav {
   position: fixed;
-  bottom: 12px;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 32px);
-  max-width: 398px;
-  height: 62px;
+  width: 100%;
+  max-width: 430px;
+  /* 버튼 높이 + 홈 인디케이터 영역 */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  border-radius: 28px;
-  box-shadow: var(--glass-shadow-lg);
+  border-top: 1px solid var(--glass-border);
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.08);
   display: flex;
   z-index: 50;
-  overflow: hidden;
 }
 
 .bottom-nav button {
@@ -137,10 +135,8 @@ img { display: block; width: 100%; object-fit: cover; }
   justify-content: center;
   gap: 3px;
   color: rgba(60,60,67,0.45);
-  padding: 6px 4px;
+  padding: 10px 4px;
   transition: color 0.15s;
-  border-radius: 20px;
-  margin: 4px 2px;
 }
 
 .bottom-nav button .nav-icon {
@@ -161,22 +157,13 @@ img { display: block; width: 100%; object-fit: cover; }
   transform: scale(1.2);
 }
 
-@supports (padding: max(0px)) {
-  .bottom-nav {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
-  }
-  .main-content {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 110px);
-  }
+.main-content {
+  padding-bottom: 80px;
 }
 
-/* PWA 설치 시 safe area 보장 */
-@media (display-mode: standalone) {
-  .bottom-nav {
-    bottom: calc(env(safe-area-inset-bottom, 34px) + 12px);
-  }
+@supports (padding: max(0px)) {
   .main-content {
-    padding-bottom: calc(env(safe-area-inset-bottom, 34px) + 110px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
   }
 }
 
