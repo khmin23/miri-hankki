@@ -66,6 +66,7 @@ const navItems = [
   { id: 'home',    label: '홈',   icon: '🏠' },
   { id: 'search',  label: '검색', icon: '🔍' },
   { id: 'map',     label: '지도', icon: '🗺️' },
+  { id: 'saved',   label: '저장', icon: '🔖' },
   { id: 'reviews', label: '후기', icon: '💬' },
   { id: 'my',      label: '마이', icon: '👤' },
 ]
@@ -2705,6 +2706,13 @@ export default function App() {
                   setMapSelectedId={setMapSelectedId}
                   onSelect={setSelectedId}
                   bp={bp}
+                />
+              )}
+              {activeTab === 'saved' && (
+                <SavedScreen
+                  savedIds={savedIds}
+                  onToggleSave={toggleSave}
+                  onSelect={setSelectedId}
                 />
               )}
               {activeTab === 'reviews' && (
