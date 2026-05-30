@@ -87,7 +87,8 @@ img { display: block; width: 100%; object-fit: cover; }
   max-width: 430px;
   min-height: 100dvh;
   background: transparent;
-  overflow-x: hidden;
+  /* clip: 스크롤 막되 fixed 기준점은 뷰포트 유지 */
+  overflow-x: clip;
 }
 
 @media (min-width: 720px) {
@@ -162,11 +163,20 @@ img { display: block; width: 100%; object-fit: cover; }
 
 @supports (padding: max(0px)) {
   .bottom-nav {
-    /* safe-area 위에 추가 12px 여유 확보 */
     bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
   }
   .main-content {
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 110px);
+  }
+}
+
+/* PWA 설치 시 safe area 보장 */
+@media (display-mode: standalone) {
+  .bottom-nav {
+    bottom: calc(env(safe-area-inset-bottom, 34px) + 12px);
+  }
+  .main-content {
+    padding-bottom: calc(env(safe-area-inset-bottom, 34px) + 110px);
   }
 }
 
