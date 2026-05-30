@@ -883,49 +883,46 @@ const TRAIT_FILTERS = [
   { id: '분위기있음', label: '분위기 있음',  icon: '✨', test: (item) => item.experience?.vibe === '감성' },
 ]
 
-/* ─── 하루 코스 데이터 ────────────────────────────────── */
-// id: 식당 id, slot: 시간대, tip: 이 시간에 여기를 추천하는 이유
-const DAY_COURSES = {
-  혼자: [
-    { slot: '브런치',    time: '09:00~',  id: 4, tip: '오션뷰 창가에서 조용히 혼자만의 아침' },
-    { slot: '점심',      time: '12:00~',  id: 5, tip: '바 테이블에서 혼자 앉기 편한 돼지곰탕' },
-    { slot: '카페',      time: '14:00~',  id: 3, tip: '해변 산책 후 에스프레소 한 잔' },
-    { slot: '저녁',      time: '18:00~',  id: 6, tip: '1인 주문 가능한 아시안 퓨전으로 마무리' },
-  ],
-  커플: [
-    { slot: '브런치',    time: '10:00~',  id: 4, tip: '광안대교 뷰와 함께 여유로운 브런치' },
-    { slot: '카페',      time: '14:00~',  id: 3, tip: '감성 에스프레소 바에서 커피 데이트' },
-    { slot: '저녁',      time: '19:00~',  id: 2, tip: '프라이빗한 분위기의 와인 다이닝' },
-  ],
-  친구들: [
-    { slot: '점심',      time: '11:30~',  id: 6, tip: '이국적인 바오번과 마파두부로 가볍게 시작' },
-    { slot: '카페',      time: '14:00~',  id: 3, tip: '힙한 분위기에서 커피 한 잔' },
-    { slot: '저녁',      time: '18:00~',  id: 1, tip: '마라전골로 얼큰하게 저녁 모임' },
-  ],
+/* ─── 하루 코스 슬롯 정의 ─────────────────────────────── */
+// 각 슬롯에 어울리는 식당 후보 (id 배열)
+const COURSE_SLOTS = [
+  { slot: '브런치', time: '09:00~', candidates: [4, 3] },       // 위킹홀리데이, 까사부사노
+  { slot: '점심',   time: '12:00~', candidates: [5, 6, 4, 3] }, // 나막집, 바오하우스, 위킹홀리데이, 까사부사노
+  { slot: '카페',   time: '14:00~', candidates: [3, 4] },        // 까사부사노, 위킹홀리데이
+  { slot: '저녁',   time: '18:00~', candidates: [1, 2, 6] },     // 푸안, 무벳, 바오하우스
+]
+
+function generateCourse() {
+  const used = new Set()
+  return COURSE_SLOTS.map((slot) => {
+    // 아직 안 쓴 후보 중 랜덤 선택
+    const available = slot.candidates.filter((id) => !used.has(id))
+    const id = available[Math.floor(Math.random() * available.length)]
+    used.add(id)
+    return { ...slot, id }
+  })
 }
 
 /* ─── 하루 코스 컴포넌트 ──────────────────────────────── */
 function DayCoursePlanner({ onSelect }) {
-  const [situation, setSituation] = useState(null)
-  const situations = ['혼자', '커플', '친구들']
+  const [course, setCourse] = useState(null)
 
-  const course = situation ? DAY_COURSES[situation] : null
+  function handleGenerate() {
+    setCourse(generateCourse())
+  }
 
   return (
     <section className="day-course-section">
       <div className="day-course-hd">
-        <h2>🗓️ 하루 코스 짜줘</h2>
-        <p>상황을 선택하면 맞춤 코스를 추천해드려요</p>
+        <div>
+          <h2>🗓️ 하루 코스 짜줘</h2>
+          <p>버튼을 누르면 브런치부터 저녁까지 랜덤으로 추천해드려요</p>
+        </div>
+        <button className="day-generate-btn" onClick={handleGenerate}>
+          {course ? '🎲 다시 뽑기' : '🎲 코스 뽑기'}
+        </button>
       </div>
-      <div className="day-course-chips">
-        {situations.map((s) => (
-          <button
-            key={s}
-            className={`day-chip${situation === s ? ' active' : ''}`}
-            onClick={() => setSituation(situation === s ? null : s)}
-          >{s === '혼자' ? '🍱 혼자' : s === '커플' ? '❤️ 커플' : '👫 친구들'}</button>
-        ))}
-      </div>
+
       {course && (
         <div className="day-course-timeline">
           {course.map((step, i) => {
@@ -943,7 +940,7 @@ function DayCoursePlanner({ onSelect }) {
                   <div className="day-step-info">
                     <span className="day-step-slot">{step.slot}</span>
                     <strong>{rest.name}</strong>
-                    <p>{step.tip}</p>
+                    <p>{rest.hero}</p>
                   </div>
                 </button>
               </div>

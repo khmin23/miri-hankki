@@ -1578,28 +1578,23 @@ img { display: block; width: 100%; object-fit: cover; }
   padding: 18px 16px 14px;
   box-shadow: var(--glass-shadow);
 }
-.day-course-hd { margin-bottom: 14px; }
+.day-course-hd {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px; margin-bottom: 16px;
+}
 .day-course-hd h2 { font-size: 1rem; font-weight: 900; margin: 0 0 3px; }
 .day-course-hd p  { font-size: 0.78rem; color: var(--text-muted); margin: 0; }
-.day-course-chips {
-  display: flex; gap: 8px; margin-bottom: 16px;
-}
-.day-chip {
-  flex: 1;
-  padding: 9px 0;
+.day-generate-btn {
+  flex-shrink: 0;
+  padding: 9px 16px;
   border-radius: 12px;
   font-size: 0.82rem; font-weight: 800;
-  background: rgba(120,120,128,0.1);
-  border: 1.5px solid transparent;
-  color: var(--text-md);
-  transition: all 0.15s;
-}
-.day-chip.active {
-  background: var(--coral);
-  color: white;
-  border-color: transparent;
+  background: var(--coral); color: white;
   box-shadow: 0 4px 12px rgba(232,101,74,0.3);
+  transition: transform 0.15s;
+  white-space: nowrap;
 }
+.day-generate-btn:active { transform: scale(0.95); }
 .day-course-timeline { display: flex; flex-direction: column; }
 .day-step {
   display: flex;
