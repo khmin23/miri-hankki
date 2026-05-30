@@ -832,7 +832,7 @@ function PromoBanner({ onAreaSelect }) {
 
   const slide = PROMO_SLIDES[idx]
   const bgStyle = slide.img
-    ? { backgroundImage: `url("${asset(slide.img)}")` }
+    ? { backgroundImage: `url("${asset(slide.img)}")`, backgroundSize: 'cover', backgroundPosition: 'center' }
     : { background: slide.grad }
 
   return (
