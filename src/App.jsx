@@ -442,7 +442,6 @@ function ModernCard({ item, saved, onToggleSave, onSelect }) {
         </div>
         <div className="m-card-foot">
           <span className="m-card-price">{item.price}</span>
-          <span className="m-card-cat-sm">{getCuisineCategory(item)}</span>
         </div>
       </div>
     </article>
