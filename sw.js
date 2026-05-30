@@ -1,4 +1,4 @@
-const CACHE_NAME = 'miri-hankki-v1780142678599'
+const CACHE_NAME = 'miri-hankki-v1780142655204'
 const BASE_PATH = new URL(self.registration.scope).pathname
 
 // Vite가 생성한 해시 기반 asset만 캐시 우선 — 나머지는 항상 네트워크 우선
