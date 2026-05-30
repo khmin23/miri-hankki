@@ -77,15 +77,6 @@ const navItems = [
   { id: 'my',     label: '마이', icon: '👤' },
 ]
 
-const homeMoodCategories = [
-  { id: '전체',   label: '전체',   icon: '🍽️' },
-  { id: '한식',   label: '한식',   icon: '🍚' },
-  { id: '중식',   label: '중식',   icon: '🥢' },
-  { id: '카페',   label: '카페',   icon: '☕' },
-  { id: '브런치', label: '브런치', icon: '🥐' },
-  { id: '아시안', label: '아시안', icon: '🍜' },
-]
-
 const moodCategories = [
   { id: '전체',   label: '전체',   icon: '🍽️' },
   { id: '한식',   label: '한식',   icon: '🍚' },
@@ -94,6 +85,7 @@ const moodCategories = [
   { id: '브런치', label: '브런치', icon: '🥐' },
   { id: '아시안', label: '아시안', icon: '🍜' },
 ]
+const homeMoodCategories = moodCategories
 
 const situationCategories = [
   { id: '혼밥',   label: '혼밥',   icon: '🍚' },
@@ -226,6 +218,14 @@ function openMapLink(url) {
   window.location.href = url
 }
 
+function formatDate(full = false) {
+  const today = new Date()
+  const pad = (n) => String(n).padStart(2, '0')
+  return full
+    ? `${today.getFullYear()}.${pad(today.getMonth() + 1)}.${pad(today.getDate())}`
+    : `${pad(today.getMonth() + 1)}.${pad(today.getDate())}`
+}
+
 /* ─── 브레이크포인트 훅 ───────────────────────────────── */
 function useBreakpoint() {
   function get() {
@@ -289,6 +289,7 @@ function PhotoThumb({ item, className = '' }) {
 /** 리스트형 트렌딩 아이템 */
 function TrendingItem({ item, saved, onToggleSave, onSelect }) {
   const userLoc = useContext(UserLocCtx)
+  const eta = getEta(item, userLoc)
   return (
     <article className="trending-item" onClick={() => onSelect(item.id)}>
       <div className="trending-thumb">
@@ -297,7 +298,7 @@ function TrendingItem({ item, saved, onToggleSave, onSelect }) {
       <div className="trending-body">
         <strong>{item.name}</strong>
         <p className="trending-sub">{item.category} · {item.location}</p>
-        {getEta(item, userLoc) && <p className="trending-meta">{getEta(item, userLoc)}</p>}
+        {eta && <p className="trending-meta">{eta}</p>}
       </div>
       <button
         className={`heart-btn sm ${saved ? 'saved' : ''}`}
@@ -313,6 +314,7 @@ function TrendingItem({ item, saved, onToggleSave, onSelect }) {
 /** 데스크탑 카드 그리드용 */
 function RestaurantCard({ item, saved, onToggleSave, onSelect, isSelected, onHover }) {
   const userLoc = useContext(UserLocCtx)
+  const eta = getEta(item, userLoc)
   return (
     <article
       className={`rest-card${isSelected ? ' rest-card-selected' : ''}`}
@@ -340,7 +342,7 @@ function RestaurantCard({ item, saved, onToggleSave, onSelect, isSelected, onHov
           ))}
         </div>
         <div className="rest-card-foot">
-          {getEta(item, userLoc) && <span className="rest-card-eta">📍 {getEta(item, userLoc)}</span>}
+          {eta && <span className="rest-card-eta">📍 {eta}</span>}
           <span className="rest-card-price">{item.price}</span>
         </div>
       </div>
@@ -796,42 +798,10 @@ function Splash({ onDone }) {
 
 /* ─── 프로모 배너 슬라이드 ─────────────────────────────── */
 const PROMO_SLIDES = [
-  {
-    area:  '광안리',
-    img:   '/promo-bg.jpg',
-    grad:  null,
-    tag:   '#광안리 로컬 픽',
-    title: '바다 옆에서 즐기는',
-    bold:  '광안리 맛집',
-    emoji: '🌊',
-  },
-  {
-    area:  '서면',
-    img:   null,
-    grad:  'linear-gradient(135deg, #163A5B 0%, #1e5080 100%)',
-    tag:   '#서면 · 전포 핫플',
-    title: '부산의 중심에서',
-    bold:  '서면 맛집',
-    emoji: '🏙️',
-  },
-  {
-    area:  '남포',
-    img:   null,
-    grad:  'linear-gradient(135deg, #3b2a1a 0%, #6b4423 100%)',
-    tag:   '#남포 · 광복 노포',
-    title: '역사가 담긴',
-    bold:  '남포 맛집',
-    emoji: '⚓',
-  },
-  {
-    area:  '해운대',
-    img:   null,
-    grad:  'linear-gradient(135deg, #0a6e8a 0%, #1a9bb5 100%)',
-    tag:   '#해운대 오션뷰',
-    title: '바다를 품은',
-    bold:  '해운대 맛집',
-    emoji: '🏖️',
-  },
+  { area: '광안리', img: '/promo-bg.jpg',  grad: null,                                               tag: '#광안리 로컬 픽',    title: '바다 옆에서 즐기는', bold: '광안리 맛집' },
+  { area: '서면',   img: null,             grad: 'linear-gradient(135deg,#163A5B,#1e5080)',           tag: '#서면 · 전포 핫플', title: '부산의 중심에서',   bold: '서면 맛집'   },
+  { area: '남포',   img: null,             grad: 'linear-gradient(135deg,#3b2a1a,#6b4423)',           tag: '#남포 · 광복 노포', title: '역사가 담긴',       bold: '남포 맛집'   },
+  { area: '해운대', img: null,             grad: 'linear-gradient(135deg,#0a6e8a,#1a9bb5)',           tag: '#해운대 오션뷰',    title: '바다를 품은',       bold: '해운대 맛집' },
 ]
 
 function PromoBanner({ onAreaSelect }) {
@@ -853,7 +823,6 @@ function PromoBanner({ onAreaSelect }) {
   }
 
   function onTouchStart(e) { setDrag({ startX: e.touches[0].clientX, startIdx: idx }) }
-  function onTouchMove(e)  { /* 실시간 피드백 불필요 */ }
   function onTouchEnd(e) {
     if (!drag) return
     const dx = e.changedTouches[0].clientX - drag.startX
@@ -880,12 +849,11 @@ function PromoBanner({ onAreaSelect }) {
       className="home-promo"
       style={{ ...bgStyle, cursor: drag ? 'grabbing' : 'grab' }}
       onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
       onMouseLeave={() => setDrag(null)}
-      onClick={() => { if (onAreaSelect && Math.abs(0) < 5) onAreaSelect(slide.area) }}
+      onClick={() => { if (onAreaSelect && !drag) onAreaSelect(slide.area) }}
     >
       <div className="promo-left">
         <span className="promo-tag">{slide.tag}</span>
@@ -1339,10 +1307,7 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, set
   }, [visitRecords])
 
   const BADGES = useMemo(() => {
-    const soloVisits = visitRecords.filter((v) => {
-      const r = restaurants.find((r) => r.id === v.restaurantId)
-      return r?.experience?.soloOk
-    }).length
+    const soloVisits = reviews.filter((r) => r.soloVisit).length
     const cafeVisits = visitRecords.filter((v) => {
       const r = restaurants.find((r) => r.id === v.restaurantId)
       return r?.category?.includes('카페') || r?.category?.includes('브런치') || r?.category?.includes('에스프레소')
@@ -1388,8 +1353,8 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, set
   const TASTE_CHIPS = useMemo(() => {
     if (visitRecords.length === 0) return []
     const chips = []
-    const soloRatio = Math.round(visitRecords.filter((v) => { const r = restaurants.find((r) => r.id === v.restaurantId); return r?.experience?.soloOk }).length / visitRecords.length * 100)
-    if (soloRatio > 0) chips.push(`🍱 혼밥 비율 ${soloRatio}%`)
+    const soloCount = reviews.filter((r) => r.soloVisit).length
+    if (soloCount > 0) chips.push(`🍱 혼밥 인증 ${soloCount}회`)
     const revisitRatio = Math.round(visitRecords.filter((v) => v.revisit).length / visitRecords.length * 100)
     if (revisitRatio > 0) chips.push(`🔄 재방문 비율 ${revisitRatio}%`)
     const locCount = {}
@@ -1398,7 +1363,7 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, set
     if (topLoc) chips.push(`📍 단골 지역 ${topLoc[0]}`)
     if (savedIds.length > 0) chips.push(`🔖 저장한 가게 ${savedIds.length}곳`)
     return chips
-  }, [visitRecords, savedIds])
+  }, [visitRecords, savedIds, reviews])
 
   const FILTER_MAP = {
     '혼밥': ['혼밥가능'],
@@ -1807,15 +1772,12 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
 
   function handleAddVisit() {
     if (!visitDish.trim()) return
-    const today = new Date()
-    const pad = (n) => String(n).padStart(2, '0')
-    const dateStr = `${today.getFullYear()}.${pad(today.getMonth() + 1)}.${pad(today.getDate())}`
     setVisitRecords((prev) => [{
       restaurantId: item.id,
       name: item.name,
       icon: item.icon,
       dish: visitDish.trim(),
-      date: dateStr,
+      date: formatDate(true),
       revisit: visitRevisit,
       photo: item.banner ?? item.photos?.[0]?.src ?? null,
       location: item.location,
@@ -1826,15 +1788,12 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
 
   function handleAddReview() {
     if (!reviewText.trim()) return
-    const today = new Date()
-    const pad = (n) => String(n).padStart(2, '0')
-    const dateStr = `${pad(today.getMonth() + 1)}.${pad(today.getDate())}`
     setReviews((prev) => [{
       restaurantId: item.id,
       name: item.name,
       rating: reviewRating,
       text: reviewText.trim(),
-      date: dateStr,
+      date: formatDate(),
       soloVisit,
     }, ...prev])
     setReviewText('')
@@ -1947,22 +1906,19 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
 
           <div className="detail-divider" />
 
-          {item.photos?.length > 0 && (() => {
-            const galleryPhotos = item.photos
-            return galleryPhotos.length > 0 ? (
-              <div className="detail-section">
-                <h3>음식 사진</h3>
-                <div className="detail-photo-grid">
-                  {galleryPhotos.map((p, i) => (
-                    <figure key={p.src} className="detail-photo-fig" onClick={() => setPhotoIdx(i)}>
-                      <img src={asset(p.src)} alt={p.alt} loading="lazy" />
-                      <figcaption>{p.caption}</figcaption>
-                    </figure>
-                  ))}
-                </div>
+          {item.photos?.length > 0 && (
+            <div className="detail-section">
+              <h3>음식 사진</h3>
+              <div className="detail-photo-grid">
+                {item.photos.map((p, i) => (
+                  <figure key={p.src} className="detail-photo-fig" onClick={() => setPhotoIdx(i)}>
+                    <img src={asset(p.src)} alt={p.alt} loading="lazy" />
+                    <figcaption>{p.caption}</figcaption>
+                  </figure>
+                ))}
               </div>
-            ) : null
-          })()}
+            </div>
+          )}
 
           {item.media?.interior?.src && (
             <div className="detail-section">
@@ -2352,10 +2308,6 @@ export default function App() {
     setShowInstallGuide(true)
   }
 
-  function handleTabChange(tab) {
-    setActiveTab(tab)
-  }
-
   const selectedItem = restaurants.find((r) => r.id === selectedId) ?? null
 
   return (
@@ -2370,7 +2322,7 @@ export default function App() {
               <SideNav
                 bp={bp}
                 activeTab={activeTab}
-                onTabChange={handleTabChange}
+                onTabChange={setActiveTab}
                 savedCount={savedIds.length}
               />
             )}
