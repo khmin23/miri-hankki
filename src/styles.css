@@ -3203,6 +3203,46 @@ img { display: block; width: 100%; object-fit: cover; }
 
 /* 폼 */
 .detail-my-form { display: flex; flex-direction: column; gap: 8px; }
+
+/* 혼밥 인증 뱃지 */
+.solo-verified-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff8ee;
+  border: 1.5px solid #f5c97a;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #b87300;
+  margin-bottom: 12px;
+}
+.solo-verified-badge span {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #a07020;
+}
+
+/* 혼밥 토글 버튼 */
+.solo-toggle-btn {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #ddd;
+  background: #f9f9f9;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #666;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+}
+.solo-toggle-btn.active {
+  border-color: #f5c97a;
+  background: #fff8ee;
+  color: #b87300;
+}
 .detail-my-input {
   width: 100%; padding: 10px 12px;
   border: 1.5px solid var(--border); border-radius: 10px;

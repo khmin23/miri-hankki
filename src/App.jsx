@@ -435,7 +435,6 @@ function ModernCard({ item, saved, onToggleSave, onSelect }) {
           onClick={(e) => { e.stopPropagation(); onToggleSave(item.id) }}
           aria-label="찜"
         >{saved ? '❤️' : '🤍'}</button>
-        {item.experience?.soloOk && <span className="m-badge">혼밥 OK</span>}
       </div>
       <div className="m-card-body">
         <strong className="m-card-name">{item.name}</strong>
@@ -1797,10 +1796,14 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
   const [showReviewForm, setShowReviewForm] = useState(false)
   const [reviewRating, setReviewRating]     = useState(5)
   const [reviewText, setReviewText]         = useState('')
+  const [soloVisit, setSoloVisit]           = useState(false)
 
   // 이 가게에 해당하는 내 기록
   const myVisits  = (visitRecords || []).filter((v) => v.restaurantId === item.id)
   const myReviews = (reviews || []).filter((r) => r.restaurantId === item.id)
+
+  // 혼밥 인증: 내 리뷰 중 soloVisit === true 가 하나라도 있으면 인증
+  const soloVerified = myReviews.some((r) => r.soloVisit)
 
   function handleAddVisit() {
     if (!visitDish.trim()) return
@@ -1832,8 +1835,10 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
       rating: reviewRating,
       text: reviewText.trim(),
       date: dateStr,
+      soloVisit,
     }, ...prev])
     setReviewText('')
+    setSoloVisit(false)
     setShowReviewForm(false)
   }
 
@@ -1990,9 +1995,13 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
           {item.experience && (
             <div className="detail-section">
               <h3>방문 경험</h3>
+              {soloVerified && (
+                <div className="solo-verified-badge">
+                  🍱 혼밥 인증 <span>내가 직접 혼밥으로 방문했어요</span>
+                </div>
+              )}
               <div className="detail-exp-grid">
                 {[
-                  { label: '혼밥', val: item.experience.soloOk ? '가능' : '불가', good: item.experience.soloOk },
                   { label: '소음', val: item.experience.noise, good: item.experience.noise === '낮음' },
                   { label: '분위기', val: item.experience.vibe, good: true },
                   { label: '음식 양', val: item.experience.portion, good: item.experience.portion === '많음' },
@@ -2139,6 +2148,13 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
                     </button>
                   ))}
                 </div>
+                <button
+                  className={`solo-toggle-btn${soloVisit ? ' active' : ''}`}
+                  onClick={() => setSoloVisit((v) => !v)}
+                  type="button"
+                >
+                  {soloVisit ? '🍱 혼밥으로 방문했어요 ✓' : '🍱 혼밥으로 방문했어요'}
+                </button>
                 <textarea
                   className="detail-my-textarea"
                   placeholder="한 줄 메모를 남겨보세요"
@@ -2148,7 +2164,7 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
                 />
                 <div className="detail-my-form-btns">
                   <button className="detail-my-save" onClick={handleAddReview}>저장</button>
-                  <button className="detail-my-cancel" onClick={() => { setShowReviewForm(false); setReviewText('') }}>취소</button>
+                  <button className="detail-my-cancel" onClick={() => { setShowReviewForm(false); setReviewText(''); setSoloVisit(false) }}>취소</button>
                 </div>
               </div>
             )}
