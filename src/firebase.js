@@ -8,7 +8,7 @@ import {
 } from 'firebase/auth'
 import {
   getFirestore, doc, getDoc, setDoc,
-  collection, addDoc, query, where, orderBy, getDocs, serverTimestamp,
+  collection, addDoc, query, where, orderBy, getDocs, serverTimestamp, limit,
 } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -88,6 +88,19 @@ export async function getPublicReviews(restaurantId) {
       collection(db, 'publicReviews'),
       where('restaurantId', '==', restaurantId),
       orderBy('createdAt', 'desc'),
+    )
+    const snap = await getDocs(q)
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+  } catch { return [] }
+}
+
+export async function getAllPublicReviews(limitCount = 50) {
+  if (!db) return []
+  try {
+    const q = query(
+      collection(db, 'publicReviews'),
+      orderBy('createdAt', 'desc'),
+      limit(limitCount),
     )
     const snap = await getDocs(q)
     return snap.docs.map((d) => ({ id: d.id, ...d.data() }))

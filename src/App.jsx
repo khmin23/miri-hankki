@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { restaurants } from './data/restaurants'
-import { signUp, signIn, signOut, onAuthStateChanged, isConfigured as firebaseConfigured, loadUserData, saveUserData, savePublicReview, getPublicReviews } from './firebase'
+import { signUp, signIn, signOut, onAuthStateChanged, isConfigured as firebaseConfigured, loadUserData, saveUserData, savePublicReview, getPublicReviews, getAllPublicReviews } from './firebase'
 
 const BASE = import.meta.env.BASE_URL
 
@@ -62,11 +62,11 @@ const menuData = {
 
 /* ─── 네비게이션 ────────────────────────────────────────── */
 const navItems = [
-  { id: 'home',   label: '홈',   icon: '🏠' },
-  { id: 'search', label: '검색', icon: '🔍' },
-  { id: 'map',    label: '지도', icon: '🗺️' },
-  { id: 'saved',  label: '저장', icon: '🔖' },
-  { id: 'my',     label: '마이', icon: '👤' },
+  { id: 'home',    label: '홈',   icon: '🏠' },
+  { id: 'search',  label: '검색', icon: '🔍' },
+  { id: 'map',     label: '지도', icon: '🗺️' },
+  { id: 'reviews', label: '후기', icon: '💬' },
+  { id: 'my',      label: '마이', icon: '👤' },
 ]
 
 const moodCategories = [
@@ -1387,6 +1387,103 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect, bp }) {
   )
 }
 
+/* ─── 후기 피드 화면 ────────────────────────────────────── */
+function ReviewsFeedScreen({ reviews, onSelect }) {
+  const [tab, setTab] = useState('public')
+  const [allPublicReviews, setAllPublicReviews] = useState([])
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (tab === 'public') {
+      setLoading(true)
+      getAllPublicReviews().then((data) => {
+        setAllPublicReviews(data)
+        setLoading(false)
+      })
+    }
+  }, [tab])
+
+  return (
+    <div className="reviews-feed-screen">
+      <div className="screen-title-row">
+        <h2>후기 모아보기</h2>
+      </div>
+      <div className="reviews-feed-tabs">
+        <button
+          className={`reviews-tab-btn${tab === 'public' ? ' active' : ''}`}
+          onClick={() => setTab('public')}
+        >
+          모두의 후기
+        </button>
+        <button
+          className={`reviews-tab-btn${tab === 'my' ? ' active' : ''}`}
+          onClick={() => setTab('my')}
+        >
+          내 후기
+        </button>
+      </div>
+
+      {tab === 'my' && (
+        <div className="reviews-feed-list">
+          {reviews.length === 0 ? (
+            <div className="reviews-feed-empty">
+              <span>✏️</span>
+              <p>아직 작성한 후기가 없어요</p>
+              <small>가게 상세 페이지에서 후기를 남겨보세요</small>
+            </div>
+          ) : (
+            reviews.map((r, i) => (
+              <div key={i} className="reviews-feed-item" onClick={() => onSelect(r.restaurantId)}>
+                <div className="reviews-feed-item-top">
+                  <strong className="reviews-feed-name">{r.name}</strong>
+                  <span className="reviews-feed-date">{r.date}</span>
+                </div>
+                <div className="reviews-feed-stars">{'⭐'.repeat(r.rating)}</div>
+                {r.soloVisit && <span className="reviews-feed-solo">🍱 혼밥</span>}
+                <p className="reviews-feed-text">{r.text}</p>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {tab === 'public' && (
+        <div className="reviews-feed-list">
+          {loading ? (
+            <p className="reviews-feed-loading">불러오는 중...</p>
+          ) : allPublicReviews.length === 0 ? (
+            <div className="reviews-feed-empty">
+              <span>💬</span>
+              <p>아직 등록된 후기가 없어요</p>
+              <small>첫 번째 후기를 남겨보세요!</small>
+            </div>
+          ) : (
+            allPublicReviews.map((r) => {
+              const restaurant = restaurants.find((rs) => rs.id === r.restaurantId)
+              return (
+                <div
+                  key={r.id}
+                  className="reviews-feed-item"
+                  onClick={() => restaurant && onSelect(r.restaurantId)}
+                  style={{ cursor: restaurant ? 'pointer' : 'default' }}
+                >
+                  <div className="reviews-feed-item-top">
+                    <strong className="reviews-feed-name">{restaurant?.name ?? '알 수 없는 가게'}</strong>
+                    <span className="reviews-feed-nick">{r.nickname}</span>
+                  </div>
+                  <div className="reviews-feed-stars">{'⭐'.repeat(r.rating)}</div>
+                  {r.soloVisit && <span className="reviews-feed-solo">🍱 혼밥</span>}
+                  <p className="reviews-feed-text">{r.text}</p>
+                </div>
+              )
+            })
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 /* ─── 저장 화면 ─────────────────────────────────────────── */
 function SavedScreen({ savedIds, onToggleSave, onSelect }) {
   const savedItems = restaurants.filter((r) => savedIds.includes(r.id))
@@ -2569,10 +2666,9 @@ export default function App() {
                   bp={bp}
                 />
               )}
-              {activeTab === 'saved' && (
-                <SavedScreen
-                  savedIds={savedIds}
-                  onToggleSave={toggleSave}
+              {activeTab === 'reviews' && (
+                <ReviewsFeedScreen
+                  reviews={reviews}
                   onSelect={setSelectedId}
                 />
               )}
