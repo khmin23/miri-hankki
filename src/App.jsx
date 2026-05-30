@@ -828,7 +828,7 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
       <AppTopBar onGoSearch={onGoSearch} area={area} setArea={setArea} />
 
       {/* ── 프로모 배너 ── */}
-      <div className="home-promo">
+      <div className="home-promo" style={{ backgroundImage: `url("${asset('/promo-bg.jpg')}")` }}>
         <div className="promo-left">
           <span className="promo-tag">#광안리 로컬 픽</span>
           <p className="promo-title">지금 딱 맞는<br/><b>오늘의 한 끼</b>를 찾아보세요</p>
