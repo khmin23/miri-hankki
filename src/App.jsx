@@ -1413,7 +1413,7 @@ function ReviewsFeedScreen({ reviews, onSelect }) {
           className={`reviews-tab-btn${tab === 'public' ? ' active' : ''}`}
           onClick={() => setTab('public')}
         >
-          모두의 후기
+          후기
         </button>
         <button
           className={`reviews-tab-btn${tab === 'my' ? ' active' : ''}`}
@@ -2302,7 +2302,7 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
           {/* ── 다른 사람들의 리뷰 ── */}
           <div className="detail-section">
             <div className="public-review-hd">
-              <h3>다른 사람들의 후기</h3>
+              <h3>후기</h3>
               {avgRating && (
                 <div className="public-avg">
                   <span className="public-avg-star">⭐</span>
