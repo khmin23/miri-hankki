@@ -289,7 +289,7 @@ function TrendingItem({ item, saved, onToggleSave, onSelect }) {
       </div>
       <div className="trending-body">
         <strong>{item.name}</strong>
-        <p className="trending-sub">{item.category} · {item.location}</p>
+        <p className="trending-sub">{item.location}</p>
         {eta && <p className="trending-meta">{eta}</p>}
       </div>
       <button
@@ -327,7 +327,6 @@ function RestaurantCard({ item, saved, onToggleSave, onSelect, isSelected, onHov
       <div className="rest-card-body">
         <p className="rest-card-loc">{item.location}</p>
         <strong className="rest-card-name">{item.name}</strong>
-        <p className="rest-card-cat">{item.category}</p>
         <div className="rest-card-tags">
           {item.tags?.slice(0, 3).map((tag) => (
             <span key={tag} className="rest-tag">#{tag}</span>
