@@ -3332,6 +3332,28 @@ img { display: block; width: 100%; object-fit: cover; }
 .nearby-card strong { display: block; font-size: 0.88rem; font-weight: 700; }
 .nearby-card small { font-size: 0.75rem; color: var(--text-muted); }
 
+/* 근처 앱 내 맛집 */
+.detail-nearby-list { display: flex; flex-direction: column; gap: 8px; }
+.nearby-rest-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: 14px;
+  width: 100%; text-align: left; cursor: pointer;
+  transition: background 0.15s;
+}
+.nearby-rest-card:active { background: rgba(255,255,255,0.8); }
+.nearby-rest-thumb {
+  width: 48px; height: 48px; border-radius: 10px;
+  overflow: hidden; flex-shrink: 0; background: var(--beige-md);
+}
+.nearby-rest-info { flex: 1; min-width: 0; }
+.nearby-rest-info strong { display: block; font-size: 0.88rem; font-weight: 800; color: var(--text); }
+.nearby-rest-info small { font-size: 0.72rem; color: var(--text-muted); }
+
 /* ─── DetailModal: 내 방문기록 & 리뷰 블록 ─── */
 .detail-my-block {
   background: var(--beige);

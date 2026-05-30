@@ -2078,20 +2078,29 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
             <p className="tip-text">{tip || '버튼을 누르면 이 장소를 더 잘 즐기는 방법을 알려드려요.'}</p>
           </div>
 
-          <div className="detail-section">
-            <h3>근처에서 함께 가볼 곳</h3>
-            <div className="detail-nearby">
-              {item.nearbyExternal.map((n) => (
-                <a key={n.name} className="nearby-card" href={n.link} target="_blank" rel="noreferrer">
-                  <span className="nearby-icon">{n.icon}</span>
-                  <div>
-                    <strong>{n.name}</strong>
-                    <small>{n.category}</small>
-                  </div>
-                </a>
-              ))}
-            </div>
-          </div>
+          {(() => {
+            const nearby = restaurants
+              .filter((r) => r.id !== item.id && haversine(item.lat, item.lng, r.lat, r.lng) <= 1)
+              .sort((a, b) => haversine(item.lat, item.lng, a.lat, a.lng) - haversine(item.lat, item.lng, b.lat, b.lng))
+            if (nearby.length === 0) return null
+            return (
+              <div className="detail-section">
+                <h3>근처 1km 이내 맛집</h3>
+                <div className="detail-nearby-list">
+                  {nearby.map((r) => (
+                    <button key={r.id} className="nearby-rest-card" onClick={() => { onClose(); setTimeout(() => onOpenMap(r.id), 50) }}>
+                      <div className="nearby-rest-thumb"><PhotoThumb item={r} /></div>
+                      <div className="nearby-rest-info">
+                        <strong>{r.name}</strong>
+                        <small>{r.location} · {Math.round(haversine(item.lat, item.lng, r.lat, r.lng) * 1000)}m</small>
+                      </div>
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )
+          })()}
 
           {/* ── 내 방문 기록 ── */}
           <div className="detail-section detail-my-block">
