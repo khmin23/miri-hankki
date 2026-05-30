@@ -1443,9 +1443,9 @@ function ReviewsFeedScreen({ reviews, profile, onSelect }) {
         <span className="saved-count">{merged.length}개</span>
       </div>
 
-      {loading ? (
+      {myReviewsForFeed.length === 0 && loading ? (
         <p className="reviews-feed-loading">불러오는 중...</p>
-      ) : merged.length === 0 ? (
+      ) : myReviewsForFeed.length === 0 && !loading && othersReviews.length === 0 ? (
         <div className="reviews-feed-empty">
           <span>💬</span>
           <p>아직 등록된 후기가 없어요</p>

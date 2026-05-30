@@ -87,10 +87,10 @@ export async function getPublicReviews(restaurantId) {
     const q = query(
       collection(db, 'publicReviews'),
       where('restaurantId', '==', restaurantId),
-      orderBy('createdAt', 'desc'),
     )
     const snap = await getDocs(q)
-    return snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+    const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+    return docs.sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0))
   } catch { return [] }
 }
 
