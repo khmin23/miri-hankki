@@ -873,24 +873,24 @@ function PromoBanner({ onAreaSelect }) {
   )
 }
 
-// 가격 문자열에서 최소 가격 추출 (e.g. "1인 15,000 ~ 25,000원대" → 15000)
+// "1인 22,000 ~ 35,000원대" → 1인 뒤의 첫 번째 가격(최소가격) 추출
 function parseMinPrice(priceStr) {
-  const m = priceStr?.replace(/,/g, '').match(/(\d+)/)
-  return m ? parseInt(m[1]) : 0
+  const m = priceStr?.match(/1인\s+([\d,]+)/)
+  return m ? parseInt(m[1].replace(/,/g, '')) : 0
 }
 
 const PRICE_FILTERS = [
-  { id: '전체',    label: '전체',          test: () => true },
-  { id: '1만이하', label: '1만원 이하',    test: (item) => parseMinPrice(item.price) <= 10000 },
-  { id: '1~2만',   label: '1~2만원',       test: (item) => { const p = parseMinPrice(item.price); return p > 10000 && p <= 20000 } },
-  { id: '2만이상', label: '2만원 이상',    test: (item) => parseMinPrice(item.price) > 20000 },
+  { id: '전체',    label: '전체',       test: () => true },
+  { id: '1만이하', label: '1만원 이하', test: (item) => parseMinPrice(item.price) <= 10000 },
+  { id: '1~2만',   label: '1~2만원',    test: (item) => { const p = parseMinPrice(item.price); return p > 10000 && p <= 20000 } },
+  { id: '2만이상', label: '2만원 이상', test: (item) => parseMinPrice(item.price) > 20000 },
 ]
 
 const TRAIT_FILTERS = [
-  { id: '웨이팅적음', label: '웨이팅 적음', icon: '✅', test: (item) => !item.experience?.waitTime?.match(/30|이상|예약 필수/) },
+  { id: '웨이팅적음', label: '웨이팅 적음', icon: '✅', test: (item) => item.experience?.waitTime?.includes('대기 없음') },
   { id: '조용함',     label: '조용함',       icon: '🤫', test: (item) => item.experience?.noise === '낮음' },
-  { id: '혼밥가능',   label: '혼밥 가능',    icon: '🍱', test: (item) => item.experience?.seating?.includes('1인석') },
-  { id: '사진맛집',   label: '사진 맛집',    icon: '📸', test: (item) => item.photos?.length > 0 },
+  { id: '혼밥가능',   label: '혼밥 가능',    icon: '🍱', test: (item) => item.experience?.soloOk === true },
+  { id: '분위기있음', label: '분위기 있음',  icon: '✨', test: (item) => item.experience?.vibe === '감성' },
 ]
 
 /* ─── 홈 화면 ───────────────────────────────────────────── */
