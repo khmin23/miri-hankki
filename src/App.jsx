@@ -50,22 +50,14 @@ const operatingHours = {
   4: '09:00 - 21:00', 5: '10:00 - 15:00', 6: '11:30 - 21:00',
 }
 const parkingAvail = { 1: false, 2: false, 3: false, 4: false, 5: true, 6: false }
+// 처음 방문자에게 추천하는 대표 메뉴 3가지 (체크리스트 기준)
 const menuData = {
-  1: [
-    { name: '보리새우 백짬뽕탕', price: '25,000원' },
-    { name: '마라전골 (매운맛 2단계)', price: '28,000원' },
-    { name: '유린기', price: '22,000원' },
-    { name: '크림새우', price: '26,000원' },
-    { name: '트러플 누룽지탕', price: '25,000원' },
-    { name: '가지튀김', price: '15,000원' },
-    { name: '계란볶음밥', price: '9,000원' },
-    { name: '이과봉봉주 (시그니처)', price: '12,000원' },
-  ],
-  2: [{ name: '한우 웰링턴 단품', price: '100,000원' }, { name: '훗카이도산 생관자', price: '27,000원' }, { name: '파리지엔 뇨끼', price: '18,000원' }],
-  3: [{ name: '샤케라또', price: '' }, { name: '레스프레소', price: '' }, { name: '부사노 크림소다', price: '' }],
-  4: [{ name: '에그베네딕트', price: '18,000원' }, { name: '팬케이크', price: '15,000원' }, { name: '파스타', price: '16,000원' }],
-  5: [{ name: '돼지곰탕', price: '9,000원' }, { name: '고기 칼국수', price: '11,000원' }, { name: '삼겹구이', price: '13,000원' }],
-  6: [{ name: '마파두부', price: '11,000원' }, { name: '볶음밥', price: '9,000원' }, { name: '우육면', price: '12,000원' }],
+  1: [{ name: '마라전골', price: '28,000원' }, { name: '크림새우', price: '26,000원' }, { name: '보리새우 백짬뽕탕', price: '25,000원' }],
+  2: [{ name: '돼지 안심 스테이크', price: '29,000원' }, { name: '파리지엔 뇨끼', price: '18,000원' }, { name: '한우안심 타르타르와 감자파브', price: '21,000원' }],
+  3: [{ name: '파도바', price: '4,500원' }, { name: '부사노 크림프레소', price: '5,000원' }, { name: '오-부사노 피즈', price: '6,500원' }],
+  4: [{ name: '연어 에그베네딕트', price: '18,000원' }, { name: '포테이토 릭 스프', price: '' }, { name: '홀리데이 라떼', price: '7,000원' }],
+  5: [{ name: '돼지곰탕', price: '11,000원' }, { name: '고기 칼국수', price: '12,000원' }, { name: '수육', price: '29,000원' }],
+  6: [{ name: '마파두부', price: '13,000원' }, { name: '볶음밥', price: '9,000원' }, { name: '우육면', price: '13,000원' }],
 }
 
 /* ─── 네비게이션 ────────────────────────────────────────── */
@@ -1905,10 +1897,17 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
         </div>
 
         <div className="detail-body">
+
+          {/* ── 가게명 + 저장 ── */}
           <div className="detail-title-row">
             <div>
               <h2 className="detail-name">{item.name}</h2>
-              <p className="detail-category">{item.category} · {item.location}</p>
+              <div className="detail-title-sub">
+                <span>{item.location}</span>
+                <span className="detail-sep">·</span>
+                <span>{getCuisineCategory(item)}</span>
+                {getEta(item, userLoc) && <><span className="detail-sep">·</span><span>📍 {getEta(item, userLoc)}</span></>}
+              </div>
             </div>
             <button
               className={`detail-heart ${saved ? 'saved' : ''}`}
@@ -1916,102 +1915,83 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
             >{saved ? '❤️' : '🤍'}</button>
           </div>
 
-          <div className="detail-meta-grid">
-            {getEta(item, userLoc) && <div className="meta-chip"><span>📍</span><span>{getEta(item, userLoc)}</span></div>}
-            <div className="meta-chip"><span>🕐</span><span>{hours}</span></div>
-            <div className="meta-chip"><span>🅿️</span><span>{parking}</span></div>
-            <div className="meta-chip"><span>💬</span><span>{item.experience?.noise === '낮음' ? '조용함' : item.experience?.noise === '높음' ? '활발함' : '보통'}</span></div>
-          </div>
-
           <p className="detail-hero-text">{item.hero}</p>
 
           {/* ── 방문 전 체크 ── */}
+          <h3 className="detail-section-title">방문 전 체크</h3>
           <div className="detail-precheck">
             <div className="precheck-item">
               <span className="precheck-icon">⏳</span>
-              <div>
-                <strong>웨이팅</strong>
-                <p>{item.experience?.waitTime || '정보 없음'}</p>
-              </div>
-            </div>
-            <div className="precheck-item">
-              <span className="precheck-icon">🅿️</span>
-              <div>
-                <strong>주차</strong>
-                <p>{parking}</p>
-              </div>
-            </div>
-            <div className="precheck-item">
-              <span className="precheck-icon">🕐</span>
-              <div>
-                <strong>영업시간</strong>
-                <p>{hours}</p>
-              </div>
+              <div><strong>웨이팅</strong><p>{item.experience?.waitTime || '정보 없음'}</p></div>
             </div>
             <div className="precheck-item">
               <span className="precheck-icon">📋</span>
-              <div>
-                <strong>예약</strong>
-                <p>{item.links?.reservation ? '예약 가능' : '예약 불가'}</p>
-              </div>
+              <div><strong>예약</strong><p>{item.links?.reservation ? '예약 가능' : '예약 불가'}</p></div>
+            </div>
+            <div className="precheck-item">
+              <span className="precheck-icon">🕐</span>
+              <div><strong>영업시간</strong><p>{hours}</p></div>
+            </div>
+            <div className="precheck-item">
+              <span className="precheck-icon">🅿️</span>
+              <div><strong>주차</strong><p>{parking}</p></div>
             </div>
           </div>
 
-          {/* ── 추천 상황 ── */}
-          {item.mood?.length > 0 && (
-            <div className="detail-mood-section">
-              <h3>이런 분들께 추천</h3>
-              <div className="detail-mood-tags">
-                {item.mood.map((m) => <span key={m} className="detail-mood-tag">{m}</span>)}
-              </div>
-            </div>
-          )}
-
-          {(item.menu?.length > 0 || menus.length > 0) && (
-            <div className="detail-menu-section">
-              <h3>메뉴</h3>
-              {item.menu?.length > 0 ? (
-                item.menu.map((cat) => (
-                  <div key={cat.category} className="menu-category">
-                    <div className="menu-category-label">{cat.category}</div>
-                    {cat.items.map((m) => (
-                      <div key={m.name} className="detail-menu-item">
-                        <div className="menu-icon-name">
-                          <div className="menu-dot" />
-                          <div className="menu-name-wrap">
-                            <span>{m.name}{m.spicy ? ' 🌶️'.repeat(m.spicy) : ''}</span>
-                            {m.desc && <span className="menu-desc">{m.desc}</span>}
-                          </div>
-                        </div>
-                        <span className="menu-price-tag">{m.price}</span>
-                      </div>
-                    ))}
-                  </div>
-                ))
-              ) : (
-                menus.map((m) => (
-                  <div key={m.name} className="detail-menu-item">
-                    <div className="menu-icon-name">
-                      <div className="menu-dot" />
-                      <span>{m.name}</span>
-                    </div>
-                    <span className="menu-price-tag">{m.price}</span>
-                  </div>
-                ))
+          {/* ── 분위기 & 좌석 ── */}
+          {item.experience && (
+            <>
+              <h3 className="detail-section-title">분위기 & 좌석</h3>
+              {soloVerified && (
+                <div className="solo-verified-badge">
+                  🍱 혼밥 인증 <span>내가 직접 혼밥으로 방문했어요</span>
+                </div>
               )}
-            </div>
+              <div className="detail-exp-grid">
+                {[
+                  { label: '소음', val: item.experience.noise === '낮음' ? '조용함' : item.experience.noise === '높음' ? '시끄러움' : '보통', good: item.experience.noise === '낮음' },
+                  { label: '분위기', val: item.experience.vibe, good: true },
+                  { label: '음식 양', val: item.experience.portion, good: item.experience.portion === '많음' },
+                  { label: '혼밥', val: item.experience.soloOk ? '가능' : '불가', good: item.experience.soloOk },
+                ].map(({ label, val, good }) => (
+                  <div key={label} className={`exp-badge ${good ? 'good' : ''}`}>
+                    <small>{label}</small>
+                    <strong>{val}</strong>
+                  </div>
+                ))}
+              </div>
+              <dl className="detail-exp-list">
+                <div><dt>좌석</dt><dd>{item.experience.seating}</dd></div>
+              </dl>
+            </>
           )}
 
+          {/* ── 저장 + 길찾기 ── */}
           <div className="detail-action-row">
-            <button
-              className={`detail-save-btn ${saved ? 'saved' : ''}`}
-              onClick={() => onToggleSave(item.id)}
-            >{saved ? '💖 저장됨' : '🤍 저장하기'}</button>
+            <button className={`detail-save-btn ${saved ? 'saved' : ''}`} onClick={() => onToggleSave(item.id)}>
+              {saved ? '💖 저장됨' : '🤍 저장하기'}
+            </button>
             <button className="detail-dir-btn" onClick={() => openMapLink(item.links.naver)}>🗺️ 길찾기</button>
           </div>
-
           <div className="detail-divider" />
 
+          {/* ── 가게 내부 ── */}
+          {item.media?.interior?.src && (
+            <div className="detail-section">
+              <h3>가게 내부</h3>
+              <div className="interior-viewer-card">
+                {item.media.interior.type === 'html360' ? (
+                  <iframe title={`${item.name} 가게 내부`} src={asset(item.media.interior.src)} loading="lazy" />
+                ) : item.media.interior.type === 'image' ? (
+                  <img src={asset(item.media.interior.src)} alt={`${item.name} 가게 내부`} style={{ width: '100%', borderRadius: '12px', display: 'block' }} />
+                ) : (
+                  <video controls playsInline poster={item.media.interior.poster ? asset(item.media.interior.poster) : undefined} src={asset(item.media.interior.src)} />
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ── 음식 사진 ── */}
           {item.photos?.length > 0 && (
             <div className="detail-section">
               <h3>음식 사진</h3>
@@ -2026,61 +2006,55 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
             </div>
           )}
 
-          {item.media?.interior?.src && (
+          {/* ── 추천 메뉴 TOP 3 ── */}
+          {menus.length > 0 && (
             <div className="detail-section">
-              <h3>가게 내부</h3>
-              <div className="interior-viewer-card">
-                {item.media.interior.type === 'html360' ? (
-                  <iframe
-                    title={`${item.name} 가게 내부`}
-                    src={asset(item.media.interior.src)}
-                    loading="lazy"
-                  />
-                ) : item.media.interior.type === 'image' ? (
-                  <img
-                    src={asset(item.media.interior.src)}
-                    alt={`${item.name} 가게 내부`}
-                    style={{ width: '100%', borderRadius: '12px', display: 'block' }}
-                  />
-                ) : (
-                  <video
-                    controls
-                    playsInline
-                    poster={item.media.interior.poster ? asset(item.media.interior.poster) : undefined}
-                    src={asset(item.media.interior.src)}
-                  />
-                )}
-              </div>
-            </div>
-          )}
-
-          {item.experience && (
-            <div className="detail-section">
-              <h3>방문 경험</h3>
-              {soloVerified && (
-                <div className="solo-verified-badge">
-                  🍱 혼밥 인증 <span>내가 직접 혼밥으로 방문했어요</span>
+              <h3>처음이라면 이걸 드세요</h3>
+              {menus.map((m, i) => (
+                <div key={m.name} className="detail-top-menu">
+                  <span className="top-menu-rank">{i + 1}</span>
+                  <span className="top-menu-name">{m.name}</span>
+                  {m.price && <span className="top-menu-price">{m.price}</span>}
                 </div>
-              )}
-              <div className="detail-exp-grid">
-                {[
-                  { label: '소음', val: item.experience.noise, good: item.experience.noise === '낮음' },
-                  { label: '분위기', val: item.experience.vibe, good: true },
-                  { label: '음식 양', val: item.experience.portion, good: item.experience.portion === '많음' },
-                ].map(({ label, val, good }) => (
-                  <div key={label} className={`exp-badge ${good ? 'good' : ''}`}>
-                    <small>{label}</small>
-                    <strong>{val}</strong>
-                  </div>
-                ))}
-              </div>
-              <dl className="detail-exp-list">
-                <div><dt>대기시간</dt><dd>{item.experience.waitTime}</dd></div>
-                <div><dt>좌석</dt><dd>{item.experience.seating}</dd></div>
-              </dl>
+              ))}
             </div>
           )}
 
+          {/* ── 전체 메뉴 ── */}
+          {item.menu?.length > 0 && (
+            <div className="detail-menu-section">
+              <h3>전체 메뉴</h3>
+              {item.menu.map((cat) => (
+                <div key={cat.category} className="menu-category">
+                  <div className="menu-category-label">{cat.category}</div>
+                  {cat.items.map((m) => (
+                    <div key={m.name} className="detail-menu-item">
+                      <div className="menu-icon-name">
+                        <div className="menu-dot" />
+                        <div className="menu-name-wrap">
+                          <span>{m.name}{m.spicy ? ' 🌶️'.repeat(m.spicy) : ''}</span>
+                          {m.desc && <span className="menu-desc">{m.desc}</span>}
+                        </div>
+                      </div>
+                      <span className="menu-price-tag">{m.price}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ── 추천 상황 ── */}
+          {item.mood?.length > 0 && (
+            <div className="detail-section">
+              <h3>이런 분들께 추천</h3>
+              <div className="detail-mood-tags">
+                {item.mood.map((m) => <span key={m} className="detail-mood-tag">{m}</span>)}
+              </div>
+            </div>
+          )}
+
+          {/* ── 에디터 포인트 ── */}
           <div className="detail-section">
             <h3>에디터 포인트</h3>
             <ul className="detail-points">
