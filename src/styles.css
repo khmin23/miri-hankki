@@ -1383,11 +1383,63 @@ img { display: block; width: 100%; object-fit: cover; }
   border: 1px solid rgba(120,120,128,0.15);
   color: var(--text-md);
 }
+.m-card-top {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 4px;
+  margin-bottom: 4px;
+}
+.m-card-loc { font-size: 0.65rem; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+.m-card-hero {
+  font-size: 0.72rem; color: var(--text-md); margin: 0 0 6px;
+  line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+.m-card-mood { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+.m-mood-tag {
+  font-size: 0.6rem; font-weight: 700; padding: 2px 7px;
+  border-radius: 999px; background: rgba(232,101,74,0.1);
+  color: var(--coral); border: 1px solid rgba(232,101,74,0.2);
+}
+.m-wait-badge {
+  position: absolute; top: 8px; left: 8px;
+  background: rgba(0,0,0,0.55); color: white;
+  font-size: 0.6rem; font-weight: 800;
+  padding: 3px 8px; border-radius: 999px;
+  backdrop-filter: blur(6px);
+}
 .m-card-foot {
   display: flex; align-items: center; justify-content: space-between;
 }
 .m-card-hours { font-size: 0.62rem; color: var(--text-muted); font-weight: 600; }
 .m-card-price { font-size: 0.76rem; font-weight: 900; color: var(--coral); }
+.m-card-cat-sm { font-size: 0.65rem; color: var(--text-muted); font-weight: 600; }
+
+/* 방문 전 체크 */
+.detail-precheck {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-bottom: 20px;
+}
+.precheck-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: 14px; padding: 12px 10px;
+}
+.precheck-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.precheck-item strong { font-size: 0.72rem; font-weight: 800; color: var(--text); display: block; margin-bottom: 2px; }
+.precheck-item p { font-size: 0.7rem; color: var(--text-md); margin: 0; line-height: 1.4; }
+
+/* 추천 상황 */
+.detail-mood-section { margin-bottom: 20px; }
+.detail-mood-section h3 { font-size: 0.92rem; font-weight: 800; margin-bottom: 10px; }
+.detail-mood-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+.detail-mood-tag {
+  padding: 6px 14px; border-radius: 999px;
+  font-size: 0.78rem; font-weight: 700;
+  background: rgba(74,144,196,0.1); color: var(--sea);
+  border: 1px solid rgba(74,144,196,0.2);
+}
 
 /* 상황별 추천 (새 버전) */
 .home-situation-section {

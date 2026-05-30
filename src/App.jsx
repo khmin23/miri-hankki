@@ -426,8 +426,11 @@ function AppTopBar({ onGoSearch, area, setArea }) {
 /* ─── 모던 카드 ─── */
 function ModernCard({ item, saved, onToggleSave, onSelect }) {
   const userLoc = useContext(UserLocCtx)
-  const hours = operatingHours[item.id] || ''
-  const tags  = item.tags?.slice(0, 2) || []
+  const eta     = getEta(item, userLoc)
+  const waiting = item.experience?.waitTime || ''
+  const isWaiting = waiting.includes('이상') || waiting.includes('30') || waiting.includes('예약')
+  const moodBadges = item.mood?.slice(0, 2) || []
+
   return (
     <article className="m-card" onClick={() => onSelect(item.id)}>
       <div className="m-card-img-wrap">
@@ -437,19 +440,20 @@ function ModernCard({ item, saved, onToggleSave, onSelect }) {
           onClick={(e) => { e.stopPropagation(); onToggleSave(item.id) }}
           aria-label="찜"
         >{saved ? '❤️' : '🤍'}</button>
+        {isWaiting && <span className="m-wait-badge">⏳ 웨이팅</span>}
       </div>
       <div className="m-card-body">
-        <strong className="m-card-name">{item.name}</strong>
-        <div className="m-card-meta">
-          {getEta(item, userLoc) && <><span className="m-card-dist">{getEta(item, userLoc)}</span><span className="m-sep">·</span></>}
-          <span className="m-card-cat">{item.category}</span>
+        <div className="m-card-top">
+          <strong className="m-card-name">{item.name}</strong>
+          <span className="m-card-loc">📍 {item.location}</span>
         </div>
-        <div className="m-card-tags">
-          {tags.map((t) => <span key={t} className="m-tag">{t}</span>)}
+        <p className="m-card-hero">{item.hero}</p>
+        <div className="m-card-mood">
+          {moodBadges.map((m) => <span key={m} className="m-mood-tag">{m}</span>)}
         </div>
         <div className="m-card-foot">
-          {hours && <span className="m-card-hours">🕐 {hours}</span>}
           <span className="m-card-price">{item.price}</span>
+          <span className="m-card-cat-sm">{getCuisineCategory(item)}</span>
         </div>
       </div>
     </article>
@@ -798,10 +802,10 @@ function Splash({ onDone }) {
 
 /* ─── 프로모 배너 슬라이드 ─────────────────────────────── */
 const PROMO_SLIDES = [
-  { area: '광안리', img: '/promo-bg.jpg',  grad: null,                                               tag: '#광안리 로컬 픽',    title: '바다 옆에서 즐기는', bold: '광안리 맛집' },
-  { area: '서면',   img: null,             grad: 'linear-gradient(135deg,#163A5B,#1e5080)',           tag: '#서면 · 전포 핫플', title: '부산의 중심에서',   bold: '서면 맛집'   },
-  { area: '남포',   img: null,             grad: 'linear-gradient(135deg,#3b2a1a,#6b4423)',           tag: '#남포 · 광복 노포', title: '역사가 담긴',       bold: '남포 맛집'   },
-  { area: '해운대', img: null,             grad: 'linear-gradient(135deg,#0a6e8a,#1a9bb5)',           tag: '#해운대 오션뷰',    title: '바다를 품은',       bold: '해운대 맛집' },
+  { area: '광안리', img: '/promo-bg.jpg',  grad: null,                                     tag: '직접 가본 것처럼 미리 확인', title: '사진·분위기·메뉴·웨이팅까지', bold: '광안리 맛집' },
+  { area: '서면',   img: null,             grad: 'linear-gradient(135deg,#163A5B,#1e5080)', tag: '직접 가본 것처럼 미리 확인', title: '부산의 중심에서',             bold: '서면 맛집'   },
+  { area: '남포',   img: null,             grad: 'linear-gradient(135deg,#3b2a1a,#6b4423)', tag: '직접 가본 것처럼 미리 확인', title: '역사가 담긴',                 bold: '남포 맛집'   },
+  { area: '해운대', img: null,             grad: 'linear-gradient(135deg,#0a6e8a,#1a9bb5)', tag: '직접 가본 것처럼 미리 확인', title: '바다를 품은',                 bold: '해운대 맛집' },
 ]
 
 function PromoBanner({ onAreaSelect }) {
@@ -1860,6 +1864,48 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
           </div>
 
           <p className="detail-hero-text">{item.hero}</p>
+
+          {/* ── 방문 전 체크 ── */}
+          <div className="detail-precheck">
+            <div className="precheck-item">
+              <span className="precheck-icon">⏳</span>
+              <div>
+                <strong>웨이팅</strong>
+                <p>{item.experience?.waitTime || '정보 없음'}</p>
+              </div>
+            </div>
+            <div className="precheck-item">
+              <span className="precheck-icon">🅿️</span>
+              <div>
+                <strong>주차</strong>
+                <p>{parking}</p>
+              </div>
+            </div>
+            <div className="precheck-item">
+              <span className="precheck-icon">🕐</span>
+              <div>
+                <strong>영업시간</strong>
+                <p>{hours}</p>
+              </div>
+            </div>
+            <div className="precheck-item">
+              <span className="precheck-icon">📋</span>
+              <div>
+                <strong>예약</strong>
+                <p>{item.links?.reservation ? '예약 가능' : '예약 불가'}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* ── 추천 상황 ── */}
+          {item.mood?.length > 0 && (
+            <div className="detail-mood-section">
+              <h3>이런 분들께 추천</h3>
+              <div className="detail-mood-tags">
+                {item.mood.map((m) => <span key={m} className="detail-mood-tag">{m}</span>)}
+              </div>
+            </div>
+          )}
 
           {(item.menu?.length > 0 || menus.length > 0) && (
             <div className="detail-menu-section">
