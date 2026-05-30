@@ -419,8 +419,6 @@ function AppTopBar({ onGoSearch, area, setArea }) {
 function ModernCard({ item, saved, onToggleSave, onSelect }) {
   const userLoc = useContext(UserLocCtx)
   const eta     = getEta(item, userLoc)
-  const waiting = item.experience?.waitTime || ''
-  const isWaiting = waiting.includes('이상') || waiting.includes('30') || waiting.includes('예약')
   const moodBadges = item.mood?.slice(0, 2) || []
 
   return (
@@ -432,7 +430,6 @@ function ModernCard({ item, saved, onToggleSave, onSelect }) {
           onClick={(e) => { e.stopPropagation(); onToggleSave(item.id) }}
           aria-label="찜"
         >{saved ? '❤️' : '🤍'}</button>
-        {isWaiting && <span className="m-wait-badge">⏳ 웨이팅</span>}
       </div>
       <div className="m-card-body">
         <div className="m-card-top">
