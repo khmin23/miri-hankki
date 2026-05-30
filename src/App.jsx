@@ -63,12 +63,11 @@ const menuData = {
 
 /* ─── 네비게이션 ────────────────────────────────────────── */
 const navItems = [
-  { id: 'home',    label: '홈',   icon: '🏠' },
-  { id: 'search',  label: '검색', icon: '🔍' },
-  { id: 'map',     label: '지도', icon: '🗺️' },
-  { id: 'saved',   label: '저장', icon: '🔖' },
-  { id: 'reviews', label: '후기', icon: '💬' },
-  { id: 'my',      label: '마이', icon: '👤' },
+  { id: 'home',  label: '홈',   icon: '🏠' },
+  { id: 'search',label: '검색', icon: '🔍' },
+  { id: 'map',   label: '지도', icon: '🗺️' },
+  { id: 'saved', label: '저장', icon: '🔖' },
+  { id: 'my',    label: '마이', icon: '👤' },
 ]
 
 const moodCategories = [
@@ -2710,13 +2709,6 @@ export default function App() {
                 <SavedScreen
                   savedIds={savedIds}
                   onToggleSave={toggleSave}
-                  onSelect={setSelectedId}
-                />
-              )}
-              {activeTab === 'reviews' && (
-                <ReviewsFeedScreen
-                  reviews={reviews}
-                  profile={profile}
                   onSelect={setSelectedId}
                 />
               )}
