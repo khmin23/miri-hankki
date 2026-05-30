@@ -833,7 +833,6 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
           <span className="promo-tag">#광안리 로컬 픽</span>
           <p className="promo-title">지금 딱 맞는<br/><b>오늘의 한 끼</b>를 찾아보세요</p>
         </div>
-        <div className="promo-emoji">🌊</div>
       </div>
 
       {/* ── 카테고리 필터 ── */}
