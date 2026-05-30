@@ -6,7 +6,10 @@ import {
   signOut as fbSignOut,
   onAuthStateChanged as fbOnAuthStateChanged,
 } from 'firebase/auth'
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore'
+import {
+  getFirestore, doc, getDoc, setDoc,
+  collection, addDoc, query, where, orderBy, getDocs, serverTimestamp,
+} from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
@@ -61,4 +64,32 @@ export async function saveUserData(uid, data) {
   try {
     await setDoc(doc(db, 'users', uid), data, { merge: true })
   } catch { /* ignore */ }
+}
+
+/* ── Firestore: 공개 리뷰 저장 / 불러오기 ── */
+export async function savePublicReview({ restaurantId, rating, text, soloVisit, nickname }) {
+  if (!db) return
+  try {
+    await addDoc(collection(db, 'publicReviews'), {
+      restaurantId,
+      rating,
+      text,
+      soloVisit: soloVisit || false,
+      nickname: nickname || '익명',
+      createdAt: serverTimestamp(),
+    })
+  } catch { /* ignore */ }
+}
+
+export async function getPublicReviews(restaurantId) {
+  if (!db) return []
+  try {
+    const q = query(
+      collection(db, 'publicReviews'),
+      where('restaurantId', '==', restaurantId),
+      orderBy('createdAt', 'desc'),
+    )
+    const snap = await getDocs(q)
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+  } catch { return [] }
 }

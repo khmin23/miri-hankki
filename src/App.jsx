@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { restaurants } from './data/restaurants'
-import { signUp, signIn, signOut, onAuthStateChanged, isConfigured as firebaseConfigured, loadUserData, saveUserData } from './firebase'
+import { signUp, signIn, signOut, onAuthStateChanged, isConfigured as firebaseConfigured, loadUserData, saveUserData, savePublicReview, getPublicReviews } from './firebase'
 
 const BASE = import.meta.env.BASE_URL
 
@@ -1869,7 +1869,7 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, set
 }
 
 /* ─── 상세 모달 ─────────────────────────────────────────── */
-function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, visitRecords, setVisitRecords, reviews, setReviews }) {
+function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, visitRecords, setVisitRecords, reviews, setReviews, profile }) {
   const userLoc = useContext(UserLocCtx)
   const scrollRef = useRef(null)
   const [tip, setTip]       = useState('')
@@ -1890,8 +1890,24 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
   const myVisits  = (visitRecords || []).filter((v) => v.restaurantId === item.id)
   const myReviews = (reviews || []).filter((r) => r.restaurantId === item.id)
 
-  // 혼밥 인증: 내 리뷰 중 soloVisit === true 가 하나라도 있으면 인증
+  // 혼밥 인증
   const soloVerified = myReviews.some((r) => r.soloVisit)
+
+  // 공개 리뷰 (다른 사람들)
+  const [publicReviews, setPublicReviews] = useState([])
+  const [publicLoading, setPublicLoading] = useState(false)
+
+  useEffect(() => {
+    setPublicLoading(true)
+    getPublicReviews(item.id).then((data) => {
+      setPublicReviews(data)
+      setPublicLoading(false)
+    })
+  }, [item.id])
+
+  const avgRating = publicReviews.length > 0
+    ? (publicReviews.reduce((s, r) => s + r.rating, 0) / publicReviews.length).toFixed(1)
+    : null
 
   function handleAddVisit() {
     if (!visitDish.trim()) return
@@ -1911,14 +1927,26 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
 
   function handleAddReview() {
     if (!reviewText.trim()) return
-    setReviews((prev) => [{
+    const review = {
       restaurantId: item.id,
       name: item.name,
       rating: reviewRating,
       text: reviewText.trim(),
       date: formatDate(),
       soloVisit,
-    }, ...prev])
+    }
+    setReviews((prev) => [review, ...prev])
+    // 공개 리뷰로도 저장
+    savePublicReview({
+      restaurantId: item.id,
+      rating: reviewRating,
+      text: reviewText.trim(),
+      soloVisit,
+      nickname: profile?.name || '익명',
+    }).then(() => {
+      // 저장 후 공개 리뷰 다시 불러오기
+      getPublicReviews(item.id).then(setPublicReviews)
+    })
     setReviewText('')
     setSoloVisit(false)
     setShowReviewForm(false)
@@ -2173,6 +2201,38 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
               </div>
             )
           })()}
+
+          {/* ── 다른 사람들의 리뷰 ── */}
+          <div className="detail-section">
+            <div className="public-review-hd">
+              <h3>다른 사람들의 후기</h3>
+              {avgRating && (
+                <div className="public-avg">
+                  <span className="public-avg-star">⭐</span>
+                  <strong>{avgRating}</strong>
+                  <small>({publicReviews.length}명)</small>
+                </div>
+              )}
+            </div>
+            {publicLoading ? (
+              <p className="detail-my-empty">불러오는 중...</p>
+            ) : publicReviews.length === 0 ? (
+              <p className="detail-my-empty">아직 후기가 없어요. 첫 번째 후기를 남겨보세요!</p>
+            ) : (
+              <div className="public-reviews">
+                {publicReviews.slice(0, 5).map((r) => (
+                  <div key={r.id} className="public-review-item">
+                    <div className="public-review-top">
+                      <span className="public-review-nick">{r.nickname}</span>
+                      <span className="public-review-stars">{'⭐'.repeat(r.rating)}</span>
+                    </div>
+                    {r.soloVisit && <span className="public-solo-badge">🍱 혼밥</span>}
+                    <p className="public-review-text">{r.text}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* ── 내 방문 기록 ── */}
           <div className="detail-section detail-my-block">
@@ -2592,6 +2652,7 @@ export default function App() {
             setVisitRecords={setVisitRecords}
             reviews={reviews}
             setReviews={setReviews}
+            profile={profile}
           />
         )}
       </div>

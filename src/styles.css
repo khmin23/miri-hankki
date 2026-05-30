@@ -3429,6 +3429,41 @@ img { display: block; width: 100%; object-fit: cover; }
 .nearby-rest-info small { font-size: 0.72rem; color: var(--text-muted); }
 
 /* ─── DetailModal: 내 방문기록 & 리뷰 블록 ─── */
+/* 공개 리뷰 섹션 */
+.public-review-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.public-review-hd h3 { margin: 0; }
+.public-avg {
+  display: flex; align-items: center; gap: 4px;
+  background: rgba(255,220,50,0.15);
+  border: 1px solid rgba(255,200,0,0.25);
+  border-radius: 999px; padding: 4px 10px;
+}
+.public-avg-star { font-size: 0.9rem; }
+.public-avg strong { font-size: 1rem; font-weight: 900; color: #b8860b; }
+.public-avg small { font-size: 0.72rem; color: var(--text-muted); }
+.public-reviews { display: flex; flex-direction: column; gap: 10px; }
+.public-review-item {
+  background: rgba(255,255,255,0.45);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: 12px; padding: 12px 14px;
+}
+.public-review-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 4px;
+}
+.public-review-nick { font-size: 0.8rem; font-weight: 800; color: var(--text); }
+.public-review-stars { font-size: 0.78rem; }
+.public-solo-badge {
+  display: inline-block; font-size: 0.68rem; font-weight: 700;
+  color: #b87300; background: rgba(245,201,122,0.2);
+  border: 1px solid rgba(245,201,122,0.4);
+  border-radius: 999px; padding: 2px 8px; margin-bottom: 5px;
+}
+.public-review-text { font-size: 0.82rem; color: var(--text-md); margin: 0; line-height: 1.5; }
+
 .detail-my-block {
   background: var(--beige);
   border-radius: var(--radius-md);
