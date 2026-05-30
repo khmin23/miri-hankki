@@ -4323,6 +4323,54 @@ img { display: block; width: 100%; object-fit: cover; }
   .home-map-box .interactive-map { height: 320px; }
 }
 
+/* ── 별점 공통 ───────────────────────────────────────────── */
+.star-display { display: inline-flex; align-items: center; gap: 0; line-height: 1; font-size: inherit; }
+.sd-full  { color: #FFB800; }
+.sd-empty { color: #ddd; }
+.sd-half  { position: relative; display: inline-block; color: #ddd; }
+.sd-half-fill {
+  position: absolute;
+  left: 0; top: 0;
+  width: 50%;
+  overflow: hidden;
+  color: #FFB800;
+  white-space: nowrap;
+}
+.sd-half-bg { display: block; }
+
+/* 별점 입력 */
+.star-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.si-star {
+  position: relative;
+  display: inline-block;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.si-half {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 50%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1;
+}
+.si-left  { left: 0; }
+.si-right { right: 0; }
+.si-val {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #FFB800;
+  margin-left: 8px;
+  min-width: 24px;
+}
+
 /* ── 후기 피드 화면 ──────────────────────────────────────── */
 .reviews-feed-screen { padding: 16px 16px 32px; max-width: 480px; margin: 0 auto; }
 

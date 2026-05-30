@@ -267,6 +267,49 @@ function SideNav({ bp, activeTab, onTabChange, savedCount }) {
 
 /* ─── 서브 컴포넌트 ──────────────────────────────────────── */
 
+/* ─── 별점 표시 / 입력 컴포넌트 ──────────────────────────── */
+function StarDisplay({ rating, className = '' }) {
+  return (
+    <span className={`star-display ${className}`}>
+      {[1, 2, 3, 4, 5].map((n) => {
+        if (rating >= n) return <span key={n} className="sd-full">★</span>
+        if (rating >= n - 0.5) return (
+          <span key={n} className="sd-half">
+            <span className="sd-half-fill">★</span>
+            <span className="sd-half-bg">★</span>
+          </span>
+        )
+        return <span key={n} className="sd-empty">★</span>
+      })}
+    </span>
+  )
+}
+
+function StarRatingInput({ value, onChange }) {
+  const [hover, setHover] = useState(null)
+  const display = hover ?? value
+  return (
+    <div className="star-input" onMouseLeave={() => setHover(null)}>
+      {[1, 2, 3, 4, 5].map((n) => (
+        <span key={n} className="si-star">
+          <button type="button" className="si-half si-left"
+            onClick={() => onChange(n - 0.5)}
+            onMouseEnter={() => setHover(n - 0.5)} />
+          <button type="button" className="si-half si-right"
+            onClick={() => onChange(n)}
+            onMouseEnter={() => setHover(n)} />
+          {display >= n
+            ? <span className="sd-full">★</span>
+            : display >= n - 0.5
+            ? <span className="sd-half"><span className="sd-half-fill">★</span><span className="sd-half-bg">★</span></span>
+            : <span className="sd-empty">★</span>}
+        </span>
+      ))}
+      <span className="si-val">{display}</span>
+    </div>
+  )
+}
+
 function PhotoThumb({ item, className = '' }) {
   const src = item.banner ?? item.photos?.[0]?.src
   if (src) {
@@ -1934,7 +1977,7 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, set
                     <button className="my-review-del" onClick={() => deleteReview(i)}>삭제</button>
                   </div>
                 </div>
-                <div className="my-review-stars">{'⭐'.repeat(rev.rating)}</div>
+                <StarDisplay rating={rev.rating} className="my-review-stars" />
                 {editingIdx === i ? (
                   <div className="my-review-edit-area">
                     <textarea
@@ -2322,7 +2365,7 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
               <h3>후기</h3>
               {avgRating && (
                 <div className="public-avg">
-                  <span className="public-avg-star">⭐</span>
+                  <StarDisplay rating={Number(avgRating)} className="public-avg-star" />
                   <strong>{avgRating}</strong>
                   <small>({publicReviews.length}명)</small>
                 </div>
@@ -2338,7 +2381,7 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
                   <div key={r.id} className="public-review-item">
                     <div className="public-review-top">
                       <span className="public-review-nick">{r.nickname}</span>
-                      <span className="public-review-stars">{'⭐'.repeat(r.rating)}</span>
+                      <StarDisplay rating={r.rating} className="public-review-stars" />
                     </div>
                     {r.soloVisit && <span className="public-solo-badge">🍱 혼밥</span>}
                     <p className="public-review-text">{r.text}</p>
@@ -2416,7 +2459,7 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
                 {myReviews.map((r, i) => (
                   <div key={i} className="detail-my-review-row">
                     <div className="detail-my-review-top">
-                      <span className="detail-my-stars">{'⭐'.repeat(r.rating)}</span>
+                      <StarDisplay rating={r.rating} className="detail-my-stars" />
                       <span className="detail-my-review-date">{r.date}</span>
                     </div>
                     <p className="detail-my-review-text">{r.text}</p>
@@ -2428,11 +2471,7 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
             {showReviewForm && (
               <div className="detail-my-form">
                 <div className="detail-star-row">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <button key={n} className="detail-star-btn" onClick={() => setReviewRating(n)}>
-                      {n <= reviewRating ? '⭐' : '☆'}
-                    </button>
-                  ))}
+                  <StarRatingInput value={reviewRating} onChange={setReviewRating} />
                 </div>
                 <button
                   className={`solo-toggle-btn${soloVisit ? ' active' : ''}`}
