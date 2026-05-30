@@ -1629,7 +1629,7 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, set
   function deleteReview(i) {
     const r = reviews[i]
     setReviews((prev) => prev.filter((_, idx) => idx !== i))
-    deletePublicReview(r.restaurantId, r.text)
+    deletePublicReview(r.firestoreId)
     showToast('리뷰를 삭제했어요')
   }
 
@@ -2041,8 +2041,18 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
     setShowVisitForm(false)
   }
 
-  function handleAddReview() {
+  async function handleAddReview() {
     if (!reviewText.trim()) return
+    setReviewText('')
+    setSoloVisit(false)
+    setShowReviewForm(false)
+    const firestoreId = await savePublicReview({
+      restaurantId: item.id,
+      rating: reviewRating,
+      text: reviewText.trim(),
+      soloVisit,
+      nickname: profile?.name || '익명',
+    })
     const review = {
       restaurantId: item.id,
       name: item.name,
@@ -2050,22 +2060,10 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
       text: reviewText.trim(),
       date: formatDate(),
       soloVisit,
+      firestoreId: firestoreId ?? null,
     }
     setReviews((prev) => [review, ...prev])
-    // 공개 리뷰로도 저장
-    savePublicReview({
-      restaurantId: item.id,
-      rating: reviewRating,
-      text: reviewText.trim(),
-      soloVisit,
-      nickname: profile?.name || '익명',
-    }).then(() => {
-      // 저장 후 공개 리뷰 다시 불러오기
-      getPublicReviews(item.id).then(setPublicReviews)
-    })
-    setReviewText('')
-    setSoloVisit(false)
-    setShowReviewForm(false)
+    getPublicReviews(item.id).then(setPublicReviews)
   }
 
   useEffect(() => {

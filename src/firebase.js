@@ -68,9 +68,9 @@ export async function saveUserData(uid, data) {
 
 /* ── Firestore: 공개 리뷰 저장 / 불러오기 ── */
 export async function savePublicReview({ restaurantId, rating, text, soloVisit, nickname }) {
-  if (!db) return
+  if (!db) return null
   try {
-    await addDoc(collection(db, 'publicReviews'), {
+    const ref = await addDoc(collection(db, 'publicReviews'), {
       restaurantId,
       rating,
       text,
@@ -78,7 +78,8 @@ export async function savePublicReview({ restaurantId, rating, text, soloVisit, 
       nickname: nickname || '익명',
       createdAt: serverTimestamp(),
     })
-  } catch { /* ignore */ }
+    return ref.id
+  } catch { return null }
 }
 
 export async function getPublicReviews(restaurantId) {
@@ -94,16 +95,10 @@ export async function getPublicReviews(restaurantId) {
   } catch { return [] }
 }
 
-export async function deletePublicReview(restaurantId, text) {
-  if (!db) return
+export async function deletePublicReview(firestoreId) {
+  if (!db || !firestoreId) return
   try {
-    const q = query(
-      collection(db, 'publicReviews'),
-      where('restaurantId', '==', restaurantId),
-      where('text', '==', text),
-    )
-    const snap = await getDocs(q)
-    await Promise.all(snap.docs.map((d) => deleteDoc(doc(db, 'publicReviews', d.id))))
+    await deleteDoc(doc(db, 'publicReviews', firestoreId))
   } catch { /* ignore */ }
 }
 
