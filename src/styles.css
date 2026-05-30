@@ -2092,10 +2092,19 @@ img { display: block; width: 100%; object-fit: cover; }
 /* 지도 하단 카드 */
 .map-bottom-card {
   background: white;
-  border-top: 1px solid var(--border);
-  padding: 14px 16px 12px;
+  border-radius: 20px 20px 0 0;
+  padding: 8px 16px 16px;
   flex-shrink: 0;
-  box-shadow: 0 -12px 30px rgba(0,0,0,0.08);
+  box-shadow: 0 -6px 24px rgba(0,0,0,0.10);
+}
+.map-bottom-card::before {
+  content: '';
+  display: block;
+  width: 36px;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  margin: 0 auto 12px;
 }
 .map-bottom-inner {
   display: flex;
@@ -2123,7 +2132,7 @@ img { display: block; width: 100%; object-fit: cover; }
 .map-chevron { color: var(--text-muted); font-size: 1.2rem; }
 
 .map-bottom-actions {
-  padding-top: 12px;
+  padding-top: 10px;
 }
 
 .map-place-scroll {
@@ -2206,9 +2215,9 @@ img { display: block; width: 100%; object-fit: cover; }
 }
 .map-btn {
   flex: 1;
-  padding: 10px 8px;
-  border-radius: var(--radius-md);
-  font-size: 0.8rem;
+  padding: 12px 8px;
+  border-radius: 14px;
+  font-size: 0.82rem;
   font-weight: 700;
   text-align: center;
 }
