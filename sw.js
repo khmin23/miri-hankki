@@ -1,4 +1,4 @@
-const CACHE_NAME = 'miri-hankki-v32'
+const CACHE_NAME = 'miri-hankki-v1780133656451'
 const BASE_PATH = new URL(self.registration.scope).pathname
 
 // Vite가 생성한 해시 기반 asset만 캐시 우선 — 나머지는 항상 네트워크 우선
@@ -18,6 +18,10 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()),
   )
+})
+
+self.addEventListener('message', (e) => {
+  if (e.data?.type === 'SKIP_WAITING') self.skipWaiting()
 })
 
 self.addEventListener('activate', (event) => {
