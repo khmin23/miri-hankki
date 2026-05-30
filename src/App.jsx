@@ -873,17 +873,20 @@ function PromoBanner({ onAreaSelect }) {
   )
 }
 
-// "1인 22,000 ~ 35,000원대" → 1인 뒤의 첫 번째 가격(최소가격) 추출
-function parseMinPrice(priceStr) {
-  const m = priceStr?.match(/1인\s+([\d,]+)/)
-  return m ? parseInt(m[1].replace(/,/g, '')) : 0
+// "1인 22,000 ~ 35,000원대" → 평균 가격 추출
+function parseAvgPrice(priceStr) {
+  const m = priceStr?.match(/1인\s+([\d,]+)\s*~\s*([\d,]+)/)
+  if (!m) return 0
+  const min = parseInt(m[1].replace(/,/g, ''))
+  const max = parseInt(m[2].replace(/,/g, ''))
+  return Math.round((min + max) / 2)
 }
 
 const PRICE_FILTERS = [
   { id: '전체',    label: '전체',       test: () => true },
-  { id: '1만이하', label: '1만원 이하', test: (item) => parseMinPrice(item.price) <= 10000 },
-  { id: '1~2만',   label: '1~2만원',    test: (item) => { const p = parseMinPrice(item.price); return p > 10000 && p <= 20000 } },
-  { id: '2만이상', label: '2만원 이상', test: (item) => parseMinPrice(item.price) > 20000 },
+  { id: '1만이하', label: '1만원 이하', test: (item) => parseAvgPrice(item.price) <= 10000 },
+  { id: '1~2만',   label: '1~2만원',    test: (item) => { const p = parseAvgPrice(item.price); return p > 10000 && p <= 20000 } },
+  { id: '2만이상', label: '2만원 이상', test: (item) => parseAvgPrice(item.price) > 20000 },
 ]
 
 const TRAIT_FILTERS = [
