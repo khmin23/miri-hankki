@@ -1093,6 +1093,17 @@ img { display: block; width: 100%; object-fit: cover; }
   color: var(--text-md);
   margin: 0;
 }
+.card-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 3px;
+}
+.card-star { font-size: 0.75rem; line-height: 1; }
+.card-avg  { font-size: 0.78rem; font-weight: 800; color: var(--text); }
+.card-count { font-size: 0.72rem; color: var(--text-muted); }
+.card-no-rating { font-size: 0.72rem; color: var(--text-muted); }
+.card-eta-inline { font-size: 0.72rem; color: var(--text-muted); }
 
 /* ═══════════════════════════════════════════════════════════
    홈 v2 – 모던 리디자인
@@ -1368,6 +1379,22 @@ img { display: block; width: 100%; object-fit: cover; }
   overflow: hidden;
   background: var(--beige-md);
 }
+.m-card-rating-badge {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 100px;
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.m-card-rating-badge em { font-style: normal; font-weight: 400; opacity: 0.8; }
 .m-card-img {
   width: 100%; height: 100%;
   object-fit: cover; display: block;
@@ -3826,6 +3853,22 @@ img { display: block; width: 100%; object-fit: cover; }
   border-radius: 100px;
   backdrop-filter: blur(4px);
 }
+.rest-card-rating-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 100px;
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.rest-card-rating-badge em { font-style: normal; font-weight: 400; opacity: 0.8; }
 .rest-card-body {
   padding: 11px 12px 12px;
 }

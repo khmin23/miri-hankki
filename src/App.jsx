@@ -6,6 +6,7 @@ const BASE = import.meta.env.BASE_URL
 
 /* ─── GPS 위치 기반 거리/소요시간 ────────────────────────── */
 const UserLocCtx = createContext(null)
+const ReviewStatsCtx = createContext({})
 
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 6371
@@ -281,7 +282,9 @@ function PhotoThumb({ item, className = '' }) {
 /** 리스트형 트렌딩 아이템 */
 function TrendingItem({ item, saved, onToggleSave, onSelect }) {
   const userLoc = useContext(UserLocCtx)
+  const reviewStats = useContext(ReviewStatsCtx)
   const eta = getEta(item, userLoc)
+  const stats = reviewStats[item.id]
   return (
     <article className="trending-item" onClick={() => onSelect(item.id)}>
       <div className="trending-thumb">
@@ -290,7 +293,18 @@ function TrendingItem({ item, saved, onToggleSave, onSelect }) {
       <div className="trending-body">
         <strong>{item.name}</strong>
         <p className="trending-sub">{item.location}</p>
-        {eta && <p className="trending-meta">{eta}</p>}
+        <div className="card-rating-row">
+          {stats ? (
+            <>
+              <span className="card-star">⭐</span>
+              <span className="card-avg">{stats.avg}</span>
+              <span className="card-count">후기 {stats.count}</span>
+            </>
+          ) : (
+            <span className="card-no-rating">후기 없음</span>
+          )}
+          {eta && <span className="card-eta-inline">· {eta}</span>}
+        </div>
       </div>
       <button
         className={`heart-btn sm ${saved ? 'saved' : ''}`}
@@ -306,7 +320,9 @@ function TrendingItem({ item, saved, onToggleSave, onSelect }) {
 /** 데스크탑 카드 그리드용 */
 function RestaurantCard({ item, saved, onToggleSave, onSelect, isSelected, onHover }) {
   const userLoc = useContext(UserLocCtx)
+  const reviewStats = useContext(ReviewStatsCtx)
   const eta = getEta(item, userLoc)
+  const stats = reviewStats[item.id]
   return (
     <article
       className={`rest-card${isSelected ? ' rest-card-selected' : ''}`}
@@ -323,6 +339,11 @@ function RestaurantCard({ item, saved, onToggleSave, onSelect, isSelected, onHov
           {saved ? '❤️' : '🤍'}
         </button>
         {item.mood?.includes('데이트') && <span className="rest-card-badge">❤️ 데이트</span>}
+        {stats && (
+          <span className="rest-card-rating-badge">
+            ⭐ {stats.avg} <em>({stats.count})</em>
+          </span>
+        )}
       </div>
       <div className="rest-card-body">
         <p className="rest-card-loc">{item.location}</p>
@@ -417,8 +438,10 @@ function AppTopBar({ onGoSearch, area, setArea }) {
 /* ─── 모던 카드 ─── */
 function ModernCard({ item, saved, onToggleSave, onSelect }) {
   const userLoc = useContext(UserLocCtx)
+  const reviewStats = useContext(ReviewStatsCtx)
   const eta     = getEta(item, userLoc)
   const moodBadges = item.mood?.slice(0, 2) || []
+  const stats = reviewStats[item.id]
 
   return (
     <article className="m-card" onClick={() => onSelect(item.id)}>
@@ -429,6 +452,11 @@ function ModernCard({ item, saved, onToggleSave, onSelect }) {
           onClick={(e) => { e.stopPropagation(); onToggleSave(item.id) }}
           aria-label="찜"
         >{saved ? '❤️' : '🤍'}</button>
+        {stats && (
+          <span className="m-card-rating-badge">
+            ⭐ {stats.avg} <em>({stats.count})</em>
+          </span>
+        )}
       </div>
       <div className="m-card-body">
         <div className="m-card-top">
@@ -2500,6 +2528,25 @@ export default function App() {
     catch { return [] }
   })
 
+  // 가게별 별점 통계 (Firestore 전체 후기 기준)
+  const [reviewStats, setReviewStats] = useState({})
+  useEffect(() => {
+    getAllPublicReviews(200).then((data) => {
+      const acc = {}
+      data.forEach((r) => {
+        const id = r.restaurantId
+        if (!acc[id]) acc[id] = { sum: 0, count: 0 }
+        acc[id].sum += r.rating
+        acc[id].count += 1
+      })
+      const stats = {}
+      Object.entries(acc).forEach(([id, { sum, count }]) => {
+        stats[Number(id)] = { avg: (sum / count).toFixed(1), count }
+      })
+      setReviewStats(stats)
+    })
+  }, [])
+
   // Firebase 인증 상태 실시간 동기화 + Firestore 데이터 로드
   useEffect(() => {
     const unsub = onAuthStateChanged(async (user) => {
@@ -2618,6 +2665,7 @@ export default function App() {
 
   return (
     <UserLocCtx.Provider value={userLoc}>
+    <ReviewStatsCtx.Provider value={reviewStats}>
     <div className="app-wrapper">
       <div className="app-frame">
         {showSplash && !isWeb ? (
@@ -2747,6 +2795,7 @@ export default function App() {
         )}
       </div>
     </div>
+    </ReviewStatsCtx.Provider>
     </UserLocCtx.Provider>
   )
 }
