@@ -892,7 +892,6 @@ function PromoBanner({ onAreaSelect }) {
         <span className="promo-tag">{slide.tag}</span>
         <p className="promo-title">{slide.title}<br/><b>{slide.bold}</b>을 찾아보세요</p>
       </div>
-      <div className="promo-emoji-area">{slide.emoji}</div>
       <div className="promo-dots">
         {PROMO_SLIDES.map((_, i) => (
           <button key={i} className={`promo-dot${i === idx ? ' active' : ''}`}
