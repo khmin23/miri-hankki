@@ -414,6 +414,48 @@ img { display: block; width: 100%; object-fit: cover; }
 .empty-box button { margin-top: 12px; color: var(--coral); font-size: 0.85rem; font-weight: 600; }
 .empty-box.big span { font-size: 2.5rem; }
 
+/* 홈 빈 상태 */
+.home-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px 36px;
+  margin: 4px 0 8px;
+  background: white;
+  border-radius: 20px;
+  text-align: center;
+}
+.home-empty-icon {
+  font-size: 2.8rem;
+  margin-bottom: 14px;
+  line-height: 1;
+  filter: grayscale(0.2);
+}
+.home-empty-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0 0 6px;
+}
+.home-empty-sub {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+.home-empty-btn {
+  background: var(--coral);
+  color: white;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 10px 28px;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.home-empty-btn:active { opacity: 0.8; }
+
 /* 스크린 타이틀 */
 .screen-title-row {
   display: flex;

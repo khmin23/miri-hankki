@@ -1135,9 +1135,11 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
           ))}
         </div>
       ) : (
-        <div className="empty-box">
-          <p>조건에 맞는 맛집이 없어요 😅</p>
-          <button onClick={() => setMoodFilter('전체')}>전체 보기</button>
+        <div className="home-empty-state">
+          <div className="home-empty-icon">🍽️</div>
+          <p className="home-empty-title">조건에 맞는 맛집이 없어요</p>
+          <p className="home-empty-sub">필터를 바꿔서 다시 찾아볼까요?</p>
+          <button className="home-empty-btn" onClick={() => setMoodFilter('전체')}>전체 보기</button>
         </div>
       )}
 
