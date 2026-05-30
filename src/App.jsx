@@ -929,7 +929,7 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
       <AppTopBar onGoSearch={onGoSearch} area={area} setArea={setArea} />
 
       {/* ── 프로모 배너 ── */}
-      <PromoBanner onAreaSelect={(a) => setArea(a)} />
+      <PromoBanner />
 
       {/* ── 음식 카테고리 필터 ── */}
       <div className="home-cat-row">
