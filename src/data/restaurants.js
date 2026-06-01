@@ -448,7 +448,7 @@ export const restaurants = [
       },
     ],
     media: {
-      interior: { src: '/interiors/casabusano-360.html', type: 'html360', poster: '' },
+      interior: { src: '/interiors/casabusano-interior.mp4', type: 'video', poster: '' },
     },
     photos: [
       {
