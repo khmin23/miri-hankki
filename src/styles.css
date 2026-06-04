@@ -1710,6 +1710,73 @@ img { display: block; width: 100%; object-fit: cover; }
 .day-step-info strong { font-size: 0.88rem; font-weight: 800; display: block; margin-bottom: 2px; }
 .day-step-info p { font-size: 0.72rem; color: var(--text-md); margin: 0; line-height: 1.4; }
 
+/* 저장 버튼 */
+.day-save-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 14px;
+  padding: 13px;
+  border-radius: 14px;
+  background: var(--coral);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.2s;
+}
+.day-save-btn:active { opacity: 0.8; }
+.day-save-btn.saved {
+  background: #4caf50;
+  cursor: default;
+}
+
+/* 마이 – 저장된 코스 */
+.my-courses { display: flex; flex-direction: column; gap: 10px; }
+.my-course-item {
+  background: var(--beige);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+.my-course-hd {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.my-course-date { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); }
+.my-course-steps { display: flex; flex-direction: column; gap: 6px; }
+.my-course-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.my-course-slot {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--coral);
+  width: 36px;
+  flex-shrink: 0;
+}
+.my-course-time {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  width: 44px;
+  flex-shrink: 0;
+}
+.my-course-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 0.15s;
+}
+.my-course-name:hover { text-decoration-color: var(--coral); }
+
 /* ═══════════════════════════════════════════════════════════
    검색 / AI 추천 화면
 ═══════════════════════════════════════════════════════════ */

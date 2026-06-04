@@ -930,11 +930,23 @@ function generateCourse() {
 }
 
 /* ─── 하루 코스 컴포넌트 ──────────────────────────────── */
-function DayCoursePlanner({ onSelect }) {
+function DayCoursePlanner({ onSelect, onSaveCourse }) {
   const [course, setCourse] = useState(null)
+  const [saved, setSaved] = useState(false)
 
   function handleGenerate() {
     setCourse(generateCourse())
+    setSaved(false)
+  }
+
+  function handleSave() {
+    if (!course) return
+    const steps = course.map((step) => {
+      const rest = restaurants.find((r) => r.id === step.id)
+      return { slot: step.slot, time: step.time, restaurantId: step.id, restaurantName: rest?.name ?? '' }
+    })
+    onSaveCourse({ id: Date.now(), date: formatDate(true), steps })
+    setSaved(true)
   }
 
   return (
@@ -950,36 +962,45 @@ function DayCoursePlanner({ onSelect }) {
       </div>
 
       {course && (
-        <div className="day-course-timeline">
-          {course.map((step, i) => {
-            const rest = restaurants.find((r) => r.id === step.id)
-            if (!rest) return null
-            return (
-              <div key={i} className="day-step">
-                <div className="day-step-left">
-                  <div className="day-step-time">{step.time}</div>
-                  <div className={`day-step-dot${i === course.length - 1 ? ' last' : ''}`} />
-                  {i < course.length - 1 && <div className="day-step-line" />}
-                </div>
-                <button className="day-step-card" onClick={() => onSelect(rest.id)}>
-                  <div className="day-step-thumb"><PhotoThumb item={rest} /></div>
-                  <div className="day-step-info">
-                    <span className="day-step-slot">{step.slot}</span>
-                    <strong>{rest.name}</strong>
-                    <p>{rest.hero}</p>
+        <>
+          <div className="day-course-timeline">
+            {course.map((step, i) => {
+              const rest = restaurants.find((r) => r.id === step.id)
+              if (!rest) return null
+              return (
+                <div key={i} className="day-step">
+                  <div className="day-step-left">
+                    <div className="day-step-time">{step.time}</div>
+                    <div className={`day-step-dot${i === course.length - 1 ? ' last' : ''}`} />
+                    {i < course.length - 1 && <div className="day-step-line" />}
                   </div>
-                </button>
-              </div>
-            )
-          })}
-        </div>
+                  <button className="day-step-card" onClick={() => onSelect(rest.id)}>
+                    <div className="day-step-thumb"><PhotoThumb item={rest} /></div>
+                    <div className="day-step-info">
+                      <span className="day-step-slot">{step.slot}</span>
+                      <strong>{rest.name}</strong>
+                      <p>{rest.hero}</p>
+                    </div>
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+          <button
+            className={`day-save-btn${saved ? ' saved' : ''}`}
+            onClick={handleSave}
+            disabled={saved}
+          >
+            {saved ? '✅ 저장됨' : '🔖 이 코스 저장하기'}
+          </button>
+        </>
       )}
     </section>
   )
 }
 
 /* ─── 홈 화면 ───────────────────────────────────────────── */
-function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onOpenMapItem }) {
+function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onOpenMapItem, onSaveCourse }) {
   const [moodFilter, setMoodFilter]   = useState('전체')
   const [priceFilter, setPriceFilter] = useState('전체')
   const [traitFilter, setTraitFilter] = useState(null)
@@ -1130,7 +1151,7 @@ function HomeScreen({ savedIds, onToggleSave, onSelect, onGoSearch, onGoMap, onO
       </section>
 
       {/* ── 하루 코스 ── */}
-      <DayCoursePlanner onSelect={onSelect} />
+      <DayCoursePlanner onSelect={onSelect} onSaveCourse={onSaveCourse} />
 
       {/* ── 하단 여백 ── */}
       <div style={{ height: 24 }} />
@@ -1417,7 +1438,7 @@ function MapScreen({ mapSelectedId, setMapSelectedId, onSelect, bp }) {
 
 
 /* ─── 마이 화면 ─────────────────────────────────────────── */
-function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, setVisitRecords, reviews, setReviews, isInstalledApp, installPrompt, onInstall, showInstallGuide, setShowInstallGuide, profile, onEditProfile, onLogout, firebaseUser, onLogin }) {
+function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, setVisitRecords, reviews, setReviews, savedCourses, onDeleteCourse, isInstalledApp, installPrompt, onInstall, showInstallGuide, setShowInstallGuide, profile, onEditProfile, onLogout, firebaseUser, onLogin }) {
   const [activeFilter, setActiveFilter] = useState('전체')
   const [rouletteItem, setRouletteItem] = useState(null)
   const [isSpinning, setIsSpinning] = useState(false)
@@ -1803,7 +1824,38 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, set
         <MyFoodMap visitRecords={visitRecords} onSelect={onSelect} />
       </section>
 
-      {/* ── 7. 리뷰 & 메모 ── */}
+      {/* ── 7. 저장된 코스 ── */}
+      <section className="my-section">
+        <div className="my-section-hd">
+          <span className="my-section-title">🗓️ 저장된 코스</span>
+          <span className="my-section-count">{savedCourses.length}개</span>
+        </div>
+        {savedCourses.length === 0 ? (
+          <div className="my-saved-empty"><span>🗓️</span><p>저장된 코스가 없어요</p></div>
+        ) : (
+          <div className="my-courses">
+            {savedCourses.map((c) => (
+              <div key={c.id} className="my-course-item">
+                <div className="my-course-hd">
+                  <span className="my-course-date">{c.date}</span>
+                  <button className="my-review-del" onClick={() => onDeleteCourse(c.id)}>삭제</button>
+                </div>
+                <div className="my-course-steps">
+                  {c.steps.map((step, i) => (
+                    <div key={i} className="my-course-step">
+                      <span className="my-course-slot">{step.slot}</span>
+                      <span className="my-course-time">{step.time}</span>
+                      <strong className="my-course-name" onClick={() => onSelect(step.restaurantId)}>{step.restaurantName}</strong>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* ── 8. 리뷰 & 메모 ── */}
       <section className="my-section">
         <div className="my-section-hd">
           <span className="my-section-title">✏️ 내 리뷰 &amp; 메모</span>
@@ -2501,6 +2553,15 @@ export default function App() {
     window.localStorage.setItem('miri-hankki-reviews-v2', JSON.stringify(reviews))
   }, [reviews])
 
+  // 저장된 코스
+  const [savedCourses, setSavedCourses] = useState(() => {
+    try { const s = window.localStorage.getItem('miri-hankki-courses'); return s ? JSON.parse(s) : [] }
+    catch { return [] }
+  })
+  useEffect(() => {
+    window.localStorage.setItem('miri-hankki-courses', JSON.stringify(savedCourses))
+  }, [savedCourses])
+
   // Firestore 자동 저장 (로그인 상태 + 로드 완료 후)
   useEffect(() => {
     if (!firebaseUser || !dataLoaded) return
@@ -2571,6 +2632,7 @@ export default function App() {
                   onGoSearch={() => setActiveTab('search')}
                   onGoMap={() => setActiveTab('map')}
                   onOpenMapItem={(id) => { setMapSelectedId(id); setActiveTab('map') }}
+                  onSaveCourse={(c) => setSavedCourses((prev) => [c, ...prev])}
                 />
               )}
               <div style={{ display: activeTab === 'search' ? 'block' : 'none' }}>
@@ -2598,6 +2660,8 @@ export default function App() {
                   setVisitRecords={setVisitRecords}
                   reviews={reviews}
                   setReviews={setReviews}
+                  savedCourses={savedCourses}
+                  onDeleteCourse={(id) => setSavedCourses((prev) => prev.filter((c) => c.id !== id))}
                   isInstalledApp={isInstalledApp}
                   installPrompt={installPrompt}
                   onInstall={handleInstallApp}
