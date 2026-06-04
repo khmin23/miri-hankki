@@ -207,6 +207,7 @@ function copyToClipboard(text) {
 }
 
 function openMapLink(url) {
+  if (!url || !url.startsWith('https://')) return
   window.location.href = url
 }
 
@@ -1949,7 +1950,7 @@ function MyScreen({ savedIds, onToggleSave, onSelect, onGoMap, visitRecords, set
 }
 
 /* ─── 상세 모달 ─────────────────────────────────────────── */
-function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, visitRecords, setVisitRecords, reviews, setReviews, profile }) {
+function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, visitRecords, setVisitRecords, reviews, setReviews, profile, firebaseUser }) {
   const userLoc = useContext(UserLocCtx)
   const scrollRef = useRef(null)
   const [tip, setTip]       = useState('')
@@ -2016,6 +2017,7 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
       text: reviewText.trim(),
       soloVisit,
       nickname: profile?.name || '익명',
+      uid: firebaseUser?.uid || null,
     })
     const review = {
       restaurantId: item.id,
@@ -2403,10 +2405,11 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
                 </button>
                 <textarea
                   className="detail-my-textarea"
-                  placeholder="한 줄 메모를 남겨보세요"
+                  placeholder="한 줄 메모를 남겨보세요 (최대 500자)"
                   value={reviewText}
                   onChange={(e) => setReviewText(e.target.value)}
                   rows={3}
+                  maxLength={500}
                 />
                 <div className="detail-my-form-btns">
                   <button className="detail-my-save" onClick={handleAddReview}>저장</button>
@@ -2762,6 +2765,7 @@ export default function App() {
             reviews={reviews}
             setReviews={setReviews}
             profile={profile}
+            firebaseUser={firebaseUser}
           />
         )}
       </div>

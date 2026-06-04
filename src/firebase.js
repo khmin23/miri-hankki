@@ -67,7 +67,7 @@ export async function saveUserData(uid, data) {
 }
 
 /* ── Firestore: 공개 리뷰 저장 / 불러오기 ── */
-export async function savePublicReview({ restaurantId, rating, text, soloVisit, nickname }) {
+export async function savePublicReview({ restaurantId, rating, text, soloVisit, nickname, uid }) {
   if (!db) return null
   try {
     const ref = await addDoc(collection(db, 'publicReviews'), {
@@ -76,6 +76,7 @@ export async function savePublicReview({ restaurantId, rating, text, soloVisit, 
       text,
       soloVisit: soloVisit || false,
       nickname: nickname || '익명',
+      uid: uid || null,
       createdAt: serverTimestamp(),
     })
     return ref.id
