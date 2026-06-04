@@ -2733,13 +2733,18 @@ export default function App() {
               if (profileData) {
                 setProfile(profileData)
                 window.localStorage.setItem('miri-hankki-profile', JSON.stringify(profileData))
+                saveUserData(user.uid, { savedIds, visitRecords, reviews, profile: profileData })
               }
             }}
             onSkip={() => setShowAuthOverlay(false)}
           />
         )}
         {showProfileSetup && firebaseUser && !profile && (
-          <ProfileSetup onDone={(p) => { setProfile(p); setShowProfileSetup(false) }} />
+          <ProfileSetup onDone={(p) => {
+            setProfile(p)
+            setShowProfileSetup(false)
+            saveUserData(firebaseUser.uid, { savedIds, visitRecords, reviews, profile: p })
+          }} />
         )}
 
         {showCopyMessage && <div className="toast">📋 링크를 복사했어요.</div>}
