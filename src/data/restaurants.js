@@ -623,9 +623,9 @@ export const restaurants = [
       },
     ],
     links: {
-      naver: 'https://map.naver.com/p/search/%EC%9C%84%ED%82%B9%ED%99%80%EB%A6%AC%EB%8D%B0%EC%9D%B4',
-      kakao: 'https://map.kakao.com/link/search/%EC%9C%84%ED%82%B9%ED%99%80%EB%A6%AC%EB%8D%B0%EC%9D%B4',
-      google: 'https://www.google.com/maps/search/?api=1&query=%EC%9C%84%ED%82%B9%ED%99%80%EB%A6%AC%EB%8D%B0%EC%9D%B4+%EA%B4%91%EC%95%88%EB%A6%AC',
+      naver: 'https://map.naver.com/p/search/%EC%9B%8C%ED%82%B9%ED%99%80%EB%A6%AC%EB%8D%B0%EC%9D%B4',
+      kakao: 'https://map.kakao.com/link/search/%EC%9B%8C%ED%82%B9%ED%99%80%EB%A6%AC%EB%8D%B0%EC%9D%B4',
+      google: 'https://www.google.com/maps/search/?api=1&query=%EC%9B%8C%ED%82%B9%ED%99%80%EB%A6%AC%EB%8D%B0%EC%9D%B4+%EA%B4%91%EC%95%88%EB%A6%AC',
       reservation: '',
     },
     nearbyExternal: [

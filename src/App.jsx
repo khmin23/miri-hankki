@@ -2131,7 +2131,7 @@ function DetailModal({ item, onClose, onShare, onOpenMap, saved, onToggleSave, v
               <h3>가게 내부</h3>
               <div className="interior-viewer-card">
                 {item.media.interior.type === 'html360' ? (
-                  <iframe title={`${item.name} 가게 내부`} src={asset(item.media.interior.src)} loading="lazy" />
+                  <iframe title={`${item.name} 가게 내부`} src={asset(item.media.interior.src)} loading="lazy" allow="autoplay" />
                 ) : item.media.interior.type === 'image' ? (
                   <img src={asset(item.media.interior.src)} alt={`${item.name} 가게 내부`} style={{ width: '100%', borderRadius: '12px', display: 'block' }} />
                 ) : (
