@@ -664,24 +664,35 @@ function MyFoodMap({ visitRecords, onSelect }) {
 
 /* ─── 로그인 / 회원가입 화면 ───────────────────────────── */
 function AuthScreen({ onDone, onSkip }) {
-  const [mode, setMode]         = useState('login')   // 'login' | 'signup'
+  const [mode, setMode]         = useState('login')
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm]   = useState('')
+  const [nickname, setNickname] = useState('')
+  const [avatar, setAvatar]     = useState('🌊')
   const [error, setError]       = useState('')
   const [loading, setLoading]   = useState(false)
 
   const handleSubmit = async () => {
     setError('')
     if (!email.trim() || !password) { setError('이메일과 비밀번호를 입력해주세요'); return }
-    if (mode === 'signup' && password !== confirm) { setError('비밀번호가 일치하지 않아요'); return }
+    if (mode === 'signup') {
+      if (password !== confirm) { setError('비밀번호가 일치하지 않아요'); return }
+      if (!nickname.trim()) { setError('닉네임을 입력해주세요'); return }
+    }
     if (password.length < 6) { setError('비밀번호는 6자 이상이어야 해요'); return }
     setLoading(true)
     try {
       const user = mode === 'signup'
         ? await signUp(email.trim(), password)
         : await signIn(email.trim(), password)
-      onDone(user)
+      if (mode === 'signup') {
+        const profileData = { name: nickname.trim(), avatar }
+        window.localStorage.setItem('miri-hankki-profile', JSON.stringify(profileData))
+        onDone(user, profileData)
+      } else {
+        onDone(user, null)
+      }
     } catch (e) {
       const msg = {
         'auth/email-already-in-use': '이미 사용 중인 이메일이에요',
@@ -719,9 +730,21 @@ function AuthScreen({ onDone, onSkip }) {
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => mode === 'login' && e.key === 'Enter' && handleSubmit()} />
           {mode === 'signup' && (
-            <input className="auth-input" type="password" placeholder="비밀번호 확인" value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSubmit()} />
+            <>
+              <input className="auth-input" type="password" placeholder="비밀번호 확인" value={confirm}
+                onChange={(e) => setConfirm(e.target.value)} />
+              <input className="auth-input" placeholder="닉네임 (예: 광안 미식가)" value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+                maxLength={12} />
+              <div className="ps-avatar-grid" style={{ marginTop: 4 }}>
+                {PROFILE_AVATARS.map((em) => (
+                  <button key={em} type="button"
+                    className={`ps-avatar-btn${avatar === em ? ' active' : ''}`}
+                    onClick={() => setAvatar(em)}>{em}</button>
+                ))}
+              </div>
+            </>
           )}
           {error && <p className="auth-error">{error}</p>}
           <button className={`auth-submit${loading ? ' loading' : ''}`} onClick={handleSubmit} disabled={loading}>
@@ -2496,11 +2519,13 @@ export default function App() {
             setProfile(data.profile)
             localStorage.setItem('miri-hankki-profile', JSON.stringify(data.profile))
           } else {
-            setShowProfileSetup(true)
+            const stored = (() => { try { const s = localStorage.getItem('miri-hankki-profile'); return s ? JSON.parse(s) : null } catch { return null } })()
+            if (stored) { setProfile(stored) } else { setShowProfileSetup(true) }
           }
         } else {
           // 신규 유저 또는 Firestore 데이터 없음
-          if (!profile) setShowProfileSetup(true)
+          const stored = (() => { try { const s = localStorage.getItem('miri-hankki-profile'); return s ? JSON.parse(s) : null } catch { return null } })()
+          if (stored) { setProfile(stored) } else { setShowProfileSetup(true) }
         }
         setDataLoaded(true)
       } else {
@@ -2702,10 +2727,13 @@ export default function App() {
         {/* 로그인 / 프로필 오버레이 */}
         {showAuthOverlay && (
           <AuthScreen
-            onDone={(user) => {
+            onDone={(user, profileData) => {
               setFirebaseUser(user)
               setShowAuthOverlay(false)
-              if (!profile) setShowProfileSetup(true)
+              if (profileData) {
+                setProfile(profileData)
+                window.localStorage.setItem('miri-hankki-profile', JSON.stringify(profileData))
+              }
             }}
             onSkip={() => setShowAuthOverlay(false)}
           />
