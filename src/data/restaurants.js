@@ -471,7 +471,7 @@ export const restaurants = [
   },
   {
     id: 4,
-    name: '위킹홀리데이',
+    name: '워킹홀리데이',
     category: '브런치카페 · 오션뷰',
     mood: ['브런치', '데이트', '오션뷰'],
     location: '광안리',
@@ -618,7 +618,7 @@ export const restaurants = [
     photos: [
       {
         src: '/restaurant-photos/walking-holiday-food.jpg',
-        alt: '위킹홀리데이 브런치 메뉴와 음료',
+        alt: '워킹홀리데이 브런치 메뉴와 음료',
         caption: '브런치 플레이트, 스프, 음료를 함께 담은 실제 방문 메뉴 사진',
       },
     ],
