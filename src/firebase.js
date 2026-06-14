@@ -51,12 +51,12 @@ export function onAuthStateChanged(callback) {
 }
 
 /* ── Firestore: 유저 데이터 로드 / 저장 ── */
+// 문서가 없으면 null을 반환하고, 네트워크 등 읽기 오류는 throw 한다.
+// (호출부에서 "신규 유저"와 "로드 실패"를 구분해 빈 데이터 덮어쓰기를 막기 위함)
 export async function loadUserData(uid) {
   if (!db) return null
-  try {
-    const snap = await getDoc(doc(db, 'users', uid))
-    return snap.exists() ? snap.data() : null
-  } catch { return null }
+  const snap = await getDoc(doc(db, 'users', uid))
+  return snap.exists() ? snap.data() : null
 }
 
 export async function saveUserData(uid, data) {

@@ -95,23 +95,29 @@ export default function App() {
         // 빈 상태가 기존 기록을 덮어쓰는 race condition 방지
         setDataLoaded(false)
         localStorage.setItem('miri-hankki-session', JSON.stringify(user))
-        const data = await loadUserData(user.uid)
-        if (data) {
-          if (Array.isArray(data.savedIds))     setSavedIds(data.savedIds)
-          if (Array.isArray(data.visitRecords)) setVisitRecords(data.visitRecords)
-          if (Array.isArray(data.reviews))      setReviews(data.reviews)
-          if (data.profile) {
-            setProfile(data.profile)
-            localStorage.setItem('miri-hankki-profile', JSON.stringify(data.profile))
+        try {
+          const data = await loadUserData(user.uid)
+          if (data) {
+            if (Array.isArray(data.savedIds))     setSavedIds(data.savedIds)
+            if (Array.isArray(data.visitRecords)) setVisitRecords(data.visitRecords)
+            if (Array.isArray(data.reviews))      setReviews(data.reviews)
+            if (data.profile) {
+              setProfile(data.profile)
+              localStorage.setItem('miri-hankki-profile', JSON.stringify(data.profile))
+            } else {
+              const stored = (() => { try { const s = localStorage.getItem('miri-hankki-profile'); return s ? JSON.parse(s) : null } catch { return null } })()
+              if (stored) { setProfile(stored) } else { setShowProfileSetup(true) }
+            }
           } else {
             const stored = (() => { try { const s = localStorage.getItem('miri-hankki-profile'); return s ? JSON.parse(s) : null } catch { return null } })()
             if (stored) { setProfile(stored) } else { setShowProfileSetup(true) }
           }
-        } else {
-          const stored = (() => { try { const s = localStorage.getItem('miri-hankki-profile'); return s ? JSON.parse(s) : null } catch { return null } })()
-          if (stored) { setProfile(stored) } else { setShowProfileSetup(true) }
+          // 클라우드 로드가 성공했을 때만 자동저장 해제
+          setDataLoaded(true)
+        } catch (e) {
+          // 읽기 실패(네트워크 등) 시 자동저장을 계속 잠가 빈 데이터 덮어쓰기 방지
+          console.warn('[미리한끼] 사용자 데이터 로드 실패 — 자동저장 잠금 유지', e)
         }
-        setDataLoaded(true)
       } else {
         localStorage.removeItem('miri-hankki-session')
         setDataLoaded(true)
