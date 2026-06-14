@@ -101,6 +101,7 @@ export default function App() {
             if (Array.isArray(data.savedIds))     setSavedIds(data.savedIds)
             if (Array.isArray(data.visitRecords)) setVisitRecords(data.visitRecords)
             if (Array.isArray(data.reviews))      setReviews(data.reviews)
+            if (Array.isArray(data.savedCourses)) setSavedCourses(data.savedCourses)
             if (data.profile) {
               setProfile(data.profile)
               localStorage.setItem('miri-hankki-profile', JSON.stringify(data.profile))
@@ -180,10 +181,10 @@ export default function App() {
   useEffect(() => {
     if (!firebaseUser || !dataLoaded) return
     const t = setTimeout(() => {
-      saveUserData(firebaseUser.uid, { savedIds, visitRecords, reviews, profile })
+      saveUserData(firebaseUser.uid, { savedIds, visitRecords, reviews, savedCourses, profile })
     }, 1500)
     return () => clearTimeout(t)
-  }, [savedIds, visitRecords, reviews, profile, firebaseUser, dataLoaded])
+  }, [savedIds, visitRecords, reviews, savedCourses, profile, firebaseUser, dataLoaded])
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' })
@@ -280,7 +281,7 @@ export default function App() {
                   onEditProfile={(p) => { setProfile(p); window.localStorage.setItem('miri-hankki-profile', JSON.stringify(p)) }}
                   onLogout={() => {
                     setFirebaseUser(null); setProfile(null)
-                    setSavedIds([]); setVisitRecords([]); setReviews([])
+                    setSavedIds([]); setVisitRecords([]); setReviews([]); setSavedCourses([])
                     setDataLoaded(true)
                     localStorage.removeItem('miri-hankki-session')
                     localStorage.removeItem('miri-hankki-profile')
@@ -317,7 +318,7 @@ export default function App() {
               if (profileData) {
                 setProfile(profileData)
                 window.localStorage.setItem('miri-hankki-profile', JSON.stringify(profileData))
-                saveUserData(user.uid, { savedIds, visitRecords, reviews, profile: profileData })
+                saveUserData(user.uid, { savedIds, visitRecords, reviews, savedCourses, profile: profileData })
               }
             }}
             onSkip={() => setShowAuthOverlay(false)}
@@ -327,7 +328,7 @@ export default function App() {
           <ProfileSetup onDone={(p) => {
             setProfile(p)
             setShowProfileSetup(false)
-            saveUserData(firebaseUser.uid, { savedIds, visitRecords, reviews, profile: p })
+            saveUserData(firebaseUser.uid, { savedIds, visitRecords, reviews, savedCourses, profile: p })
           }} />
         )}
 
