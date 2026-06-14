@@ -91,6 +91,9 @@ export default function App() {
     const unsub = onAuthStateChanged(async (user) => {
       setFirebaseUser(user)
       if (user) {
+        // 사용자 감지 즉시 자동저장 잠금 — Firestore 로드 완료 전에
+        // 빈 상태가 기존 기록을 덮어쓰는 race condition 방지
+        setDataLoaded(false)
         localStorage.setItem('miri-hankki-session', JSON.stringify(user))
         const data = await loadUserData(user.uid)
         if (data) {
